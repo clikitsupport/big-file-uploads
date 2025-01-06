@@ -90,6 +90,10 @@ If you can upload it to the WordPress media library, Big File Uploads can proces
 
 No. [Infinite Uploads](https://github.com/plugins/infinite-uploads/) is an optional service to offload your media files to the cloud and make your WordPress website storage infinitely scalable. Perfect for sites that need to store many large file uploads.
 
+### How can I report security bugs?
+
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/wordpress/plugin/tuxedo-big-file-uploads/vdp)
+
 
 ## About Us
 Infinite Uploads builds WordPress plugins and is a premium cloud storage provider and content delivery network (CDN) for all your WordPress media files. Learn more here:
