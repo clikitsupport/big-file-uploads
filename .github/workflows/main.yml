@@ -5,29 +5,37 @@ name: Deploy to WordPress.org
 on:
   push:
     tags:
-      - '*'
+      - '*' # Triggers on all tag pushes
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v2
+      # Step 1: Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    - name: WordPress Plugin Deploy
-      id: deploy
-      uses: 10up/action-wordpress-plugin-deploy@stable
-      with:
-        generate-zip: true
-      env:
-        SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-        SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-        SLUG: tuxedo-big-file-uploads # optional, remove if GitHub repo name matches SVN slug, including capitalization
+      # Step 2: Install Subversion (SVN)
+      - name: Install Subversion
+        run: sudo apt-get update && sudo apt-get install subversion -y
 
-    - name: Create Github release
-      uses: ncipollo/release-action@v1
-      with:
-        artifacts: ${{github.workspace}}/${{ github.event.repository.name }}.zip
-        body: ${{ github.event.head_commit.message }}
-        token: ${{ secrets.GITHUB_TOKEN }}
-        artifactContentType: application/zip
+      # Step 3: Deploy to WordPress.org Plugin Repository
+      - name: WordPress Plugin Deploy
+        id: deploy
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        with:
+          generate-zip: true
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: tuxedo-big-file-uploads # Optional, remove if GitHub repo name matches SVN slug
+
+      # Step 4: Create a GitHub Release
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ${{ github.workspace }}/${{ github.event.repository.name }}.zip
+          body: ${{ github.event.head_commit.message }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifactContentType: application/zip
