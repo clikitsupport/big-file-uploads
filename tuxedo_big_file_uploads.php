@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Big File Uploads
  * Description: Enable large file uploads in the built-in WordPress media uploader via multipart uploads, and set maximum upload file size to any value based on user role. Uploads can be as large as available disk space allows.
- * Version:     2.1.4
+ * Version:     2.1.5
  * Author:      Infinite Uploads
  * Author URI:  https://infiniteuploads.com/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=meta
  * Network:     true
@@ -24,7 +24,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright 2021-2024 UglyRobot, LLC
+ * Copyright 2021-2025 ClikIT, LLC
  *
  * @package BigFileUploads
  * @version 2.0

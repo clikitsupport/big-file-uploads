@@ -110,6 +110,10 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
+2.1.5 - 2025-1-7
+----------------------------------------------------------------------
+- Copyright update
+
 2.1.4 - 2025-1-6
 ----------------------------------------------------------------------
 - FAQ update for security bug reporting
