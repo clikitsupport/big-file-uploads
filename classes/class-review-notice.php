@@ -285,6 +285,14 @@ class Big_File_Uploads_Review_Notice {
 	 * @return bool
 	 */
 	protected function is_time() {
+		$install_time = get_option( 'tuxedo_big_file_uploads_install_time' );
+
+		/**
+		 * If the plugin is installed less than 1 hour ago,
+		 */
+		if ( ( time() - $install_time ) < 3600 ) {
+			return;
+		}
 		// Get the notice time.
 		$time = get_site_option( $this->key( 'time' ) );
 
