@@ -290,7 +290,7 @@ class Big_File_Uploads_Review_Notice {
 		/**
 		 * If the plugin is installed less than 1 hour ago,
 		 */
-		if ( ( time() - $install_time ) < 3600 ) {
+		if ( ( time() - $install_time ) < HOUR_IN_SECONDS ) {
 			return;
 		}
 		// Get the notice time.

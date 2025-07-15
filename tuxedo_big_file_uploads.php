@@ -155,7 +155,7 @@ class BigFileUploads {
 	 * @since 2.1.7
 	 */
 	public function on_plugin_activation() {
-		update_option( 'tuxedo_big_file_uploads_install_time', time() );
+		update_option( 'tuxedo_big_file_uploads_install_time', time(), '', false );
 	}
 
 	/**
