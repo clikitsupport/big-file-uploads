@@ -932,7 +932,7 @@ class BigFileUploads {
 		$custom_links             = [];
 		$custom_links['settings'] = "<a href='$url'>" . esc_html__( 'Settings', 'tuxedo-big-file-uploads' ) . '</a>';
 		$custom_links['support']  = '<a href="' . esc_url( $this->api_url( '/support/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_term=support&utm_content=meta' ) ) . '">' . esc_html__( 'Support', 'tuxedo-big-file-uploads' ) . '</a>';
-        $custom_links['upgrade'] = '<a href="http://infiniteuploads.com/big-file-form-uploads" aria-label="' . esc_attr__( 'Go Pro', 'tuxedo-big-file-uploads' ) . '" style="color: #8D00B1;" target="_blank">' . esc_html__( 'Go Pro', 'tuxedo-big-file-uploads' ) . '</a>';
+        $custom_links['upgrade'] = '<a href="http://infiniteuploads.com/big-file-form-uploads" aria-label="' . esc_attr__( 'Go Pro', 'tuxedo-big-file-uploads' ) . '" style="color: #93003f;" target="_blank"><b>' . esc_html__( 'Go Pro', 'tuxedo-big-file-uploads' ) . '</b></a>';
 
         // Adds the links to the beginning of the array.
 		return array_merge( $custom_links, $actions );
