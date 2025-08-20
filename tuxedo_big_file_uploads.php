@@ -226,7 +226,7 @@ class BigFileUploads {
         $promo = new BFFU_Promo_Notice();
 
         $promo->add_notice( [
-                'id'      => 'bffu_pro_upgrade_123456',
+                'id'      => 'bffu_pro_upgrade',
                 'title'   => 'Get Big File Form Uploads',
                 'message' => 'Expand Big File Uploads to your front-end form uploads and let your visitors upload large files with Contact Form 7, Gravity Forms, and Forminator, with more integrations coming soon.',
                 'type'    => 'info',
