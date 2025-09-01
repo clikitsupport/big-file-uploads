@@ -285,12 +285,26 @@ class Big_File_Uploads_Review_Notice {
 	 * @return bool
 	 */
 	protected function is_time() {
-		// Get the notice time.
+		$install_time = get_option( 'tuxedo_big_file_uploads_install_time' );
+
+        // If not set, we will use current time.
+        if ( ! $install_time ) {
+            $install_time = time();
+            add_option( 'tuxedo_big_file_uploads_install_time', $install_time );
+        }
+
+		// Bail if the plugin is installed less than an hour ago.
+		if ( ( time() - $install_time ) < HOUR_IN_SECONDS ) {
+			return false;
+		}
+
+		// Get the time when we should show the notice.
 		$time = get_site_option( $this->key( 'time' ) );
 
 		// If not set, set now and bail.
 		if ( empty( $time ) ) {
 			$time = time() + ( $this->days * DAY_IN_SECONDS );
+
 			// Set to future.
 			update_site_option( $this->key( 'time' ), $time );
 

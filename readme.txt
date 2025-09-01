@@ -2,8 +2,8 @@
 Contributors: uglyrobot, jdailey, andtrev
 Tags: increase file size limit, increase upload limit, max upload file size, post max size, upload limit, file upload, files uploader, ftp, video uploader, AJAX
 Requires at least: 5.3
-Tested up to: 6.6.1
-Stable tag: 2.1.6
+Tested up to: 6.8
+Stable tag: 2.1.7
 Requires PHP: 5.6
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -69,6 +69,9 @@ Other plugins simply rewrite the .htaccess or php.ini files in an attempt to adj
 
 Big File Uploads is built to work with [Infinite Uploads](https://wordpress.org/plugins/infinite-uploads/) to make your site's upload directory infinitely scalable. A large WordPress media library can slow down your server and run up the cost of bandwidth and storage with your hosting provider. Move your uploads directory to the Infinite Uploads cloud to save on storage and bandwidth and improve site performance and security. Learn more about [Infinite Uploads cloud storage and content delivery network](https://infiniteuploads.com/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=bfu_readme&utm_term=promo).
 
+### Extend Big File Uploads to your forms!
+
+[Big File Form Uploads](https://infiniteuploads.com/big-file-form-uploads/) is a paid add-on that  extends the functionality of increasing the maximum WordPress file upload size to your favorite form plugins for WordPress, including Contact Form 7, Gravity Forms, and Forminator! Set the limit in Big File Uploads, and that carries over to your file uploads in your forms to let your users upload big files! [Learn more about Big File Form Uploads!](https://infiniteuploads.com/big-file-form-uploads/)
 
 ### Privacy
 
