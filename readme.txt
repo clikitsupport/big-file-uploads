@@ -2,7 +2,7 @@
 Contributors: uglyrobot, jdailey, andtrev
 Tags: increase file size limit, increase upload limit, max upload file size, post max size, upload limit, file upload, files uploader, ftp, video uploader, AJAX
 Requires at least: 5.3
-Tested up to: 6.8
+Tested up to: 6.8.2
 Stable tag: 2.1.7
 Requires PHP: 5.6
 License: GPLv2
@@ -103,7 +103,6 @@ No. [Infinite Uploads](https://wordpress.org/plugins/infinite-uploads/) is an op
 
 You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/wordpress/plugin/tuxedo-big-file-uploads/vdp)
 
-
 == Screenshots ==
 
 1. Set maximum upload file size.
@@ -113,40 +112,45 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
-2.1.6 - 2025-1-7
+2.1.7 [2025-09-02]
+----------------------------------------------------------------------
+
+- Update: WordPress 6.8.2 compatibility check
+
+2.1.6 [2025-01-07]
 ----------------------------------------------------------------------
 - 2025 update
 
-2.1.5 - 2025-1-7
+2.1.5 [2025-01-07]
 ----------------------------------------------------------------------
 - Copyright update
 
-2.1.4 - 2025-1-6
+2.1.4 [2025-01-06]
 ----------------------------------------------------------------------
 - FAQ update for security bug reporting
 
-2.1.3 - 2024-9-6
+2.1.3 [2024-09-06]
 ----------------------------------------------------------------------
 - Fix for Authenticated (Author+) Full Path Disclosure vulnerability in error messages. Props @netc4t
 
-2.1.2 - 2023-10-25
+2.1.2 [2023-10-25]
 ----------------------------------------------------------------------
 - Minor security improvement for dismissing the review notice (CSRF).
 
-2.1.1 - 2022-8-17
+2.1.1 [2022-08-17]
 ----------------------------------------------------------------------
 - Compatibility with Easy Digital Downloads plugin.
 - Protect the temp directory from direct access.
 
-2.1 - 2022-8-14
+2.1 [2022-08-14]
 ----------------------------------------------------------------------
 - Can now handle files of any size, limited only by your disk space, not system temp directory size.
 
-2.0.3 - 2022-7-03
+2.0.3 [2022-07-03]
 ----------------------------------------------------------------------
 - Security fix: Prevent OS command injection in rare hosting configurations. props Marco Nappi.
 
-2.0.2 - 2022-2-03
+2.0.2 [2022-02-03]
 ----------------------------------------------------------------------
 - Fix: Conflicts with some theme builders like Themify.
 - Fix: Fail with error message instead of showing success with partially uploaded big files missing chunks.
@@ -154,11 +158,11 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 - Add a review on wordpress.org timed notice
 - Smoother Gutenberg editor support with a custom error message directing to use the media library uploader.
 
-2.0.1 - 2021-6-30
+2.0.1 [2021-06-30]
 ----------------------------------------------------------------------
 - Bug fix: Sometimes the upgrade notice showed in wrong places in the admin area. props Nick H.
 
-2.0 - 2021-6-20
+2.0 - [2021-06-20]
 ----------------------------------------------------------------------
 - Development and support now managed by Infinite Uploads
 - Adds the ability to set maximum upload size by user role
@@ -169,20 +173,20 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 - Install Infinite Uploads and upload large files directly to your cloud account
 - Improve notifications
 
-1.2 - 04/09/2016
+1.2 - [2016-09-04]
 ----------------------------------------------------------------------
 - Added maximum upload size limit setting.
 - Stronger security: uploads now go through admin-ajax and check_admin_referer is called before any chunks are touched.
 
-1.1 - 01/12/2016
+1.1 - [2016-01-12]
 ----------------------------------------------------------------------
 - WordPress Multisite support (subdir, subdomain, and pre-WP3.5 networks)
 
-1.0.1 - 01/09/2016
+1.0.1 - [2016-01-09]
 ----------------------------------------------------------------------
 - Added fallback if the file info extension is missing
 
-1.0 - 12/20/2015
+1.0 - [2015-12-20]
 ----------------------------------------------------------------------
 - Initial release
 
