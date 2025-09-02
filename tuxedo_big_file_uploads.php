@@ -8,6 +8,8 @@
  * Network:     true
  * License:     GPLv2 or later
  * Domain Path: /languages
+ * Requires at least: 5.6
+ * Tests up to: 6.8.2
  * Text Domain: tuxedo-big-file-uploads
  *
  * This program is free software; you can redistribute it and/or
@@ -102,7 +104,7 @@ class BigFileUploads {
         //save default before we filter it
         $this->max_upload_size = wp_max_upload_size();
         register_activation_hook( __FILE__, array( $this, 'on_plugin_activation' ) );
-        add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
+        add_action( 'init', array( $this, 'load_textdomain' ) );
         add_action( 'admin_notices', array( $this, 'init_review_notice' ) );
         add_filter( 'plupload_init', array( $this, 'filter_plupload_settings' ) );
         add_filter( 'upload_post_params', array( $this, 'filter_plupload_params' ) );
