@@ -1,0 +1,118 @@
+name: Deploy to WordPress.org and GitHub Release with ZIP
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., nightly-20241227)'
+        required: true
+        type: string
+        default: 'nightly'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Decide version (tag or input)
+      - name: Set version
+        id: vars
+        run: |
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "version=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: mbstring, xml
+          tools: composer:v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: WordPress Plugin Deploy
+        id: deploy
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        with:
+          generate-zip: false
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: tuxedo-big-file-uploads
+
+      - name: Prepare clean plugin package
+        run: |
+          WORKDIR="$RUNNER_TEMP/big-file-uploads"
+          rm -rf "$WORKDIR"
+          mkdir -p "$WORKDIR"
+          
+          cp -a . "$WORKDIR/"
+          cd "$WORKDIR"
+
+          # Remove development-only files
+          find . -type d -name "node_modules" -exec rm -rf {} +
+          find . -type f \( \
+            -name ".distignore" -o -name ".gitattributes" -o -name ".gitignore" \
+            -o -name "composer.lock" -o -name "composer.json" -o -name "composer-dev.json" \
+            -o -name "LICENSE.txt" -o -name "README.md" -o -name "phpunit.xml" \
+            -o -name "phpunit.xml.dist" -o -name "package.json" -o -name "package-lock.json" \
+            -o -name "readme.md" -o -name "gulpfile.js" -o -name "build-aws3.sh" \
+            -o -name "webpack.config.js" \
+          \) -delete
+          find . -type d \( -name "tests" -o -name "bin" \) -exec rm -rf {} +
+          find . -mindepth 1 -name ".*" -exec rm -rf {} +
+
+          # Create versioned zip file
+          zip -r "$RUNNER_TEMP/big-file-uploads-${{ steps.vars.outputs.version }}.zip" .
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: big-file-uploads-${{ steps.vars.outputs.version }}
+          path: ${{ runner.temp }}/big-file-uploads-${{ steps.vars.outputs.version }}.zip
+          retention-days: 5
+
+      - name: Rename build zip
+        run: mv ${{ runner.temp }}/big-file-uploads-${{ steps.vars.outputs.version }}.zip ${{ runner.temp }}/big-file-uploads.zip
+
+      - name: Extract changelog from readme.txt
+        id: changelog
+        run: |
+          VERSION=${{ steps.vars.outputs.version }}
+          CHANGELOG=$(awk -v ver="$VERSION" '
+            BEGIN { found=0 }
+            /^[0-9]+\.[0-9]+(\.[0-9]+){0,2}/ {
+              if ($1 == ver) { found=1; next }
+              if (found) exit
+            }
+            found { print }
+          ' readme.txt)
+
+          {
+            echo 'changelog<<EOF'
+            echo "$CHANGELOG"
+            echo 'EOF'
+          } >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release (with asset)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.version }}
+          name: Release ${{ steps.vars.outputs.version }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+          files: |
+            ${{ runner.temp }}/big-file-uploads.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
