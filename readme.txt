@@ -2,8 +2,8 @@
 Contributors: uglyrobot, jdailey, andtrev
 Tags: increase file size limit, increase upload limit, max upload file size, post max size, upload limit, file upload, files uploader, ftp, video uploader, AJAX
 Requires at least: 5.3
-Tested up to: 6.8.2
-Stable tag: 2.1.7
+Tested up to: 6.9
+Stable tag: 2.1.8
 Requires PHP: 5.6
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -111,6 +111,12 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 4. Increase upload size for built-in file uploader.
 
 == Changelog ==
+
+2.1.8 [2026-04-01]
+----------------------------------------------------------------------
+
+- Update: WordPress 6.9 compatibility check.
+- Translation updates.
 
 2.1.7 [2025-09-02]
 ----------------------------------------------------------------------
