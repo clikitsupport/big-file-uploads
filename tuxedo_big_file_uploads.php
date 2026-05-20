@@ -119,30 +119,30 @@ class BigFileUploads {
 
 
         //single site
-        add_action( 'admin_menu', [ &$this, 'admin_menu' ] );
+        add_action( 'admin_menu', [ $this, 'admin_menu' ] );
         add_filter( 'plugin_action_links_tuxedo-big-file-uploads/tuxedo_big_file_uploads.php', [
-                &$this,
+                $this,
                 'plugins_list_links',
         ] );
 
         //multisite
-        add_action( 'network_admin_menu', [ &$this, 'admin_menu' ] );
+        add_action( 'network_admin_menu', [ $this, 'admin_menu' ] );
         add_filter( 'network_admin_plugin_action_links_tuxedo-big-file-uploads/tuxedo_big_file_uploads.php', [
-                &$this,
+                $this,
                 'plugins_list_links',
         ] );
 
         if ( is_main_site() ) {
-            add_action( 'wp_ajax_bfu_file_scan', [ &$this, 'ajax_file_scan' ] );
-            add_action( 'wp_ajax_bfu_upload_dismiss', [ &$this, 'ajax_upload_dismiss' ] );
-            add_action( 'wp_ajax_bfu_upgrade_dismiss', [ &$this, 'ajax_upgrade_dismiss' ] );
-            add_action( 'wp_ajax_bfu_subscribe_dismiss', [ &$this, 'ajax_subscribe_dismiss' ] );
+            add_action( 'wp_ajax_bfu_file_scan', [ $this, 'ajax_file_scan' ] );
+            add_action( 'wp_ajax_bfu_upload_dismiss', [ $this, 'ajax_upload_dismiss' ] );
+            add_action( 'wp_ajax_bfu_upgrade_dismiss', [ $this, 'ajax_upgrade_dismiss' ] );
+            add_action( 'wp_ajax_bfu_subscribe_dismiss', [ $this, 'ajax_subscribe_dismiss' ] );
         }
 
         if ( is_multisite() ) {
-            add_action( 'network_admin_notices', [ &$this, 'upgrade_notice' ] );
+            add_action( 'network_admin_notices', [ $this, 'upgrade_notice' ] );
         } else {
-            add_action( 'admin_notices', [ &$this, 'upgrade_notice' ] );
+            add_action( 'admin_notices', [ $this, 'upgrade_notice' ] );
         }
 
         require_once dirname( __FILE__ ) . '/classes/class-file-scan.php';
@@ -1061,8 +1061,8 @@ class BigFileUploads {
             );
         }
 
-        add_action( 'admin_print_scripts-' . $page, [ &$this, 'admin_scripts' ] );
-        add_action( 'admin_print_styles-' . $page, [ &$this, 'admin_styles' ] );
+        add_action( 'admin_print_scripts-' . $page, [ $this, 'admin_scripts' ] );
+        add_action( 'admin_print_styles-' . $page, [ $this, 'admin_styles' ] );
     }
 
     /**
