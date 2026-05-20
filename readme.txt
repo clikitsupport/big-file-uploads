@@ -1,5 +1,5 @@
 === Big File Uploads - Increase Maximum File Upload Size ===
-Contributors: uglyrobot, jdailey, andtrev
+Contributors: bww
 Tags: increase file size limit, increase upload limit, max upload file size, post max size, upload limit, file upload, files uploader, ftp, video uploader, AJAX
 Requires at least: 5.3
 Tested up to: 7.0
