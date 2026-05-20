@@ -81,7 +81,7 @@
 			<?php if ( ! class_exists( 'Infinite_Uploads' ) ) { ?>
 				<div class="row justify-content-center mt-3">
 					<div class="col text-center">
-						<p><?php esc_html_e( 'Want unlimited storage space?', 'tuxedo-big-file-uploads' ); ?> <a href="" data-toggle="modal" data-target="#upgrade-modal" class="text-warning"><?php esc_html_e( 'Move your media files to the Infinite Uploads cloud', 'tuxedo-big-file-uploads' ); ?></a>.
+						<p class="iu-upgrade-text"><?php esc_html_e( 'Want unlimited storage space, CDN, video hosting, folders, and enhanced media library search?', 'tuxedo-big-file-uploads' ); ?> <a href="" data-toggle="modal" data-target="#upgrade-modal" class="text-warning"><?php esc_html_e( 'Move your media files to the Infinite Uploads cloud', 'tuxedo-big-file-uploads' ); ?></a>.
 						</p>
 					</div>
 				</div>

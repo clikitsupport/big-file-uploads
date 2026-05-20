@@ -274,3 +274,7 @@ input.bfu-input-subscribe {
   width: 15px;
   vertical-align: text-top;
 }
+
+p.iu-upgrade-text {
+  font-size: 14px;
+}

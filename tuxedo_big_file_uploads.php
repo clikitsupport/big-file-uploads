@@ -2,14 +2,14 @@
 /**
  * Plugin Name: Big File Uploads
  * Description: Enable large file uploads in the built-in WordPress media uploader via multipart uploads, and set maximum upload file size to any value based on user role. Uploads can be as large as available disk space allows.
- * Version:     2.1.7
+ * Version:     2.1.8
  * Author:      Infinite Uploads
  * Author URI:  https://infiniteuploads.com/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=meta
  * Network:     true
  * License:     GPLv2 or later
  * Domain Path: /languages
  * Requires at least: 5.6
- * Tests up to: 6.8.2
+ * Tests up to: 7.0
  * Text Domain: tuxedo-big-file-uploads
  *
  * This program is free software; you can redistribute it and/or
@@ -36,7 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     die();
 }
 
-define( 'BIG_FILE_UPLOADS_VERSION', '2.1.4' );
+define( 'BIG_FILE_UPLOADS_VERSION', '2.1.8' );
 
 if ( ! defined( 'BIG_FILE_UPLOADS_PLUGIN_URL' ) ) {
     define( 'BIG_FILE_UPLOADS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -119,30 +119,30 @@ class BigFileUploads {
 
 
         //single site
-        add_action( 'admin_menu', [ &$this, 'admin_menu' ] );
+        add_action( 'admin_menu', [ $this, 'admin_menu' ] );
         add_filter( 'plugin_action_links_tuxedo-big-file-uploads/tuxedo_big_file_uploads.php', [
-                &$this,
+                $this,
                 'plugins_list_links',
         ] );
 
         //multisite
-        add_action( 'network_admin_menu', [ &$this, 'admin_menu' ] );
+        add_action( 'network_admin_menu', [ $this, 'admin_menu' ] );
         add_filter( 'network_admin_plugin_action_links_tuxedo-big-file-uploads/tuxedo_big_file_uploads.php', [
-                &$this,
+                $this,
                 'plugins_list_links',
         ] );
 
         if ( is_main_site() ) {
-            add_action( 'wp_ajax_bfu_file_scan', [ &$this, 'ajax_file_scan' ] );
-            add_action( 'wp_ajax_bfu_upload_dismiss', [ &$this, 'ajax_upload_dismiss' ] );
-            add_action( 'wp_ajax_bfu_upgrade_dismiss', [ &$this, 'ajax_upgrade_dismiss' ] );
-            add_action( 'wp_ajax_bfu_subscribe_dismiss', [ &$this, 'ajax_subscribe_dismiss' ] );
+            add_action( 'wp_ajax_bfu_file_scan', [ $this, 'ajax_file_scan' ] );
+            add_action( 'wp_ajax_bfu_upload_dismiss', [ $this, 'ajax_upload_dismiss' ] );
+            add_action( 'wp_ajax_bfu_upgrade_dismiss', [ $this, 'ajax_upgrade_dismiss' ] );
+            add_action( 'wp_ajax_bfu_subscribe_dismiss', [ $this, 'ajax_subscribe_dismiss' ] );
         }
 
         if ( is_multisite() ) {
-            add_action( 'network_admin_notices', [ &$this, 'upgrade_notice' ] );
+            add_action( 'network_admin_notices', [ $this, 'upgrade_notice' ] );
         } else {
-            add_action( 'admin_notices', [ &$this, 'upgrade_notice' ] );
+            add_action( 'admin_notices', [ $this, 'upgrade_notice' ] );
         }
 
         require_once dirname( __FILE__ ) . '/classes/class-file-scan.php';
@@ -228,16 +228,16 @@ class BigFileUploads {
         $promo = new BFFU_Promo_Notice();
 
         $promo->add_notice( [
-                'id'      => 'bffu_pro_upgrade',
-                'title'   => 'Get Big File Form Uploads',
-                'message' => 'Expand Big File Uploads to your front-end form uploads and let your visitors upload large files with Contact Form 7, Gravity Forms, and Forminator, with more integrations coming soon.',
+                'id'      => 'iu_enhanced_folder_management',
+                'title'   => 'Add folders and better search to your Media Library',
+                'message' => 'Infinite Uploads brings unlimited folders, drag-and-drop organization, and improved search to WordPress — plus storage offloading and CDN delivery on unlimited sites',
                 'type'    => 'info',
                 'delay_days' => 10,
                 'buttons' => [
                         'link' => [
                                 'text'   => 'Learn More',
                                 'action' => 'link',
-                                'link'   => 'http://infiniteuploads.com/big-file-form-uploads',
+                                'link'   => 'https://infiniteuploads.com',
                                 'type' => 'primary',
                         ],
 
@@ -372,7 +372,7 @@ class BigFileUploads {
             ?>
 			(function ($) {
 				'use strict';
-				$(".max-upload-size").after('<span class="bfu-upload-notice"><small><?php esc_html_e( 'Want unlimited storage space?', 'tuxedo-big-file-uploads' ); ?> <a href="<?php echo esc_url( $this->settings_url() ); ?>#upgrade-modal"><?php esc_html_e( 'Move your media files to the Infinite Uploads cloud', 'tuxedo-big-file-uploads' ); ?>.</a></small><a style="width:12px;height:12px;font-size:12px;vertical-align:middle;" class="dashicons dashicons-no" title="<?php esc_attr_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?>" href="#"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?></span></a></span>');
+				$(".max-upload-size").after('<span class="bfu-upload-notice"><p class="small"><?php esc_html_e( 'Want unlimited storage space, CDN, video hosting, folders, and enhanced media library search?', 'tuxedo-big-file-uploads' ); ?> <a href="<?php echo esc_url( $this->settings_url() ); ?>#upgrade-modal"><?php esc_html_e( 'Move your media files to the Infinite Uploads cloud', 'tuxedo-big-file-uploads' ); ?>.</a></p><a style="width:12px;height:12px;font-size:12px;vertical-align:middle;" class="dashicons dashicons-no" title="<?php esc_attr_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?>" href="#"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?></span></a></span>');
 				$(function () {
 					var $notice = $('.bfu-upload-notice');
 					$notice.children('a.dashicons').on('click', function (event, el) {
@@ -1061,8 +1061,8 @@ class BigFileUploads {
             );
         }
 
-        add_action( 'admin_print_scripts-' . $page, [ &$this, 'admin_scripts' ] );
-        add_action( 'admin_print_styles-' . $page, [ &$this, 'admin_styles' ] );
+        add_action( 'admin_print_scripts-' . $page, [ $this, 'admin_scripts' ] );
+        add_action( 'admin_print_styles-' . $page, [ $this, 'admin_styles' ] );
     }
 
     /**

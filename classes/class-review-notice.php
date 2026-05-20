@@ -456,7 +456,8 @@ class Big_File_Uploads_Review_Notice {
 		}
 
 		// Get the current review action.
-		$action = filter_input( INPUT_GET, $this->key( 'action' ), FILTER_SANITIZE_STRING );
+		$action_key = $this->key( 'action' );
+		$action     = isset( $_GET[ $action_key ] ) ? sanitize_text_field( wp_unslash( $_GET[ $action_key ] ) ) : null;
 		do_action( 'qm/debug', $action );
 		switch ( $action ) {
 			case 'later':
