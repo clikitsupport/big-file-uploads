@@ -2,7 +2,7 @@
 Contributors: uglyrobot, jdailey, andtrev
 Tags: increase file size limit, increase upload limit, max upload file size, post max size, upload limit, file upload, files uploader, ftp, video uploader, AJAX
 Requires at least: 5.3
-Tested up to: 6.9
+Tested up to: 7.0
 Stable tag: 2.1.8
 Requires PHP: 5.6
 License: GPLv2
@@ -77,6 +77,27 @@ Big File Uploads is built to work with [Infinite Uploads](https://wordpress.org/
 
 This plugin does not collect or share any data. Site admins can optionally subscribe to email updates which is subject to our [Privacy Policy](https://infiniteuploads.com/privacy/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=bfu_readme&utm_term=privacy).
 
+
+== About Us ==
+
+Infinite Uploads builds WordPress plugins and is a premium cloud storage provider and content delivery network (CDN) for all your WordPress media files. Learn more here:
+[infiniteuploads.com](https://infiniteuploads.com/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=bfu_readme&utm_term=about_us)
+
+Learn how to manage large files on our blog:
+[Infinite Uploads Blog, Tips, Tricks, How-tos, and News](https://infiniteuploads.com/blog/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=bfu_readme&utm_term=blog)
+
+[Contribute to the plugin's development on Github!](https://github.com/uglyrobot/big-file-uploads)
+
+Want to use your WordPress site to train an AI chatbot to provide instant answers to your customers? Check out our sister project [DocsBot AI](https://docsbot.ai/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=bfu_readme)!
+
+Enjoy!
+
+== Contact and Credits ==
+
+Maintained by the cloud architects and WordPress engineers at [Infinite Uploads](https://infiniteuploads.com/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=bfu_readme&utm_term=credits).
+
+Big File Uploads was originally "Tuxedo Big File Uploads" created by Trevor Anderson ([@andtrev on WordPress.org](https://profiles.wordpress.org/andtrev/)), 2015-2021. Find Trevor on [GitHub](https://github.com/andtrev).
+
 == Frequently Asked Questions ==
 
 = What is the biggest file size that can be uploaded? =
@@ -112,10 +133,10 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
-2.1.8 [2026-04-01]
+2.1.8 [2026-05-20]
 ----------------------------------------------------------------------
 
-- Update: WordPress 6.9 compatibility check.
+- Update: WordPress 7.0 compatibility check.
 - Translation updates.
 
 2.1.7 [2025-09-02]
@@ -195,23 +216,3 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 1.0 - [2015-12-20]
 ----------------------------------------------------------------------
 - Initial release
-
-
-== About Us ==
-Infinite Uploads builds WordPress plugins and is a premium cloud storage provider and content delivery network (CDN) for all your WordPress media files. Learn more here:
-[infiniteuploads.com](https://infiniteuploads.com/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=bfu_readme&utm_term=about_us)
-
-Learn how to manage large files on our blog:
-[Infinite Uploads Blog, Tips, Tricks, How-tos, and News](https://infiniteuploads.com/blog/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=bfu_readme&utm_term=blog)
-
-[Contribute to the plugin's development on Github!](https://github.com/uglyrobot/big-file-uploads)
-
-Want to use your WordPress site to train an AI chatbot to provide instant answers to your customers? Check out our sister project [DocsBot AI](https://docsbot.ai/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=bfu_readme)!
-
-Enjoy!
-
-== Contact and Credits ==
-
-Maintained by the cloud architects and WordPress engineers at [Infinite Uploads](https://infiniteuploads.com/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=bfu_readme&utm_term=credits).
-
-Big File Uploads was originally "Tuxedo Big File Uploads" created by Trevor Anderson ([@andtrev on WordPress.org](https://profiles.wordpress.org/andtrev/)), 2015-2021. Find Trevor on [GitHub](https://github.com/andtrev).

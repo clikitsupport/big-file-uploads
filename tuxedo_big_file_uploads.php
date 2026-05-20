@@ -9,7 +9,7 @@
  * License:     GPLv2 or later
  * Domain Path: /languages
  * Requires at least: 5.6
- * Tests up to: 6.9
+ * Tests up to: 7.0
  * Text Domain: tuxedo-big-file-uploads
  *
  * This program is free software; you can redistribute it and/or
