@@ -1,0 +1,126 @@
+/**
+ * Infinite Uploads promotional admin notice.
+ *
+ * Styles the notice as a branded card (rounded corners, brand accent bar,
+ * solid brand CTA, text-link secondary) using the Infinite Uploads palette:
+ *   #26a9e0 primary, #1c8fbf hover.
+ * Loaded on every screen the notice can appear (media, plugins, dashboard).
+ */
+
+.bffu-notice.notice {
+	position: relative;
+	/* Full-bleed within .wrap (like the dashboard welcome panel) so the card
+	   never stops short of the content width on wide screens. */
+	margin: 16px 0 24px;
+	padding: 24px 52px 24px 28px;
+	box-sizing: border-box;
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-left: 6px solid #26a9e0;
+	border-radius: 10px;
+	box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+.bffu-notice.notice h3 {
+	margin: 0 0 10px;
+	padding: 0;
+	font-size: 20px;
+	font-weight: 700;
+	line-height: 1.3;
+	color: #1d2327;
+}
+
+.bffu-notice.notice p {
+	margin: 0 0 6px;
+	padding: 0;
+	font-size: 14px;
+	line-height: 1.6;
+	color: #50575e;
+}
+
+.bffu-notice.notice p a {
+	color: #26a9e0;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.bffu-notice.notice p a:hover,
+.bffu-notice.notice p a:focus {
+	color: #1c8fbf;
+	text-decoration: underline;
+}
+
+.bffu-notice .bffu-notice-actions {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin: 18px 0 0;
+}
+
+/* Primary "Try for Free" CTA — solid Infinite Uploads brand button. */
+.bffu-notice .bffu-notice-actions .button.button-primary {
+	display: inline-flex;
+	align-items: center;
+	height: auto;
+	min-height: 0;
+	padding: 11px 22px;
+	background: #26a9e0;
+	border: none;
+	border-radius: 6px;
+	box-shadow: none;
+	color: #ffffff;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 1;
+	text-shadow: none;
+	transition: background-color 0.18s ease;
+}
+
+.bffu-notice .bffu-notice-actions .button.button-primary:hover,
+.bffu-notice .bffu-notice-actions .button.button-primary:focus {
+	background: #1c8fbf;
+	border: none;
+	box-shadow: none;
+	color: #ffffff;
+	outline: none;
+}
+
+/* Secondary "Remind Me Later" — plain brand text link, no button chrome. */
+.bffu-notice .bffu-notice-actions .button.button-secondary {
+	height: auto;
+	min-height: 0;
+	padding: 11px 12px;
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	color: #26a9e0;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.bffu-notice .bffu-notice-actions .button.button-secondary:hover,
+.bffu-notice .bffu-notice-actions .button.button-secondary:focus {
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	color: #1c8fbf;
+	text-decoration: underline;
+	outline: none;
+}
+
+/* Dismiss (X) in the top-right corner. */
+.bffu-notice.notice .notice-dismiss {
+	top: 14px;
+	right: 12px;
+	padding: 9px;
+}
+
+.bffu-notice.notice .notice-dismiss::before {
+	color: #8a92a2;
+}
+
+.bffu-notice.notice .notice-dismiss:hover::before,
+.bffu-notice.notice .notice-dismiss:focus::before {
+	color: #1d2327;
+}

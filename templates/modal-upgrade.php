@@ -36,7 +36,7 @@
 								}
 								?>
 							<?php } ?>
-							<p><small class="text-muted"><?php printf( esc_html__( 'Get 7 days of %s storage FREE. Plans starting at just $16/mo', 'tuxedo-big-file-uploads' ), '<span class="dashicons dashicons-cloud"></span>' ); ?></small></p>
+							<p><small class="text-muted"><?php printf( esc_html__( 'Get 7 days of %s storage FREE. Plans starting at just $8.25/mo', 'tuxedo-big-file-uploads' ), '<span class="dashicons dashicons-cloud"></span>' ); ?></small></p>
 						</div>
 					</div>
 				</div>
