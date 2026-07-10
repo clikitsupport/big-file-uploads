@@ -19,12 +19,12 @@ $bfu_iu_cloud = plugins_url( '/assets/img/iu-logo-blue.svg', dirname( __FILE__ )
 			<div class="bfu-results__ring">
 				<svg class="bfu-results__ring-track" viewBox="0 0 200 200" fill="none" aria-hidden="true">
 					<circle cx="100" cy="100" r="82" fill="#ffffff"/>
-					<circle cx="100" cy="100" r="86" stroke="#eaf3fb" stroke-width="10"/>
-					<circle cx="100" cy="16" r="4" fill="#cfe6f6"/>
-					<circle cx="26" cy="64" r="3" fill="#dcecf8"/>
-					<circle cx="174" cy="64" r="3" fill="#dcecf8"/>
-					<circle cx="40" cy="152" r="3.5" fill="#cfe6f6"/>
-					<circle cx="160" cy="152" r="3.5" fill="#cfe6f6"/>
+					<circle cx="100" cy="100" r="86" stroke="#d7ecf9" stroke-width="10"/>
+					<circle cx="100" cy="16" r="4" fill="#b9ddf2"/>
+					<circle cx="26" cy="64" r="3" fill="#c6e3f5"/>
+					<circle cx="174" cy="64" r="3" fill="#c6e3f5"/>
+					<circle cx="40" cy="152" r="3.5" fill="#b9ddf2"/>
+					<circle cx="160" cy="152" r="3.5" fill="#b9ddf2"/>
 				</svg>
 				<div class="bfu-results__ring-inner">
 					<span class="bfu-results__ring-icon" aria-hidden="true">

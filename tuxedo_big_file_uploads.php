@@ -237,7 +237,7 @@ class BigFileUploads {
                         'link' => [
                                 'text'   => 'Learn More',
                                 'action' => 'link',
-                                'link'   => 'https://infiniteuploads.com',
+                                'link'   => $this->api_url( '/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=admin_notice&utm_term=learn_more' ),
                                 'type' => 'primary',
                         ],
 
@@ -986,7 +986,7 @@ class BigFileUploads {
         $custom_links             = [];
         $custom_links['settings'] = "<a href='$url'>" . esc_html__( 'Settings', 'tuxedo-big-file-uploads' ) . '</a>';
         $custom_links['support']  = '<a href="' . esc_url( $this->api_url( '/support/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_term=support&utm_content=meta' ) ) . '">' . esc_html__( 'Support', 'tuxedo-big-file-uploads' ) . '</a>';
-        $custom_links['upgrade']  = '<a href="http://infiniteuploads.com/big-file-form-uploads" aria-label="' . esc_attr__( 'Go Pro', 'tuxedo-big-file-uploads' ) . '" style="color: #93003f;" target="_blank"><b>' . esc_html__( 'Go Pro', 'tuxedo-big-file-uploads' ) . '</b></a>';
+        $custom_links['upgrade']  = '<a href="' . esc_url( $this->api_url( '/pricing/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_term=go_pro&utm_content=meta' ) ) . '" aria-label="' . esc_attr__( 'Go Pro', 'tuxedo-big-file-uploads' ) . '" style="color: #93003f;" target="_blank"><b>' . esc_html__( 'Go Pro', 'tuxedo-big-file-uploads' ) . '</b></a>';
 
         // Adds the links to the beginning of the array.
         return array_merge( $custom_links, $actions );
@@ -1403,7 +1403,7 @@ class BigFileUploads {
     }
 
     /**
-     * Render the Infinite Uploads Pro feature upsell grid.
+     * Render the Infinite Uploads feature upsell grid.
      *
      * Rendered beneath the storage analysis section. Clicking a feature card opens
      * a modal describing that feature with a branded "Install Infinite Uploads"
@@ -1456,9 +1456,6 @@ class BigFileUploads {
             ),
         );
 
-        // Feather "lock" icon reused for every Pro badge.
-        $lock_icon = '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
-
         $action     = $this->get_infinite_uploads_action();
         $learn_more = $this->api_url( '/pricing/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=feature_modal&utm_term=upgrade' );
 
@@ -1476,10 +1473,6 @@ class BigFileUploads {
                         <span class="bfu-upsell-title"><?php echo esc_html( $feature['title'] ); ?></span>
                         <span class="bfu-upsell-desc"><?php echo esc_html( $feature['desc'] ); ?></span>
                     </span>
-                    <span class="bfu-upsell-badge">
-                        <?php esc_html_e( 'Pro', 'tuxedo-big-file-uploads' ); ?>
-                        <svg class="bfu-upsell-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><?php echo $lock_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static inline SVG path markup. ?></svg>
-                    </span>
                 </button>
             <?php endforeach; ?>
         </div>
@@ -1494,17 +1487,10 @@ class BigFileUploads {
             <span class="bfu-cloud-banner__content">
                 <span class="bfu-cloud-banner__title"><?php esc_html_e( 'You can move your storage to Cloud on Infinite Uploads', 'tuxedo-big-file-uploads' ); ?></span>
                 <span class="bfu-cloud-banner__subtitle"><?php esc_html_e( 'Try out Infinite Uploads for Free for 7 days and upload your storage to the cloud.', 'tuxedo-big-file-uploads' ); ?></span>
-                <?php if ( $action ) : ?>
-                    <a class="bfu-cloud-banner__cta" href="<?php echo esc_url( $action['url'] ); ?>">
-                        <?php esc_html_e( 'Start Free', 'tuxedo-big-file-uploads' ); ?>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                    </a>
-                <?php else : ?>
-                    <a class="bfu-cloud-banner__cta" href="<?php echo esc_url( $learn_more ); ?>" target="_blank" rel="noopener noreferrer">
-                        <?php esc_html_e( 'Start Free', 'tuxedo-big-file-uploads' ); ?>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                    </a>
-                <?php endif; ?>
+                <a class="bfu-cloud-banner__cta" href="<?php echo esc_url( $this->api_url( '/pricing/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=cloud_banner&utm_term=start_free' ) ); ?>" target="_blank" rel="noopener noreferrer">
+                    <?php esc_html_e( 'Start Free', 'tuxedo-big-file-uploads' ); ?>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
             </span>
             <button type="button" class="bfu-cloud-banner__dismiss" aria-label="<?php esc_attr_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?>">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>

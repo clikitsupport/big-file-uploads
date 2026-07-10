@@ -9,6 +9,13 @@
 		const action = $(this).data('action');
 		const link = $(this).data('link');
 
+		// Open the link immediately, inside the click gesture, so the browser's
+		// popup blocker doesn't swallow it (a window.open() fired from an async
+		// AJAX callback gets blocked). The AJAX below just records the click.
+		if (link) {
+			window.open(link, '_blank', 'noopener');
+		}
+
 		$.ajax({
 			url: bffuPromo.ajaxurl,
 			type: 'POST',
@@ -21,11 +28,6 @@
 			success: function (response) {
 				if (response.success) {
 					$notice.slideUp();
-
-					if (link) {
-						window.open(link, '_blank');
-						return;
-					}
 				}
 			}
 		});

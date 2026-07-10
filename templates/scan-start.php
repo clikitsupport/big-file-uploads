@@ -15,11 +15,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="bfu-scan__visual">
 			<div class="bfu-scan__ring">
 				<svg class="bfu-scan__ring-track" viewBox="0 0 160 160" fill="none" aria-hidden="true">
-					<circle cx="80" cy="80" r="66" stroke="#e3f3fb" stroke-width="13"/>
+					<circle cx="80" cy="80" r="66" stroke="#cfe8f8" stroke-width="13"/>
 					<circle cx="80" cy="80" r="66" stroke="#26a9e0" stroke-width="13" stroke-linecap="round" stroke-dasharray="414.7" stroke-dashoffset="135" transform="rotate(-90 80 80)"/>
 					<circle cx="80" cy="146" r="4" fill="#26a9e0"/>
-					<circle cx="20" cy="52" r="3" fill="#bce1f4"/>
-					<circle cx="142" cy="60" r="3" fill="#bce1f4"/>
+					<circle cx="20" cy="52" r="3" fill="#a6d6f0"/>
+					<circle cx="142" cy="60" r="3" fill="#a6d6f0"/>
 				</svg>
 				<span class="bfu-scan__ring-icon" aria-hidden="true">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
