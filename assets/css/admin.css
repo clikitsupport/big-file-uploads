@@ -437,9 +437,11 @@ p.iu-upgrade-text {
 }
 
 .bfu-cloud-banner__cta:hover,
-.bfu-cloud-banner__cta:focus {
+.bfu-cloud-banner__cta:focus,
+.bfu-cloud-banner__cta:active {
   background: #1c8fbf;
   color: #ffffff !important;
+  border-radius: 24px; /* keep the pill on focus; WP admin forces a:focus{border-radius:2px} */
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(38, 169, 224, 0.36);
   outline: none;
@@ -1220,10 +1222,12 @@ body.bfu-modal-open {
 }
 
 .bfu-results__refresh:hover,
-.bfu-results__refresh:focus {
+.bfu-results__refresh:focus,
+.bfu-results__refresh:active {
   background: #26a9e0;
   border-color: #26a9e0;
   color: #ffffff;
+  border-radius: 8px; /* keep rounded on focus; WP admin forces a:focus{border-radius:2px} */
   outline: none;
 }
 
