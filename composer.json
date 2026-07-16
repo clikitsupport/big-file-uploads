@@ -1,0 +1,31 @@
+{
+  "name": "clikitnow/big-file-uploads",
+  "description": "Enable large file uploads in the built-in WordPress media uploader via multipart uploads, and set maximum upload file size to any value based on user role.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-only",
+  "require": {
+    "php": ">=7.2"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6",
+    "yoast/phpunit-polyfills": "^2.0",
+    "wp-phpunit/wp-phpunit": "^6.7",
+    "roots/wordpress-core-installer": "^1.100",
+    "composer/installers": "^1.12 || ^2.0"
+  },
+  "config": {
+    "allow-plugins": {
+      "roots/wordpress-core-installer": true,
+      "composer/installers": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "test:iu": "phpunit -c phpunit-iu-active.xml.dist",
+    "test:all": [
+      "@test",
+      "@test:iu"
+    ]
+  }
+}

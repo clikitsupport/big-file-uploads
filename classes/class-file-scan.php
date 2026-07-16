@@ -119,6 +119,13 @@ class Big_File_Uploads_File_Scan {
 				? glob( trailingslashit( $path ) . '{,.}[!.,!..]*', GLOB_BRACE )
 				: glob( trailingslashit( $path ) . '[!.,!..]*' );
 
+			// An unreadable directory usually globs to an empty array, but glob() is documented to
+			// return false on error and the distinction is platform dependent. Normalise, so a
+			// single bad directory can never fatal a scan that may be most of the way through.
+			if ( ! is_array( $contents ) ) {
+				$contents = [];
+			}
+
 			foreach ( $contents as $item ) {
 				if ( is_link( $item ) || $this->is_excluded( $item ) ) {
 					continue;

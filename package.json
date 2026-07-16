@@ -5,6 +5,14 @@
   "dependencies": {
     "chart.js": "^2.9.4"
   },
+  "scripts": {
+    "env:start": "wp-env start",
+    "env:stop": "wp-env stop",
+    "env:destroy": "wp-env destroy",
+    "test": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit",
+    "test:iu": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit -c phpunit-iu-active.xml.dist",
+    "test:all": "npm run test && npm run test:iu"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/uglyrobot/big-file-uploads.git"
@@ -20,5 +28,8 @@
   "bugs": {
     "url": "https://github.com/uglyrobot/big-file-uploads/issues"
   },
-  "homepage": "https://infiniteuploads.com"
+  "homepage": "https://infiniteuploads.com",
+  "devDependencies": {
+    "@wordpress/env": "^11.11.0"
+  }
 }
