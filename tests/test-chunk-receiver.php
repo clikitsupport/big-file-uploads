@@ -10,6 +10,8 @@
  */
 
 /**
+ * @testdox Chunk receiver endpoint (bfu_chunker)
+ *
  * @covers BigFileUploads::ajax_chunk_receiver
  * @covers BigFileUploads::send_upload_error
  */

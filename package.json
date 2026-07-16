@@ -9,10 +9,11 @@
     "env:start": "wp-env start",
     "env:stop": "wp-env stop",
     "env:destroy": "wp-env destroy",
-    "test": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit",
-    "test:iu": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit -c phpunit-iu-active.xml.dist",
-    "test:ms": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit -c phpunit-multisite.xml.dist",
-    "test:all": "npm run test && npm run test:iu && npm run test:ms"
+    "test": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit --testdox --colors=always",
+    "test:iu": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit --testdox --colors=always -c phpunit-iu-active.xml.dist",
+    "test:ms": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit --testdox --colors=always -c phpunit-multisite.xml.dist",
+    "test:all": "npm run test && npm run test:iu && npm run test:ms",
+    "test:dots": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit"
   },
   "repository": {
     "type": "git",

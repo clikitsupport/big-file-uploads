@@ -7,6 +7,8 @@
  */
 
 /**
+ * @testdox Upload limit resolution
+ *
  * @covers BigFileUploads::get_upload_limit
  * @covers BigFileUploads::get_settings
  * @covers BigFileUploads::filter_upload_size_limit

@@ -10,6 +10,8 @@
  */
 
 /**
+ * @testdox File scan endpoint (bfu_file_scan)
+ *
  * @covers BigFileUploads::ajax_file_scan
  * @covers BigFileUploads::get_upload_dir_root
  */

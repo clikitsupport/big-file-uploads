@@ -9,6 +9,8 @@
  */
 
 /**
+ * @testdox Chunked upload assembly
+ *
  * @covers BigFileUploads::append_chunk
  * @covers BigFileUploads::chunk_path
  * @covers BigFileUploads::cleanup_stale_chunks

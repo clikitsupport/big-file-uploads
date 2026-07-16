@@ -11,6 +11,8 @@
  */
 
 /**
+ * @testdox Settings page with Infinite Uploads active
+ *
  * @covers BigFileUploads::settings_page
  *
  * @group iu-active

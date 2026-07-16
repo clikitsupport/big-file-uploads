@@ -16,6 +16,26 @@ npm run test:ms      # the multisite suite (see below)
 npm run test:all     # all three
 ```
 
+Each test prints what it checks, with a green `✔` when it passes and a red `✘` — plus the diff —
+when it doesn't:
+
+```
+Chunked upload assembly
+ ✔ Chunks in order reassemble byte identical
+ ✔ Chunk ending in a zero byte is not truncated
+ ✘ Chunk consisting only of a zero byte is not dropped
+   ├ Failed asserting that two strings are identical.
+   ┊ --- Expected
+   ┊ +++ Actual
+```
+
+The heading comes from the `@testdox` annotation on the test class; the line under it is the test
+method name with the underscores taken out. So method names are the spec — write them as sentences
+that read properly after `✔`, and keep the assertion message for the *why*.
+
+`npm run test:dots` is the same run without any of that: plain progress dots and no colour, for CI
+logs or anywhere the output is piped rather than watched.
+
 Anything PHPUnit accepts can be passed through:
 
 ```bash

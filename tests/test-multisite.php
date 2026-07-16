@@ -12,6 +12,8 @@
  */
 
 /**
+ * @testdox Multisite
+ *
  * @covers BigFileUploads::get_upload_limit
  * @covers BigFileUploads::settings_url
  * @covers BigFileUploads::chunk_path

@@ -7,6 +7,8 @@
  */
 
 /**
+ * @testdox Storage file scanner
+ *
  * @covers Big_File_Uploads_File_Scan
  * @covers BigFileUploads::get_file_type
  */

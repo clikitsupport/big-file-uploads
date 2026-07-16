@@ -7,6 +7,8 @@
  */
 
 /**
+ * @testdox Settings page
+ *
  * @covers BigFileUploads::settings_page
  */
 class Test_BFU_Settings_Page extends BFU_TestCase {
