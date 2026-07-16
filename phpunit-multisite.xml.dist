@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
 <!--
-	Second suite, run in its own process with a stub Infinite_Uploads class declared before
-	WordPress boots. The plugin hides its scan and subscribe UI when that class exists, and a class
-	can't be undeclared once loaded, so that branch is unreachable from the main suite.
+	Third suite. The plugin declares Network: true, stores its settings in site options and gates
+	the settings screen on manage_network_options, so its behaviour genuinely differs on multisite.
+	WP_TESTS_MULTISITE makes the WordPress test bootstrap install a network instead of a single
+	site; the capability the plugin resolves at load time depends on it, so it cannot be toggled
+	from inside a running suite.
 -->
 <phpunit
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-	bootstrap="tests/bootstrap-iu-active.php"
+	bootstrap="tests/bootstrap.php"
 	backupGlobals="false"
 	colors="true"
 	beStrictAboutTestsThatDoNotTestAnything="true"
@@ -18,18 +20,17 @@
 	failOnWarning="true"
 	failOnRisky="true"
 	>
+	<php>
+		<const name="WP_TESTS_MULTISITE" value="1"/>
+	</php>
 	<testsuites>
-		<testsuite name="big-file-uploads-iu-active">
-			<!-- prefix+suffix, so the bootstraps and tests/includes are not loaded as test files. -->
+		<testsuite name="big-file-uploads-multisite">
 			<directory prefix="test-" suffix=".php">./tests</directory>
 		</testsuite>
 	</testsuites>
 	<groups>
 		<include>
-			<group>iu-active</group>
-		</include>
-		<exclude>
 			<group>multisite</group>
-		</exclude>
+		</include>
 	</groups>
 </phpunit>

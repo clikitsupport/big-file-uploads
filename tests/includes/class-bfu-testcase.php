@@ -86,6 +86,78 @@ abstract class BFU_TestCase extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The capability the plugin gates its settings and scan endpoints on.
+	 *
+	 * Resolved in the constructor at plugin load, so it has to be read reflectively.
+	 *
+	 * @return string
+	 */
+	protected function get_capability() {
+		$property = new ReflectionProperty( BigFileUploads::class, 'capability' );
+		$property->setAccessible( true );
+
+		return $property->getValue( $this->bfu() );
+	}
+
+	/**
+	 * Make the current request look like admin-ajax.php to WordPress.
+	 *
+	 * Needed for any endpoint that answers with wp_send_json_*(): outside an AJAX request those
+	 * helpers call a bare `die`, which takes the test runner down with them. Routing the AJAX die
+	 * handler to the test suite's turns it into a catchable WPDieException instead.
+	 *
+	 * @return void
+	 */
+	protected function force_ajax_context() {
+		add_filter( 'wp_doing_ajax', '__return_true' );
+		add_filter( 'wp_die_ajax_handler', [ $this, 'get_wp_die_handler' ] );
+	}
+
+	/**
+	 * Run a request that is expected to end via wp_die(), capturing whatever it echoed.
+	 *
+	 * @param callable $callback The request to run.
+	 *
+	 * @return array{output: string, died: bool}
+	 */
+	protected function capture( callable $callback ) {
+		$level = ob_get_level();
+
+		/*
+		 * These endpoints send real headers, which php-cli warns about because the test bootstrap
+		 * has already printed. That is an artefact of running a web request under CLI, not a
+		 * defect, so swallow just that warning - everything else still falls through to PHPUnit's
+		 * handler and fails the test.
+		 */
+		$previous = set_error_handler(
+			function ( $errno, $errstr, $errfile = '', $errline = 0 ) use ( &$previous ) {
+				if ( false !== strpos( $errstr, 'Cannot modify header information' ) ) {
+					return true;
+				}
+
+				return $previous ? call_user_func( $previous, $errno, $errstr, $errfile, $errline ) : false;
+			}
+		);
+
+		ob_start();
+		try {
+			$callback();
+
+			return [ 'output' => ob_get_clean(), 'died' => false ];
+		} catch ( WPDieException $e ) {
+			return [ 'output' => ob_get_clean(), 'died' => true ];
+		} catch ( Throwable $e ) {
+			while ( ob_get_level() > $level ) {
+				ob_end_clean();
+			}
+
+			throw $e;
+		} finally {
+			restore_error_handler();
+		}
+	}
+
+	/**
 	 * Read the instance's cached PHP/server upload ceiling.
 	 *
 	 * Captured in the constructor at plugin load, so it has to be read reflectively.
@@ -145,6 +217,40 @@ abstract class BFU_TestCase extends WP_UnitTestCase {
 		file_put_contents( $path, $contents );
 
 		return $path;
+	}
+
+	/**
+	 * Empty the media library's upload directory.
+	 *
+	 * The database is rolled back after every test but the filesystem is not, so a test that
+	 * publishes an attachment leaves the file behind and the next "nothing was published" assertion
+	 * fails. Core's remove_added_uploads() is not enough on its own: it ignores anything that was
+	 * already present when the run started, so files left over from a previous run survive it.
+	 *
+	 * @return void
+	 */
+	protected function clear_uploads() {
+		$uploads = wp_upload_dir();
+
+		if ( empty( $uploads['basedir'] ) || ! is_dir( $uploads['basedir'] ) ) {
+			return;
+		}
+
+		/*
+		 * Delete the files but leave the directory tree standing. wp_upload_dir() remembers which
+		 * year/month directories it has already created and will not recreate one that disappears
+		 * underneath it, so removing them makes every later upload fail.
+		 */
+		$files = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator( $uploads['basedir'], FilesystemIterator::SKIP_DOTS ),
+			RecursiveIteratorIterator::CHILD_FIRST
+		);
+
+		foreach ( $files as $file ) {
+			if ( $file->isFile() || $file->isLink() ) {
+				@unlink( $file->getPathname() );
+			}
+		}
 	}
 
 	/**

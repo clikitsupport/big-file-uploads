@@ -12,7 +12,8 @@ npm run env:start    # boots WordPress + MySQL in Docker (slow the first time, p
 
 npm run test         # the main suite
 npm run test:iu      # the Infinite-Uploads-active suite (see below)
-npm run test:all     # both
+npm run test:ms      # the multisite suite (see below)
+npm run test:all     # all three
 ```
 
 Anything PHPUnit accepts can be passed through:
@@ -32,18 +33,28 @@ Node 18+ is required by `wp-env`. If `node -v` reports something older, switch f
 | File | Covers |
 | --- | --- |
 | `test-upload-limits.php` | Which limit a user resolves to, MB/GB round-tripping, defaults for missing or malformed settings, and what reaches plupload / `upload_size_limit` / the block editor. |
-| `test-chunk-assembly.php` | Chunked upload assembly: byte-identity of the reassembled file, out-of-order and restarted uploads, temp file naming, and the stale chunk sweep. |
+| `test-chunk-assembly.php` | `append_chunk()` in isolation: byte-identity of the reassembled file, out-of-order and restarted uploads, temp file naming, and the stale chunk sweep. |
+| `test-chunk-receiver.php` | The `bfu_chunker` endpoint end to end: when a file is published (and that a partial never is), the size-limit gate, auth, and both response paths. |
 | `test-file-scan.php` | `Big_File_Uploads_File_Scan`: totals over a fixture tree, resumption across batches, symlinks, and unreadable directories. |
+| `test-ajax-file-scan.php` | The `bfu_file_scan` endpoint, chiefly its path-traversal guard on `remaining_dirs`. |
 | `test-settings-page.php` | `settings_page()` renders and saves; the subscribe modal's visibility rules. |
 | `test-settings-page-iu-active.php` | The same page with Infinite Uploads active. `iu-active` group only. |
+| `test-multisite.php` | Network capability, network-wide limits, per-site chunk isolation. `multisite` group only. |
 | `includes/class-bfu-testcase.php` | Base class: resets plugin options between tests, scratch directories, fixture helpers. |
 
-## Why there are two suites
+## Why there are three suites
 
-Several branches key off `class_exists( 'Infinite_Uploads' )`. A class cannot be undeclared once
-loaded, so both states can't be exercised in one PHP process. `phpunit-iu-active.xml.dist` boots
-through `tests/bootstrap-iu-active.php`, which declares a stub `Infinite_Uploads` before WordPress
-loads, and runs only the `iu-active` group. The main config excludes that group.
+Two things about the plugin are fixed before any test runs, so they need their own process rather
+than their own test:
+
+- **`iu-active`** — several branches key off `class_exists( 'Infinite_Uploads' )`, and a class
+  cannot be undeclared once loaded. `phpunit-iu-active.xml.dist` boots through
+  `tests/bootstrap-iu-active.php`, which declares a stub `Infinite_Uploads` before WordPress loads.
+- **`multisite`** — the plugin resolves its capability once, in the constructor, from
+  `is_multisite()`. `phpunit-multisite.xml.dist` sets `WP_TESTS_MULTISITE`, which makes the
+  WordPress bootstrap install a network.
+
+Each extra config runs only its own group; the main config excludes both.
 
 ## Conventions
 
@@ -54,6 +65,11 @@ loads, and runs only the `iu-active` group. The main config excludes that group.
 - Scratch directories come from `make_scratch_dir()` and are removed during teardown. Nothing
   writes to the real `wp-content/bfu-temp`; the chunk tests redirect it with the `bfu_temp_dir`
   filter.
+- Tests that publish attachments call `clear_uploads()` at both ends. The database is rolled back
+  between tests but the uploads directory is not, so a published file otherwise survives and breaks
+  the next "nothing was published" assertion. Do not swap this for core's `remove_added_uploads()`:
+  that ignores files already present when the run started, and deleting the year/month directories
+  outright breaks `wp_upload_dir()`, which caches the directories it has created.
 - A test that pins current behaviour rather than desired behaviour says so in a comment and uses
   the word "characterization" — see `test_duplicate_chunk_is_appended_twice`. Those are the ones to
   revisit, not to trust.

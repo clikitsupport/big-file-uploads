@@ -5,3 +5,4 @@
 .phpunit.result.cache
 phpunit.xml
 phpunit-iu-active.xml
+phpunit-multisite.xml

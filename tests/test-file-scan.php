@@ -243,17 +243,38 @@ class Test_BFU_File_Scan extends BFU_TestCase {
 
 		$this->assertNotEmpty( $scan->paths_left );
 
-		/*
-		 * start() writes scan_finished => false before walking, but flush_to_db() then overwrites
-		 * the whole option with type_list, which has no such key - so mid-scan the key is absent
-		 * rather than false. Both read as "unfinished" to settings_page(), which guards with
-		 * isset() && truthy, so assert that contract rather than the exact shape.
-		 */
 		$results = get_site_option( 'tuxbfu_file_scan' );
-		$this->assertEmpty(
-			$results['scan_finished'] ?? null,
+		$this->assertFalse(
+			$results['scan_finished'],
 			'A partial scan must not be reported to the settings page as finished.'
 		);
+	}
+
+	public function test_resuming_with_no_stored_results_does_not_deprecate() {
+		/*
+		 * Regression test. A resumed batch reads the previous batch's totals out of the option; if
+		 * the option is not there, get_site_option() hands back false and add_file() used to write
+		 * array keys straight into it - "Automatic conversion of false to array", deprecated on PHP
+		 * 8.1 and an error in PHP 9. Reachable whenever the option is cleared between batches.
+		 */
+		$this->build_fixture_tree();
+		delete_site_option( 'tuxbfu_file_scan' );
+
+		$scan = new Big_File_Uploads_File_Scan( $this->root, 0, [ '/docs' ] );
+		$scan->start();
+
+		$this->assertGreaterThan( 0, $scan->get_total_files(), 'The resumed batch should still count what it walks.' );
+		$this->assertIsArray( get_site_option( 'tuxbfu_file_scan' ) );
+	}
+
+	public function test_resuming_with_a_corrupt_option_does_not_fatal() {
+		$this->build_fixture_tree();
+		update_site_option( 'tuxbfu_file_scan', 'not-an-array' );
+
+		$scan = new Big_File_Uploads_File_Scan( $this->root, 0, [ '/docs' ] );
+		$scan->start();
+
+		$this->assertIsArray( get_site_option( 'tuxbfu_file_scan' ) );
 	}
 
 	public function test_parent_directory_traversal_in_remaining_paths_is_skipped() {

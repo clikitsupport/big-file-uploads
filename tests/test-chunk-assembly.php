@@ -204,26 +204,22 @@ class Test_BFU_Chunk_Assembly extends BFU_TestCase {
 		$this->assertSame( 'AAAABBBBBBBB', file_get_contents( $path ) );
 	}
 
-	public function test_missing_final_chunk_publishes_nothing() {
+	public function test_partial_upload_accumulates_only_in_temp() {
+		// Whether a partial file gets *published* is the endpoint's decision, and is asserted for
+		// real in test-chunk-receiver.php. All this level can show is that the bytes land in the
+		// temp file and nowhere else.
 		$path = $this->bfu()->chunk_path( 'incomplete.bin' );
 
-		// Two of an expected three chunks arrive, then the upload dies.
 		$this->bfu()->append_chunk( $path, $this->incoming_chunk( 'AAAA' ), 0 );
 		$this->bfu()->append_chunk( $path, $this->incoming_chunk( 'BBBB' ), 1 );
 
 		$this->assertFileExists( $path, 'The partial file stays in temp, awaiting the final chunk.' );
-
-		// Nothing is handed to WordPress until the final chunk lands.
-		$this->assertCount(
-			0,
-			get_posts( [ 'post_type' => 'attachment', 'post_status' => 'inherit' ] ),
-			'An incomplete upload must not produce an attachment.'
-		);
+		$this->assertStringStartsWith( $this->temp_dir . '/', $path );
 
 		$uploads = wp_upload_dir();
 		$this->assertFileDoesNotExist(
 			trailingslashit( $uploads['path'] ) . 'incomplete.bin',
-			'A partial file must never reach the uploads directory.'
+			'Assembly must never write into the uploads directory.'
 		);
 	}
 

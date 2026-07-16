@@ -23,6 +23,8 @@
 		<exclude>
 			<!-- Needs Infinite_Uploads declared before WordPress boots. See phpunit-iu-active.xml.dist. -->
 			<group>iu-active</group>
+			<!-- Needs a network installed by the bootstrap. See phpunit-multisite.xml.dist. -->
+			<group>multisite</group>
 		</exclude>
 	</groups>
 </phpunit>

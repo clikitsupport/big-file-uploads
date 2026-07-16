@@ -11,7 +11,8 @@
     "env:destroy": "wp-env destroy",
     "test": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit",
     "test:iu": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit -c phpunit-iu-active.xml.dist",
-    "test:all": "npm run test && npm run test:iu"
+    "test:ms": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit -c phpunit-multisite.xml.dist",
+    "test:all": "npm run test && npm run test:iu && npm run test:ms"
   },
   "repository": {
     "type": "git",
