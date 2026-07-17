@@ -77,6 +77,11 @@ jobs:
         # update, not install: the same lockfile has to resolve across three PHP versions.
         run: composer update --prefer-dist --no-progress --no-interaction
 
+      - name: Install Subversion
+        # install-wp-tests.sh exports the WP test library over svn, which the ubuntu-latest runner
+        # no longer ships by default.
+        run: sudo apt-get update && sudo apt-get install -y subversion
+
       - name: Install the WordPress test suite
         run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 latest
 
