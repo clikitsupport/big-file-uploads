@@ -51,6 +51,28 @@ Node 18+ is required by `wp-env`. If `node -v` reports something older, switch f
 
 `npm run env:destroy` throws the whole environment away if the database gets into a bad state.
 
+## Continuous integration
+
+`.github/workflows/tests.yml` runs on every pull request and on pushes to `master`, in two jobs:
+
+- **lint** — `php -l` over the plugin's production code on PHP 5.6, 7.0, 7.2, 7.4, 8.1 and 8.4. This
+  is how the older PHP versions the plugin supports are covered: PHPUnit 9 needs PHP 7.3+ and cannot
+  run below it, but a syntax check still catches any construct that would fail to parse on PHP 5.6.
+- **test** — the full PHPUnit suite (all three configs) on PHP 7.4, 8.1 and 8.4, against a MySQL
+  service and a real WordPress installed by `bin/install-wp-tests.sh`.
+
+CI does not use `wp-env`; it uses the classic test-library layout via `WP_TESTS_DIR`, which
+`bootstrap.php` supports directly. To reproduce a CI run locally without Docker/wp-env:
+
+```bash
+# Needs a MySQL you can create a throwaway database in, plus svn (for the WP test library).
+bash bin/install-wp-tests.sh wordpress_test <user> <pass> 127.0.0.1 latest
+export WP_TESTS_DIR=/tmp/wordpress-tests-lib
+vendor/bin/phpunit
+vendor/bin/phpunit -c phpunit-iu-active.xml.dist
+vendor/bin/phpunit -c phpunit-multisite.xml.dist
+```
+
 ## Layout
 
 | File | Covers |

@@ -1,6 +1,7 @@
 /.git
 /.github
 /.wordpress-org
+/bin
 /tests
 /vendor
 /node_modules
