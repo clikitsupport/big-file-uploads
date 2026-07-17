@@ -48,6 +48,14 @@ jobs:
       matrix:
         php: [ '7.4', '8.1', '8.4' ]
 
+    # Each `run:` is its own shell, so these have to live at the job level: install-wp-tests.sh
+    # writes the test library and its wp-tests-config.php here, and the plugin's bootstrap reads
+    # WP_TESTS_DIR to find them. Without this the bootstrap falls back to the vendored wp-phpunit
+    # copy, which has no config and dies on the missing WP_TESTS_* constants.
+    env:
+      WP_TESTS_DIR: /tmp/wordpress-tests-lib
+      WP_CORE_DIR: /tmp/wordpress
+
     services:
       # 5.7 defaults to mysql_native_password, so PHP connects without auth-plugin juggling.
       mysql:
