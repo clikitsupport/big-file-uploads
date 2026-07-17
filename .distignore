@@ -17,6 +17,9 @@ phpunit-iu-active.xml
 phpunit-iu-active.xml.dist
 phpunit-multisite.xml
 phpunit-multisite.xml.dist
+playwright.config.js
+/test-results
+/playwright-report
 package.json
 package-lock.json
 README.md

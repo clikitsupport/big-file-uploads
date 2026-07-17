@@ -13,7 +13,10 @@
     "test:iu": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit --testdox --colors=always -c phpunit-iu-active.xml.dist",
     "test:ms": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit --testdox --colors=always -c phpunit-multisite.xml.dist",
     "test:all": "npm run test && npm run test:iu && npm run test:ms",
-    "test:dots": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit"
+    "test:dots": "wp-env run tests-cli --env-cwd=wp-content/plugins/big-file-uploads vendor/bin/phpunit",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:ui": "playwright test --ui"
   },
   "repository": {
     "type": "git",
@@ -32,6 +35,7 @@
   },
   "homepage": "https://infiniteuploads.com",
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@wordpress/env": "^11.11.0"
   }
 }

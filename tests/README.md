@@ -3,6 +3,9 @@
 WordPress integration tests, run with PHPUnit 9 against a throwaway WordPress in Docker via
 [`wp-env`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/).
 
+There is also a browser-level suite for the real chunked-upload integration, which PHPUnit cannot
+reach; see [`e2e/README.md`](e2e/README.md).
+
 ## Running
 
 ```bash
