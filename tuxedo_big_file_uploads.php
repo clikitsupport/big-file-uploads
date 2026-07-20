@@ -229,15 +229,15 @@ class BigFileUploads {
 
         $promo->add_notice( [
                 'id'      => 'iu_enhanced_folder_management',
-                'title'   => 'Add folders and better search to your Media Library',
-                'message' => 'Infinite Uploads brings unlimited folders, drag-and-drop organization, and improved search to WordPress — plus storage offloading and CDN delivery on unlimited sites',
+                'title'   => 'Scale Your WordPress Media Library. Upgrade to Infinite Uploads',
+                'message' => 'Infinite Uploads adds folders, smart organization, cloud storage, CDN delivery, and media scalability - Start 7 Day Free Trial',
                 'type'    => 'info',
                 'delay_days' => 10,
                 'buttons' => [
                         'link' => [
-                                'text'   => 'Learn More',
+                                'text'   => 'Try for Free →',
                                 'action' => 'link',
-                                'link'   => $this->api_url( '/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=admin_notice&utm_term=learn_more' ),
+                                'link'   => $this->api_url( '/pricing/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=admin_notice&utm_term=try_for_free' ),
                                 'type' => 'primary',
                         ],
 
