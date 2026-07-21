@@ -1,0 +1,531 @@
+# Copyright (C) 2026 Infinite Uploads
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Big File Uploads 2.1.9\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/big-file-uploads\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-07-21T13:35:28+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.9.0\n"
+"X-Domain: tuxedo-big-file-uploads\n"
+
+#. Plugin Name of the plugin
+#: tuxedo_big_file_uploads.php:263
+#: tuxedo_big_file_uploads.php:1142
+#: tuxedo_big_file_uploads.php:1143
+#: tuxedo_big_file_uploads.php:1153
+#: tuxedo_big_file_uploads.php:1154
+#: tuxedo_big_file_uploads.php:1271
+msgid "Big File Uploads"
+msgstr ""
+
+#. Description of the plugin
+msgid "Enable large file uploads in the built-in WordPress media uploader via multipart uploads, and set maximum upload file size to any value based on user role. Uploads can be as large as available disk space allows."
+msgstr ""
+
+#. Author of the plugin
+msgid "Infinite Uploads"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://infiniteuploads.com/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=meta"
+msgstr ""
+
+#: classes/class-promo-notice.php:25
+msgid "Learn More"
+msgstr ""
+
+#: classes/class-promo-notice.php:33
+#: tuxedo_big_file_uploads.php:375
+#: tuxedo_big_file_uploads.php:1628
+msgid "Dismiss"
+msgstr ""
+
+#: classes/class-promo-notice.php:37
+msgid "Maybe Later"
+msgstr ""
+
+#: classes/class-promo-notice.php:126
+msgid "Dismiss this notice"
+msgstr ""
+
+#: templates/footer.php:4
+msgid "Made with %s by Infinite Uploads"
+msgstr ""
+
+#: templates/footer.php:9
+#: tuxedo_big_file_uploads.php:1071
+msgid "Support"
+msgstr ""
+
+#: templates/footer.php:10
+msgid "Terms of Service"
+msgstr ""
+
+#: templates/footer.php:11
+#: templates/modal-subscribe.php:42
+msgid "Privacy Policy"
+msgstr ""
+
+#: templates/footer.php:16
+msgid "Twitter"
+msgstr ""
+
+#: templates/footer.php:17
+msgid "Facebook"
+msgstr ""
+
+#: templates/modal-scan.php:15
+#: templates/modal-subscribe.php:15
+#: tuxedo_big_file_uploads.php:1654
+msgid "Close"
+msgstr ""
+
+#: templates/modal-scan.php:20
+msgid "Scanning Media Library"
+msgstr ""
+
+#: templates/modal-scan.php:21
+msgid "This usually only takes a minute or two but can take longer for very large media libraries with a lot of files. Please leave this tab open while we complete your scan."
+msgstr ""
+
+#. translators: %4$s is the closing span tag for files.
+#: templates/modal-scan.php:30
+msgid "Found %1$s0 MB%2$s / %3$s0%4$s Files..."
+msgstr ""
+
+#: templates/modal-subscribe.php:21
+msgid "Get Media Management Tips & Tricks"
+msgstr ""
+
+#: templates/modal-subscribe.php:22
+msgid "Subscribe to receive tips for managing large files in WordPress and making your media library infinitely scalable with cloud storage from Infinite Uploads."
+msgstr ""
+
+#: templates/modal-subscribe.php:36
+msgid "Email Address"
+msgstr ""
+
+#: templates/modal-subscribe.php:37
+msgid "Enter your email"
+msgstr ""
+
+#: templates/modal-subscribe.php:41
+msgid "Optional – no spam, unsubscribe at any time!"
+msgstr ""
+
+#: templates/modal-subscribe.php:46
+msgid "Subscribe & View Results"
+msgstr ""
+
+#: templates/modal-subscribe.php:50
+msgid "No thanks, view results without subscribing."
+msgstr ""
+
+#: templates/modal-upgrade.php:14
+msgid "Effortlessly Offload Your Media Library to the Cloud"
+msgstr ""
+
+#: templates/modal-upgrade.php:16
+msgid "Infinite Uploads is a cloud storage and CDN delivery provider for your WordPress media library and other uploads. The Infinite Uploads plugin allows you to easily connect an unlimited number of sites to our cloud for offloading your files, lowering hosting costs, improving site performance, and serving files faster to your visitors."
+msgstr ""
+
+#: templates/modal-upgrade.php:17
+msgid "More Information &raquo;"
+msgstr ""
+
+#: templates/modal-upgrade.php:31
+msgid "Get 7 days of %s storage FREE. Plans starting at just $8.25/mo"
+msgstr ""
+
+#: templates/scan-results.php:15
+msgid "Storage Usage Analysis"
+msgstr ""
+
+#: templates/scan-results.php:55
+msgid "Total Bytes / Files"
+msgstr ""
+
+#: templates/scan-results.php:64
+msgid "Scanned %s ago"
+msgstr ""
+
+#: templates/scan-results.php:66
+msgid "Run a new scan to detect recently uploaded files."
+msgstr ""
+
+#: templates/scan-results.php:68
+msgid "Refresh"
+msgstr ""
+
+#: templates/scan-results.php:88
+msgid "Want unlimited storage space?"
+msgstr ""
+
+#: templates/scan-results.php:89
+msgid "Move your media files to the Infinite Uploads cloud to save storage space, bandwidth, improve performance, and free you from hosting limits."
+msgstr ""
+
+#: templates/scan-results.php:91
+msgid "More Info"
+msgstr ""
+
+#: templates/scan-start.php:32
+msgid "Scan"
+msgstr ""
+
+#: templates/scan-start.php:33
+msgid "Analyze"
+msgstr ""
+
+#: templates/scan-start.php:34
+msgid "Report"
+msgstr ""
+
+#: templates/scan-start.php:39
+msgid "Analyze Your Storage Usage"
+msgstr ""
+
+#: templates/scan-start.php:40
+msgid "Run a free scan of your existing Media Library and get your report in seconds."
+msgstr ""
+
+#: templates/scan-start.php:42
+msgid "Run Free Scan"
+msgstr ""
+
+#: templates/scan-start.php:51
+msgid "Lightning Fast"
+msgstr ""
+
+#: templates/scan-start.php:52
+msgid "Get your storage usage report in just a few seconds."
+msgstr ""
+
+#: templates/scan-start.php:61
+msgid "Detailed Insights"
+msgstr ""
+
+#: templates/scan-start.php:62
+msgid "See how your storage is used across different file types."
+msgstr ""
+
+#: templates/scan-start.php:71
+msgid "Private &amp; Secure"
+msgstr ""
+
+#: templates/scan-start.php:72
+msgid "We analyze your data locally. Your privacy is our priority."
+msgstr ""
+
+#: templates/settings-filetypes.php:4
+#: templates/settings.php:6
+#: tuxedo_big_file_uploads.php:1070
+msgid "Settings"
+msgstr ""
+
+#: templates/settings-filetypes.php:10
+msgid "File Type Manager"
+msgstr ""
+
+#: templates/settings-filetypes.php:11
+msgid "Allow or prevent specific file formats from being uploaded by users."
+msgstr ""
+
+#: templates/settings-filetypes.php:14
+msgid "WordPress Core"
+msgstr ""
+
+#: templates/settings-filetypes.php:15
+msgid "Add-on"
+msgstr ""
+
+#: templates/settings-filetypes.php:42
+msgid "Note: All WordPress supported file types are listed. Not all webhosts are configured to allow these filetypes to be uploaded. Check with your host if you are having an issue uploading a file."
+msgstr ""
+
+#: templates/settings-filetypes.php:47
+#: templates/settings.php:78
+msgid "Save"
+msgstr ""
+
+#: templates/settings.php:12
+msgid "Maximum Upload Size"
+msgstr ""
+
+#: templates/settings.php:13
+msgid "Big File Uploads allows you to bypass your hosting file size %s limit by seamlessly uploading in multiple smaller chunks. Set the max filesize you want to allow users to upload in Megabytes (MB) or Gigabytes (GB) up to what your hosting provider can handle. Toggle \"Customize by user role\" to set the maximum file size for each user role with upload capabilities."
+msgstr ""
+
+#: templates/settings.php:18
+msgid "Customize by user role"
+msgstr ""
+
+#: templates/settings.php:22
+msgid "All Users"
+msgstr ""
+
+#: templates/settings.php:28
+msgid "All users upload limit"
+msgstr ""
+
+#: templates/settings.php:38
+#: templates/settings.php:66
+msgid "Maximum Upload Size (default is %s)"
+msgstr ""
+
+#: templates/settings.php:38
+#: templates/settings.php:66
+msgid "Default size is defined by your hosting provider"
+msgstr ""
+
+#: templates/settings.php:56
+msgid "%s upload limit"
+msgstr ""
+
+#: templates/settings.php:84
+#: tuxedo_big_file_uploads.php:375
+msgid "Want unlimited storage space, CDN, video hosting, folders, and enhanced media library search?"
+msgstr ""
+
+#: templates/settings.php:84
+#: tuxedo_big_file_uploads.php:375
+msgid "Move your media files to the Infinite Uploads cloud"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:368
+msgid "Change"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:417
+msgid "Tuxedo Big File Uploads has a new maintainer and <strong>new free features</strong>!"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:421
+msgid "Review your upload settings now, configure different limits per role, or analyze your uploads storage usage."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:536
+msgid "The file size has exceeded the maximum file size setting."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:548
+msgid "There was an error reading uploaded part %d of %d."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:771
+msgid "There was an error opening the temp file for writing. Available temp directory space may be exceeded or the temp file was cleaned up before the upload completed."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:784
+#: tuxedo_big_file_uploads.php:799
+msgid "There was an error reading the uploaded part."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1072
+msgid "Go Pro"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1188
+msgid "Are you sure you want to leave this tab? The current bulk action will be canceled and you will need to continue where it left off later."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1189
+msgid "Too many server errors. Please try again."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1190
+msgid "If you leave this page the sync will be interrupted and you will have to continue where you left off later."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1227
+#: tuxedo_big_file_uploads.php:1233
+#: tuxedo_big_file_uploads.php:1434
+msgid "Permissions Error: Please refresh the page and try again."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1286
+msgid "Settings saved!"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1297
+msgid "Please choose a maximum size for each option."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1519
+msgid "Configure Infinite Uploads"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1526
+msgid "Activate Infinite Uploads"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1533
+msgid "Install Infinite Uploads"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1549
+msgid "Cloud Storage"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1550
+msgid "Store your media securely in the cloud."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1551
+msgid "Offload your media to the cloud with Infinite Uploads"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1552
+msgid "Try Infinite Uploads for free for 7 days and reduce server load while improving performance."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1556
+msgid "Folders"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1557
+msgid "Organize your media files with folders."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1558
+msgid "Organize your media library with smart folders"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1559
+msgid "Try Infinite Uploads for free for 7 days and manage your media files with ease."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1563
+msgid "Smart Organization"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1564
+msgid "Drag & drop media to keep your library organized."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1565
+msgid "Keep your media library effortlessly organized"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1566
+msgid "Try Infinite Uploads for free for 7 days and drag & drop your media into order."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1570
+msgid "CDN Delivery"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1571
+msgid "Deliver media via global CDN for faster sites."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1572
+msgid "Deliver your media faster worldwide with Global CDN"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1573
+msgid "Try Infinite Uploads for free for 7 days and serve your media through a global CDN."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1577
+msgid "Advanced Search"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1578
+msgid "Find the right media instantly with advanced search."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1579
+msgid "Find any file instantly with advanced media search"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1580
+msgid "Try Infinite Uploads for free for 7 days and locate the right media in seconds."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1584
+msgid "Media Scalability"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1585
+msgid "Handle unlimited growth without limits."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1586
+msgid "Scale your media storage without limits"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1587
+msgid "Try Infinite Uploads for free for 7 days and handle unlimited growth effortlessly."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1621
+msgid "You can move your storage to Cloud on Infinite Uploads"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1622
+msgid "Try out Infinite Uploads for Free for 7 days and upload your storage to the cloud."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1624
+msgid "Start Free"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1668
+msgid "Learn More About Infinite Uploads"
+msgstr ""
+
+#. translators: %s is a cloud icon.
+#: tuxedo_big_file_uploads.php:1675
+msgid "Get 7 days of %s storage, bandwidth, media folders, and more for FREE. Plans starting at just $8.25/mo."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1809
+msgid "%s file totalling %s"
+msgid_plural "%s files totalling %s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: tuxedo_big_file_uploads.php:1814
+msgid "%s / %s File"
+msgid_plural "%s / %s Files"
+msgstr[0] ""
+msgstr[1] ""
+
+#: tuxedo_big_file_uploads.php:1834
+msgid "Images"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1835
+msgid "Audio"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1836
+msgid "Video"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1837
+msgid "Documents"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1838
+msgid "Archives"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1839
+msgid "Code"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1840
+msgid "Other"
+msgstr ""
+
+#: assets/js/block-notice.js:5
+msgid "To upload larger files use the upload tab via the Media Library link."
+msgstr ""

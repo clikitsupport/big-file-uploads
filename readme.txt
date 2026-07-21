@@ -133,7 +133,7 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
-2.1.9 [2026-07-14]
+2.1.9 [2026-07-21]
 ----------------------------------------------------------------------
 
 - New: Redesigned storage usage scanner with a cleaner results view.
