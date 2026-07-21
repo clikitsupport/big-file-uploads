@@ -1,0 +1,37 @@
+# Mapped over the WordPress root's .htaccess by .wp-env.json.
+#
+# Constrains the dev site to a 2MB upload ceiling, the sort of limit a cheap shared host imposes
+# and the exact thing Big File Uploads exists to work around. Without this the container allows 1GB
+# uploads, and the end-to-end test would pass by uploading the file in one piece - proving nothing
+# about chunking.
+#
+# Only works because the WordPress image runs mod_php (apache2handler); a FastCGI setup would need
+# .user.ini instead.
+<IfModule mod_php.c>
+	php_value upload_max_filesize 2M
+	php_value post_max_size 2M
+</IfModule>
+<IfModule mod_php7.c>
+	php_value upload_max_filesize 2M
+	php_value post_max_size 2M
+</IfModule>
+<IfModule mod_php8.c>
+	php_value upload_max_filesize 2M
+	php_value post_max_size 2M
+</IfModule>
+
+# BEGIN WordPress
+# The directives (lines) between "BEGIN WordPress" and "END WordPress" are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+# END WordPress

@@ -1,0 +1,103 @@
+name: Tests
+
+on:
+  push:
+
+# Cancel superseded runs on the same branch/PR, so a force-push doesn't leave stale jobs running.
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Parse the plugin's production code on every PHP version the plugin claims to support.
+  # PHPUnit 9 cannot run below PHP 7.3, so the older versions are covered here by a syntax check:
+  # if the plugin ever gains a construct that does not parse on PHP 5.6, a PR fails.
+  lint:
+    name: Lint (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ '5.6', '7.0', '7.2', '7.4', '8.1', '8.4' ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: none
+
+      - name: Lint production code
+        run: |
+          find . -type f -name '*.php' \
+            -not -path './tests/*' \
+            -not -path './vendor/*' \
+            -not -path './node_modules/*' \
+            -not -path './bin/*' \
+            -print0 | xargs -0 -n1 -P4 php -l
+
+  # Run the full PHPUnit suite on the PHP versions its tooling (PHPUnit 9.6 + polyfills) supports.
+  test:
+    name: PHPUnit (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ '7.4', '8.1', '8.4' ]
+
+    # Each `run:` is its own shell, so these have to live at the job level: install-wp-tests.sh
+    # writes the test library and its wp-tests-config.php here, and the plugin's bootstrap reads
+    # WP_TESTS_DIR to find them. Without this the bootstrap falls back to the vendored wp-phpunit
+    # copy, which has no config and dies on the missing WP_TESTS_* constants.
+    env:
+      WP_TESTS_DIR: /tmp/wordpress-tests-lib
+      WP_CORE_DIR: /tmp/wordpress
+
+    services:
+      # 5.7 defaults to mysql_native_password, so PHP connects without auth-plugin juggling.
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mysqli, gd, zip
+          coverage: none
+          tools: composer
+
+      - name: Install Composer dependencies
+        # update, not install: the same lockfile has to resolve across three PHP versions.
+        run: composer update --prefer-dist --no-progress --no-interaction
+
+      - name: Install Subversion
+        # install-wp-tests.sh exports the WP test library over svn, which the ubuntu-latest runner
+        # no longer ships by default.
+        run: sudo apt-get update && sudo apt-get install -y subversion
+
+      - name: Install the WordPress test suite
+        run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 latest
+
+      - name: PHPUnit — single site
+        run: vendor/bin/phpunit
+
+      - name: PHPUnit — Infinite Uploads active
+        run: vendor/bin/phpunit -c phpunit-iu-active.xml.dist
+
+      - name: PHPUnit — multisite
+        run: vendor/bin/phpunit -c phpunit-multisite.xml.dist

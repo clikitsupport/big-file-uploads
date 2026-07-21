@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!--
+	Second suite, run in its own process with a stub Infinite_Uploads class declared before
+	WordPress boots. The plugin hides its scan and subscribe UI when that class exists, and a class
+	can't be undeclared once loaded, so that branch is unreachable from the main suite.
+-->
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+	bootstrap="tests/bootstrap-iu-active.php"
+	backupGlobals="false"
+	colors="true"
+	beStrictAboutTestsThatDoNotTestAnything="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	convertDeprecationsToExceptions="true"
+	failOnWarning="true"
+	failOnRisky="true"
+	>
+	<testsuites>
+		<testsuite name="big-file-uploads-iu-active">
+			<!-- prefix+suffix, so the bootstraps and tests/includes are not loaded as test files. -->
+			<directory prefix="test-" suffix=".php">./tests</directory>
+		</testsuite>
+	</testsuites>
+	<groups>
+		<include>
+			<group>iu-active</group>
+		</include>
+		<exclude>
+			<group>multisite</group>
+		</exclude>
+	</groups>
+</phpunit>

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!--
+	Third suite. The plugin declares Network: true, stores its settings in site options and gates
+	the settings screen on manage_network_options, so its behaviour genuinely differs on multisite.
+	WP_TESTS_MULTISITE makes the WordPress test bootstrap install a network instead of a single
+	site; the capability the plugin resolves at load time depends on it, so it cannot be toggled
+	from inside a running suite.
+-->
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+	bootstrap="tests/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	beStrictAboutTestsThatDoNotTestAnything="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	convertDeprecationsToExceptions="true"
+	failOnWarning="true"
+	failOnRisky="true"
+	>
+	<php>
+		<const name="WP_TESTS_MULTISITE" value="1"/>
+	</php>
+	<testsuites>
+		<testsuite name="big-file-uploads-multisite">
+			<directory prefix="test-" suffix=".php">./tests</directory>
+		</testsuite>
+	</testsuites>
+	<groups>
+		<include>
+			<group>multisite</group>
+		</include>
+	</groups>
+</phpunit>

@@ -42,12 +42,20 @@ class Big_File_Uploads_File_Scan {
 
 		// If just starting reset the local DB list storage
 		if ( empty( $this->paths_left ) ) {
-			update_site_option( 'tuxbfu_file_scan', [
-				'scan_finished' => false,
-				'types'         => [],
-			] );
+			$this->type_list = $this->empty_type_list();
+			update_site_option( 'tuxbfu_file_scan', $this->type_list );
 		} else {
 			$this->type_list = get_site_option( 'tuxbfu_file_scan' );
+
+			/*
+			 * A resumed batch expects the previous batch's results to be there, but the option can
+			 * be missing - cleared between batches, flushed from the object cache, or simply never
+			 * written because this request was crafted. get_site_option() then returns false, and
+			 * add_file() would go on to write array keys into it.
+			 */
+			if ( ! is_array( $this->type_list ) ) {
+				$this->type_list = $this->empty_type_list();
+			}
 		}
 
 		$this->get_files();
@@ -61,6 +69,18 @@ class Big_File_Uploads_File_Scan {
 			$this->type_list['scan_finished'] = time();
 			update_site_option( 'tuxbfu_file_scan', $this->type_list );
 		}
+	}
+
+	/**
+	 * The shape of a scan that has found nothing yet.
+	 *
+	 * @return array
+	 */
+	protected function empty_type_list() {
+		return [
+			'scan_finished' => false,
+			'types'         => [],
+		];
 	}
 
 	/**
@@ -118,6 +138,13 @@ class Big_File_Uploads_File_Scan {
 			$contents = defined( 'GLOB_BRACE' )
 				? glob( trailingslashit( $path ) . '{,.}[!.,!..]*', GLOB_BRACE )
 				: glob( trailingslashit( $path ) . '[!.,!..]*' );
+
+			// An unreadable directory usually globs to an empty array, but glob() is documented to
+			// return false on error and the distinction is platform dependent. Normalise, so a
+			// single bad directory can never fatal a scan that may be most of the way through.
+			if ( ! is_array( $contents ) ) {
+				$contents = [];
+			}
 
 			foreach ( $contents as $item ) {
 				if ( is_link( $item ) || $this->is_excluded( $item ) ) {
