@@ -78,7 +78,7 @@
 					<button class="btn text-nowrap btn-info btn-lg btn-block" name="bfu_settings_submit" value="1" type="submit"><?php esc_html_e( 'Save', 'tuxedo-big-file-uploads' ); ?></button>
 				</div>
 			</div>
-			<?php if ( ! class_exists( 'Infinite_Uploads' ) ) { ?>
+			<?php if ( ! $this->is_infinite_uploads_active() ) { ?>
 				<div class="row justify-content-center mt-3">
 					<div class="col text-center">
 						<p class="iu-upgrade-text"><?php esc_html_e( 'Want unlimited storage space, CDN, video hosting, folders, and enhanced media library search?', 'tuxedo-big-file-uploads' ); ?> <a href="" data-toggle="modal" data-target="#upgrade-modal" class="text-warning"><?php esc_html_e( 'Move your media files to the Infinite Uploads cloud', 'tuxedo-big-file-uploads' ); ?></a>.

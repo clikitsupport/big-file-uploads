@@ -368,7 +368,7 @@ class BigFileUploads {
 			jQuery(".max-upload-size").append(' <small><a style="text-decoration:none;" href="<?php echo esc_url( $this->settings_url() ); ?>"><?php esc_html_e( 'Change', 'tuxedo-big-file-uploads' ); ?></a></small>');
             <?php
             $dismissed = get_user_option( 'bfu_notice_dismissed', get_current_user_id() );
-            if ( ! class_exists( 'Infinite_Uploads' ) && ! $dismissed ) {
+            if ( ! $this->is_infinite_uploads_active() && ! $dismissed ) {
             ?>
 			(function ($) {
 				'use strict';
@@ -1310,7 +1310,7 @@ class BigFileUploads {
             // must render in full every time it is called, not just the first time per request.
             require( dirname( __FILE__ ) . '/templates/settings.php' );
 
-            if ( ! class_exists( 'Infinite_Uploads' ) ) {
+            if ( ! $this->is_infinite_uploads_active() ) {
                 $scan_results = get_site_option( 'tuxbfu_file_scan' );
                 if ( isset( $scan_results['scan_finished'] ) && $scan_results['scan_finished'] ) {
                     if ( isset( $scan_results['types'] ) ) {
@@ -1332,7 +1332,7 @@ class BigFileUploads {
         <?php
         require( dirname( __FILE__ ) . '/templates/footer.php' );
 
-        if ( ! class_exists( 'Infinite_Uploads' ) ) {
+        if ( ! $this->is_infinite_uploads_active() ) {
             require( dirname( __FILE__ ) . '/templates/modal-scan.php' );
 
             $dismissed = get_user_option( 'bfu_subscribe_notice_dismissed', get_current_user_id() );
@@ -1471,6 +1471,30 @@ class BigFileUploads {
      *
      * @return array|null Array of url/label/external, or null when the user cannot install plugins.
      */
+    /**
+     * Whether the Infinite Uploads plugin is installed AND active.
+     *
+     * Detection deliberately covers several signals. Infinite Uploads 3.x moved its main
+     * class into the \ClikIT\InfiniteUploads namespace, so the legacy
+     * class_exists( 'Infinite_Uploads' ) test returns false on current versions and every
+     * upsell guard keyed off it fails open. The constant and bootstrap function are defined
+     * as soon as the plugin file loads, so they are the dependable signals; the class checks
+     * remain for older releases and for the test suite's stub.
+     *
+     * @return bool
+     * @since 2.1.9
+     */
+    public function is_infinite_uploads_active() {
+        if ( function_exists( 'is_plugin_active' ) && is_plugin_active( 'infinite-uploads/infinite-uploads.php' ) ) {
+            return true;
+        }
+
+        return defined( 'INFINITE_UPLOADS_VERSION' )
+               || function_exists( 'infinite_uploads_init' )
+               || class_exists( 'Infinite_Uploads' )
+               || class_exists( '\\ClikIT\\InfiniteUploads\\InfiniteUploads' );
+    }
+
     public function get_infinite_uploads_action() {
         if ( ! current_user_can( 'install_plugins' ) ) {
             return null;
@@ -1484,9 +1508,14 @@ class BigFileUploads {
         $installed_plugins = get_plugins();
 
         if ( array_key_exists( $plugin_file, $installed_plugins ) ) {
-            if ( class_exists( 'Infinite_Uploads_Admin' ) ) {
+            if ( $this->is_infinite_uploads_active() ) {
+                // 3.x namespaced its classes, so the legacy settings_url() helper may be absent.
+                $iu_settings_url = class_exists( 'Infinite_Uploads_Admin' )
+                    ? Infinite_Uploads_Admin::get_instance()->settings_url()
+                    : self_admin_url( 'admin.php?page=infinite_uploads' );
+
                 return array(
-                    'url'      => Infinite_Uploads_Admin::get_instance()->settings_url(),
+                    'url'      => $iu_settings_url,
                     'label'    => __( 'Configure Infinite Uploads', 'tuxedo-big-file-uploads' ),
                     'external' => false,
                 );
