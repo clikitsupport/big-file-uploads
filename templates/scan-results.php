@@ -17,14 +17,35 @@ $bfu_iu_cloud = plugins_url( '/assets/img/iu-logo-blue.svg', dirname( __FILE__ )
 
 		<div class="bfu-results__visual">
 			<div class="bfu-results__ring">
+				<?php
+				// Donut segments are built from the same data and colors as the legend below,
+				// sized by bytes (matching what the old pie chart plotted).
+				$bfu_ring_types = array();
+				foreach ( $this->get_filetypes( false ) as $bfu_ft ) {
+					if ( empty( $bfu_ft->files ) || $bfu_ft->size <= 0 ) {
+						continue;
+					}
+					$bfu_ring_types[] = $bfu_ft;
+				}
+				$bfu_ring_total = 0;
+				foreach ( $bfu_ring_types as $bfu_ft ) {
+					$bfu_ring_total += $bfu_ft->size;
+				}
+				$bfu_ring_circ = 2 * M_PI * 86;
+				$bfu_ring_at   = 0;
+				?>
 				<svg class="bfu-results__ring-track" viewBox="0 0 200 200" fill="none" aria-hidden="true">
 					<circle cx="100" cy="100" r="82" fill="#ffffff"/>
-					<circle cx="100" cy="100" r="86" stroke="#d7ecf9" stroke-width="10"/>
-					<circle cx="100" cy="16" r="4" fill="#b9ddf2"/>
-					<circle cx="26" cy="64" r="3" fill="#c6e3f5"/>
-					<circle cx="174" cy="64" r="3" fill="#c6e3f5"/>
-					<circle cx="40" cy="152" r="3.5" fill="#b9ddf2"/>
-					<circle cx="160" cy="152" r="3.5" fill="#b9ddf2"/>
+					<circle cx="100" cy="100" r="86" stroke="#e8f4fb" stroke-width="10"/>
+					<?php foreach ( $bfu_ring_types as $bfu_ft ) : ?>
+						<?php
+						$bfu_seg        = $bfu_ring_total > 0 ? ( $bfu_ft->size / $bfu_ring_total ) * $bfu_ring_circ : 0;
+						$bfu_dasharray  = round( $bfu_seg, 2 ) . ' ' . round( $bfu_ring_circ, 2 );
+						$bfu_dashoffset = $bfu_ring_at ? round( -$bfu_ring_at, 2 ) : 0;
+						$bfu_ring_at   += $bfu_seg;
+						?>
+						<circle cx="100" cy="100" r="86" stroke="<?php echo esc_attr( $bfu_ft->color ); ?>" stroke-width="10" stroke-dasharray="<?php echo esc_attr( $bfu_dasharray ); ?>" stroke-dashoffset="<?php echo esc_attr( $bfu_dashoffset ); ?>" transform="rotate(-90 100 100)"/>
+					<?php endforeach; ?>
 				</svg>
 				<div class="bfu-results__ring-inner">
 					<span class="bfu-results__ring-icon" aria-hidden="true">

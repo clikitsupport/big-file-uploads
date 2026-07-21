@@ -1808,7 +1808,7 @@ class BigFileUploads {
                 'document' => [ 'color' => '#EE7C1E', 'label' => esc_html__( 'Documents', 'tuxedo-big-file-uploads' ) ],
                 'archive'  => [ 'color' => '#EC008C', 'label' => esc_html__( 'Archives', 'tuxedo-big-file-uploads' ) ],
                 'code'     => [ 'color' => '#EFED27', 'label' => esc_html__( 'Code', 'tuxedo-big-file-uploads' ) ],
-                'other'    => [ 'color' => '#F1F1F1', 'label' => esc_html__( 'Other', 'tuxedo-big-file-uploads' ) ],
+                'other'    => [ 'color' => '#8A94A6', 'label' => esc_html__( 'Other', 'tuxedo-big-file-uploads' ) ],
         ];
 
         if ( isset( $labels[ $type ] ) ) {
