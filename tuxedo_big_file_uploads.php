@@ -229,15 +229,15 @@ class BigFileUploads {
 
         $promo->add_notice( [
                 'id'      => 'iu_enhanced_folder_management',
-                'title'   => 'Add folders and better search to your Media Library',
-                'message' => 'Infinite Uploads brings unlimited folders, drag-and-drop organization, and improved search to WordPress — plus storage offloading and CDN delivery on unlimited sites',
+                'title'   => 'Scale Your WordPress Media Library. Upgrade to Infinite Uploads',
+                'message' => 'Infinite Uploads adds folders, smart organization, cloud storage, CDN delivery, and media scalability - Start 7 Day Free Trial',
                 'type'    => 'info',
                 'delay_days' => 10,
                 'buttons' => [
                         'link' => [
-                                'text'   => 'Learn More',
+                                'text'   => 'Try for Free →',
                                 'action' => 'link',
-                                'link'   => $this->api_url( '/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=admin_notice&utm_term=learn_more' ),
+                                'link'   => $this->api_url( '/pricing/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=admin_notice&utm_term=try_for_free' ),
                                 'type' => 'primary',
                         ],
 
@@ -1517,6 +1517,13 @@ class BigFileUploads {
         // Feather Icons (MIT) rendered inline so no extra assets are required.
         $features = array(
             array(
+                'title'    => __( 'Cloud Storage', 'tuxedo-big-file-uploads' ),
+                'desc'     => __( 'Store your media securely in the cloud.', 'tuxedo-big-file-uploads' ),
+                'heading'  => __( 'Offload your media to the cloud with Infinite Uploads', 'tuxedo-big-file-uploads' ),
+                'subtitle' => __( 'Try Infinite Uploads for free for 7 days and reduce server load while improving performance.', 'tuxedo-big-file-uploads' ),
+                'icon'     => '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>',
+            ),
+            array(
                 'title'    => __( 'Folders', 'tuxedo-big-file-uploads' ),
                 'desc'     => __( 'Organize your media files with folders.', 'tuxedo-big-file-uploads' ),
                 'heading'  => __( 'Organize your media library with smart folders', 'tuxedo-big-file-uploads' ),
@@ -1529,13 +1536,6 @@ class BigFileUploads {
                 'heading'  => __( 'Keep your media library effortlessly organized', 'tuxedo-big-file-uploads' ),
                 'subtitle' => __( 'Try Infinite Uploads for free for 7 days and drag & drop your media into order.', 'tuxedo-big-file-uploads' ),
                 'icon'     => '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
-            ),
-            array(
-                'title'    => __( 'Cloud Storage', 'tuxedo-big-file-uploads' ),
-                'desc'     => __( 'Store your media securely in the cloud.', 'tuxedo-big-file-uploads' ),
-                'heading'  => __( 'Offload your media to the cloud with Infinite Uploads', 'tuxedo-big-file-uploads' ),
-                'subtitle' => __( 'Try Infinite Uploads for free for 7 days and reduce server load while improving performance.', 'tuxedo-big-file-uploads' ),
-                'icon'     => '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>',
             ),
             array(
                 'title'    => __( 'CDN Delivery', 'tuxedo-big-file-uploads' ),
