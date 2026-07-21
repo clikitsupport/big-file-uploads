@@ -1,2 +1,12 @@
 .DS_Store
 .idea
+/vendor/
+/node_modules/
+.phpunit.result.cache
+phpunit.xml
+phpunit-iu-active.xml
+phpunit-multisite.xml
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
