@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Big File Uploads
  * Description: Enable large file uploads in the built-in WordPress media uploader via multipart uploads, and set maximum upload file size to any value based on user role. Uploads can be as large as available disk space allows.
- * Version:     2.1.8
+ * Version:     2.1.9
  * Author:      Infinite Uploads
  * Author URI:  https://infiniteuploads.com/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=meta
  * Network:     true
@@ -36,7 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     die();
 }
 
-define( 'BIG_FILE_UPLOADS_VERSION', '2.1.8' );
+define( 'BIG_FILE_UPLOADS_VERSION', '2.1.9' );
 
 if ( ! defined( 'BIG_FILE_UPLOADS_PLUGIN_URL' ) ) {
     define( 'BIG_FILE_UPLOADS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -229,15 +229,15 @@ class BigFileUploads {
 
         $promo->add_notice( [
                 'id'      => 'iu_enhanced_folder_management',
-                'title'   => 'Add folders and better search to your Media Library',
-                'message' => 'Infinite Uploads brings unlimited folders, drag-and-drop organization, and improved search to WordPress — plus storage offloading and CDN delivery on unlimited sites',
+                'title'   => 'Scale Your WordPress Media Library. Upgrade to Infinite Uploads',
+                'message' => 'Infinite Uploads adds folders, smart organization, cloud storage, CDN delivery, and media scalability - Start 7 Day Free Trial',
                 'type'    => 'info',
                 'delay_days' => 10,
                 'buttons' => [
                         'link' => [
-                                'text'   => 'Learn More',
+                                'text'   => 'Try for Free →',
                                 'action' => 'link',
-                                'link'   => 'https://infiniteuploads.com',
+                                'link'   => $this->api_url( '/pricing/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=admin_notice&utm_term=try_for_free' ),
                                 'type' => 'primary',
                         ],
 
@@ -368,7 +368,7 @@ class BigFileUploads {
 			jQuery(".max-upload-size").append(' <small><a style="text-decoration:none;" href="<?php echo esc_url( $this->settings_url() ); ?>"><?php esc_html_e( 'Change', 'tuxedo-big-file-uploads' ); ?></a></small>');
             <?php
             $dismissed = get_user_option( 'bfu_notice_dismissed', get_current_user_id() );
-            if ( ! class_exists( 'Infinite_Uploads' ) && ! $dismissed ) {
+            if ( ! $this->is_infinite_uploads_active() && ! $dismissed ) {
             ?>
 			(function ($) {
 				'use strict';
@@ -1069,7 +1069,7 @@ class BigFileUploads {
         $custom_links             = [];
         $custom_links['settings'] = "<a href='$url'>" . esc_html__( 'Settings', 'tuxedo-big-file-uploads' ) . '</a>';
         $custom_links['support']  = '<a href="' . esc_url( $this->api_url( '/support/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_term=support&utm_content=meta' ) ) . '">' . esc_html__( 'Support', 'tuxedo-big-file-uploads' ) . '</a>';
-        $custom_links['upgrade']  = '<a href="http://infiniteuploads.com/big-file-form-uploads" aria-label="' . esc_attr__( 'Go Pro', 'tuxedo-big-file-uploads' ) . '" style="color: #93003f;" target="_blank"><b>' . esc_html__( 'Go Pro', 'tuxedo-big-file-uploads' ) . '</b></a>';
+        $custom_links['upgrade']  = '<a href="' . esc_url( $this->api_url( '/pricing/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_term=go_pro&utm_content=meta' ) ) . '" aria-label="' . esc_attr__( 'Go Pro', 'tuxedo-big-file-uploads' ) . '" style="color: #93003f;" target="_blank"><b>' . esc_html__( 'Go Pro', 'tuxedo-big-file-uploads' ) . '</b></a>';
 
         // Adds the links to the beginning of the array.
         return array_merge( $custom_links, $actions );
@@ -1171,12 +1171,17 @@ class BigFileUploads {
      * @since 2.0
      */
     function admin_scripts() {
+        // Version admin.js by file mtime so JS edits bust the browser cache even
+        // when the plugin version is unchanged.
+        $bfu_admin_js     = plugin_dir_path( __FILE__ ) . 'assets/js/admin.js';
+        $bfu_admin_js_ver = file_exists( $bfu_admin_js ) ? filemtime( $bfu_admin_js ) : BIG_FILE_UPLOADS_VERSION;
+
         wp_enqueue_script( 'bfu-bootstrap', plugins_url( 'assets/bootstrap/js/bootstrap.bundle.min.js', __FILE__ ), [ 'jquery' ], BIG_FILE_UPLOADS_VERSION );
         wp_enqueue_script( 'bfu-chartjs', plugins_url( 'assets/js/Chart.min.js', __FILE__ ), [], BIG_FILE_UPLOADS_VERSION );
         wp_enqueue_script( 'bfu-js', plugins_url( 'assets/js/admin.js', __FILE__ ), [
                 'bfu-bootstrap',
                 'bfu-chartjs',
-        ], BIG_FILE_UPLOADS_VERSION );
+        ], $bfu_admin_js_ver );
 
         $data                        = [];
         $data['strings']             = [
@@ -1202,8 +1207,13 @@ class BigFileUploads {
      * @since 2.0
      */
     function admin_styles() {
+        // Version admin.css by file mtime so CSS edits bust the browser cache
+        // even when the plugin version is unchanged.
+        $bfu_admin_css     = plugin_dir_path( __FILE__ ) . 'assets/css/admin.css';
+        $bfu_admin_css_ver = file_exists( $bfu_admin_css ) ? filemtime( $bfu_admin_css ) : BIG_FILE_UPLOADS_VERSION;
+
         wp_enqueue_style( 'tuxbfu-bootstrap', plugins_url( 'assets/bootstrap/css/bootstrap.min.css', __FILE__ ), false, BIG_FILE_UPLOADS_VERSION );
-        wp_enqueue_style( 'tuxbfu-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), [ 'tuxbfu-bootstrap' ], BIG_FILE_UPLOADS_VERSION );
+        wp_enqueue_style( 'tuxbfu-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), [ 'tuxbfu-bootstrap' ], $bfu_admin_css_ver );
     }
 
     /**
@@ -1300,7 +1310,7 @@ class BigFileUploads {
             // must render in full every time it is called, not just the first time per request.
             require( dirname( __FILE__ ) . '/templates/settings.php' );
 
-            if ( ! class_exists( 'Infinite_Uploads' ) ) {
+            if ( ! $this->is_infinite_uploads_active() ) {
                 $scan_results = get_site_option( 'tuxbfu_file_scan' );
                 if ( isset( $scan_results['scan_finished'] ) && $scan_results['scan_finished'] ) {
                     if ( isset( $scan_results['types'] ) ) {
@@ -1314,13 +1324,15 @@ class BigFileUploads {
                 } else {
                     require( dirname( __FILE__ ) . '/templates/scan-start.php' );
                 }
+
+                $this->render_upsell_bar();
             }
             ?>
         </div>
         <?php
         require( dirname( __FILE__ ) . '/templates/footer.php' );
 
-        if ( ! class_exists( 'Infinite_Uploads' ) ) {
+        if ( ! $this->is_infinite_uploads_active() ) {
             require( dirname( __FILE__ ) . '/templates/modal-scan.php' );
 
             $dismissed = get_user_option( 'bfu_subscribe_notice_dismissed', get_current_user_id() );
@@ -1448,6 +1460,321 @@ class BigFileUploads {
     }
 
     /**
+     * Resolve the Infinite Uploads install / activate / configure action.
+     *
+     * Mirrors the logic in templates/modal-upgrade.php so the upsell surfaces the
+     * same one-click flow the plugin already uses for Infinite Uploads (the cloud
+     * offloading successor to Big File Uploads):
+     *  - not installed  -> core plugin installer (install-plugin)
+     *  - installed only -> activation link
+     *  - active         -> Infinite Uploads settings screen
+     *
+     * @return array|null Array of url/label/external, or null when the user cannot install plugins.
+     */
+    /**
+     * Whether the Infinite Uploads plugin is installed AND active.
+     *
+     * Detection deliberately covers several signals. Infinite Uploads 3.x moved its main
+     * class into the \ClikIT\InfiniteUploads namespace, so the legacy
+     * class_exists( 'Infinite_Uploads' ) test returns false on current versions and every
+     * upsell guard keyed off it fails open. The constant and bootstrap function are defined
+     * as soon as the plugin file loads, so they are the dependable signals; the class checks
+     * remain for older releases and for the test suite's stub.
+     *
+     * @return bool
+     * @since 2.1.9
+     */
+    public function is_infinite_uploads_active() {
+        if ( function_exists( 'is_plugin_active' ) && is_plugin_active( 'infinite-uploads/infinite-uploads.php' ) ) {
+            return true;
+        }
+
+        return defined( 'INFINITE_UPLOADS_VERSION' )
+               || function_exists( 'infinite_uploads_init' )
+               || class_exists( 'Infinite_Uploads' )
+               || class_exists( '\\ClikIT\\InfiniteUploads\\InfiniteUploads' );
+    }
+
+    public function get_infinite_uploads_action() {
+        if ( ! current_user_can( 'install_plugins' ) ) {
+            return null;
+        }
+
+        if ( ! function_exists( 'get_plugins' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+
+        $plugin_file       = 'infinite-uploads/infinite-uploads.php';
+        $installed_plugins = get_plugins();
+
+        if ( array_key_exists( $plugin_file, $installed_plugins ) ) {
+            if ( $this->is_infinite_uploads_active() ) {
+                // 3.x namespaced its classes, so the legacy settings_url() helper may be absent.
+                $iu_settings_url = class_exists( 'Infinite_Uploads_Admin' )
+                    ? Infinite_Uploads_Admin::get_instance()->settings_url()
+                    : self_admin_url( 'admin.php?page=infinite_uploads' );
+
+                return array(
+                    'url'      => $iu_settings_url,
+                    'label'    => __( 'Configure Infinite Uploads', 'tuxedo-big-file-uploads' ),
+                    'external' => false,
+                );
+            }
+
+            return array(
+                'url'      => wp_nonce_url( 'plugins.php?action=activate&plugin=' . rawurlencode( $plugin_file ), 'activate-plugin_' . $plugin_file ),
+                'label'    => __( 'Activate Infinite Uploads', 'tuxedo-big-file-uploads' ),
+                'external' => false,
+            );
+        }
+
+        return array(
+            'url'      => wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=infinite-uploads' ), 'install-plugin_infinite-uploads' ),
+            'label'    => __( 'Install Infinite Uploads', 'tuxedo-big-file-uploads' ),
+            'external' => false,
+        );
+    }
+
+    /**
+     * Render the Infinite Uploads feature upsell grid.
+     *
+     * Rendered beneath the storage analysis section. Clicking a feature card opens
+     * a modal describing that feature with a branded "Install Infinite Uploads"
+     * call to action.
+     */
+    public function render_upsell_bar() {
+        // Feather Icons (MIT) rendered inline so no extra assets are required.
+        $features = array(
+            array(
+                'title'    => __( 'Cloud Storage', 'tuxedo-big-file-uploads' ),
+                'desc'     => __( 'Store your media securely in the cloud.', 'tuxedo-big-file-uploads' ),
+                'heading'  => __( 'Offload your media to the cloud with Infinite Uploads', 'tuxedo-big-file-uploads' ),
+                'subtitle' => __( 'Try Infinite Uploads for free for 7 days and reduce server load while improving performance.', 'tuxedo-big-file-uploads' ),
+                'icon'     => '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>',
+            ),
+            array(
+                'title'    => __( 'Folders', 'tuxedo-big-file-uploads' ),
+                'desc'     => __( 'Organize your media files with folders.', 'tuxedo-big-file-uploads' ),
+                'heading'  => __( 'Organize your media library with smart folders', 'tuxedo-big-file-uploads' ),
+                'subtitle' => __( 'Try Infinite Uploads for free for 7 days and manage your media files with ease.', 'tuxedo-big-file-uploads' ),
+                'icon'     => '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+            ),
+            array(
+                'title'    => __( 'Smart Organization', 'tuxedo-big-file-uploads' ),
+                'desc'     => __( 'Drag & drop media to keep your library organized.', 'tuxedo-big-file-uploads' ),
+                'heading'  => __( 'Keep your media library effortlessly organized', 'tuxedo-big-file-uploads' ),
+                'subtitle' => __( 'Try Infinite Uploads for free for 7 days and drag & drop your media into order.', 'tuxedo-big-file-uploads' ),
+                'icon'     => '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+            ),
+            array(
+                'title'    => __( 'CDN Delivery', 'tuxedo-big-file-uploads' ),
+                'desc'     => __( 'Deliver media via global CDN for faster sites.', 'tuxedo-big-file-uploads' ),
+                'heading'  => __( 'Deliver your media faster worldwide with Global CDN', 'tuxedo-big-file-uploads' ),
+                'subtitle' => __( 'Try Infinite Uploads for free for 7 days and serve your media through a global CDN.', 'tuxedo-big-file-uploads' ),
+                'icon'     => '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+            ),
+            array(
+                'title'    => __( 'Advanced Search', 'tuxedo-big-file-uploads' ),
+                'desc'     => __( 'Find the right media instantly with advanced search.', 'tuxedo-big-file-uploads' ),
+                'heading'  => __( 'Find any file instantly with advanced media search', 'tuxedo-big-file-uploads' ),
+                'subtitle' => __( 'Try Infinite Uploads for free for 7 days and locate the right media in seconds.', 'tuxedo-big-file-uploads' ),
+                'icon'     => '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+            ),
+            array(
+                'title'    => __( 'Media Scalability', 'tuxedo-big-file-uploads' ),
+                'desc'     => __( 'Handle unlimited growth without limits.', 'tuxedo-big-file-uploads' ),
+                'heading'  => __( 'Scale your media storage without limits', 'tuxedo-big-file-uploads' ),
+                'subtitle' => __( 'Try Infinite Uploads for free for 7 days and handle unlimited growth effortlessly.', 'tuxedo-big-file-uploads' ),
+                'icon'     => '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+            ),
+        );
+
+        $action     = $this->get_infinite_uploads_action();
+        $learn_more = $this->api_url( '/pricing/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=feature_modal&utm_term=upgrade' );
+
+        // Official Infinite Uploads brand marks (bundled with the plugin).
+        $iu_logo_mark = plugins_url( 'assets/img/iu-logo-blue.svg', __FILE__ );
+        $iu_wordmark  = plugins_url( 'assets/img/iu-logo-words.svg', __FILE__ );
+        ?>
+        <div class="bfu-upsell-grid">
+            <?php foreach ( $features as $index => $feature ) : ?>
+                <button type="button" class="bfu-upsell-card" data-bfu-feature="<?php echo esc_attr( $index ); ?>" aria-haspopup="dialog">
+                    <span class="bfu-upsell-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?php echo $feature['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static inline SVG path markup. ?></svg>
+                    </span>
+                    <span class="bfu-upsell-text">
+                        <span class="bfu-upsell-title"><?php echo esc_html( $feature['title'] ); ?></span>
+                        <span class="bfu-upsell-desc"><?php echo esc_html( $feature['desc'] ); ?></span>
+                    </span>
+                </button>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="bfu-cloud-banner">
+            <span class="bfu-cloud-banner__badge" aria-hidden="true">
+                <img src="<?php echo esc_url( $iu_logo_mark ); ?>" alt="" width="38" height="29" />
+            </span>
+            <span class="bfu-cloud-banner__art" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/></svg>
+            </span>
+            <span class="bfu-cloud-banner__content">
+                <span class="bfu-cloud-banner__title"><?php esc_html_e( 'You can move your storage to Cloud on Infinite Uploads', 'tuxedo-big-file-uploads' ); ?></span>
+                <span class="bfu-cloud-banner__subtitle"><?php esc_html_e( 'Try out Infinite Uploads for Free for 7 days and upload your storage to the cloud.', 'tuxedo-big-file-uploads' ); ?></span>
+                <a class="bfu-cloud-banner__cta" href="<?php echo esc_url( $this->api_url( '/pricing/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=cloud_banner&utm_term=start_free' ) ); ?>" target="_blank" rel="noopener noreferrer">
+                    <?php esc_html_e( 'Start Free', 'tuxedo-big-file-uploads' ); ?>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
+            </span>
+            <button type="button" class="bfu-cloud-banner__dismiss" aria-label="<?php esc_attr_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?>">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <?php
+        // The feature modal, dismiss handler and click wiring only need to exist once.
+        static $singletons_printed = false;
+        if ( $singletons_printed ) {
+            return;
+        }
+        $singletons_printed = true;
+
+        // Feature data for the modal, keyed by the card index. Only presentational
+        // text and the icon differ per feature; the install action is shared.
+        $modal_features = array();
+        foreach ( $features as $index => $feature ) {
+            $modal_features[ $index ] = array(
+                'heading'  => $feature['heading'],
+                'subtitle' => $feature['subtitle'],
+                'icon'     => $feature['icon'],
+            );
+        }
+        ?>
+        <div class="bfu-feature-modal" id="bfu-feature-modal" aria-hidden="true">
+            <div class="bfu-feature-modal__overlay" data-bfu-close></div>
+            <div class="bfu-feature-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="bfu-feature-modal-heading">
+                <button type="button" class="bfu-feature-modal__close" data-bfu-close aria-label="<?php esc_attr_e( 'Close', 'tuxedo-big-file-uploads' ); ?>">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+                <img class="bfu-feature-modal__brand" src="<?php echo esc_url( $iu_wordmark ); ?>" alt="Infinite Uploads" width="132" height="33" />
+                <span class="bfu-feature-modal__icon" id="bfu-feature-modal-icon" aria-hidden="true"></span>
+                <h2 class="bfu-feature-modal__heading" id="bfu-feature-modal-heading"></h2>
+                <p class="bfu-feature-modal__subtitle" id="bfu-feature-modal-subtitle"></p>
+                <div class="bfu-feature-modal__actions">
+                    <?php if ( $action ) : ?>
+                        <a class="btn text-nowrap btn-primary btn-lg" href="<?php echo esc_url( $action['url'] ); ?>" role="button"<?php echo $action['external'] ? ' target="_blank" rel="noopener noreferrer"' : ''; ?>>
+                            <?php echo esc_html( $action['label'] ); ?>
+                        </a>
+                    <?php else : ?>
+                        <a class="btn text-nowrap btn-primary btn-lg" href="<?php echo esc_url( $learn_more ); ?>" role="button" target="_blank" rel="noopener noreferrer">
+                            <?php esc_html_e( 'Learn More About Infinite Uploads', 'tuxedo-big-file-uploads' ); ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
+                <p class="bfu-feature-modal__note">
+                    <?php
+                        // translators: %s is a cloud icon.
+                        printf( esc_html__( 'Get 7 days of %s storage, bandwidth, media folders, and more for FREE. Plans starting at just $8.25/mo.', 'tuxedo-big-file-uploads' ), '<span class="dashicons dashicons-cloud" aria-hidden="true"></span>' );
+                    ?>
+                </p>
+            </div>
+        </div>
+        <script>
+        ( function () {
+            var FEATURES = <?php echo wp_json_encode( $modal_features ); ?>;
+
+            var modal      = document.getElementById( 'bfu-feature-modal' );
+            var iconEl     = document.getElementById( 'bfu-feature-modal-icon' );
+            var headingEl  = document.getElementById( 'bfu-feature-modal-heading' );
+            var subtitleEl = document.getElementById( 'bfu-feature-modal-subtitle' );
+            var lastFocus  = null;
+
+            // Move the modal to <body> so a hidden ancestor never hides the fixed modal.
+            if ( modal && modal.parentNode !== document.body ) {
+                document.body.appendChild( modal );
+            }
+
+            function openModal( key ) {
+                var data = FEATURES[ key ];
+                if ( ! data || ! modal ) {
+                    return;
+                }
+                iconEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + data.icon + '</svg>';
+                headingEl.textContent  = data.heading;
+                subtitleEl.textContent = data.subtitle;
+                modal.classList.add( 'is-open' );
+                modal.setAttribute( 'aria-hidden', 'false' );
+                document.body.classList.add( 'bfu-modal-open' );
+                var cta = modal.querySelector( '.bfu-feature-modal__actions .btn' );
+                if ( cta ) {
+                    cta.focus();
+                }
+            }
+
+            function closeModal() {
+                if ( ! modal ) {
+                    return;
+                }
+                modal.classList.remove( 'is-open' );
+                modal.setAttribute( 'aria-hidden', 'true' );
+                document.body.classList.remove( 'bfu-modal-open' );
+                if ( lastFocus && lastFocus.focus ) {
+                    lastFocus.focus();
+                }
+            }
+
+            // Cloud banner dismissal (persisted per browser).
+            var BANNER_KEY = 'bfuCloudBannerDismissed';
+            function hideBanners() {
+                var banners = document.querySelectorAll( '.bfu-cloud-banner' );
+                for ( var i = 0; i < banners.length; i++ ) {
+                    banners[ i ].style.display = 'none';
+                }
+            }
+            try {
+                if ( window.localStorage && localStorage.getItem( BANNER_KEY ) === '1' ) {
+                    hideBanners();
+                }
+            } catch ( err ) {}
+
+            document.addEventListener( 'click', function ( e ) {
+                if ( ! e.target.closest ) {
+                    return;
+                }
+
+                var card = e.target.closest( '[data-bfu-feature]' );
+                if ( card ) {
+                    e.preventDefault();
+                    lastFocus = card;
+                    openModal( card.getAttribute( 'data-bfu-feature' ) );
+                    return;
+                }
+
+                if ( e.target.closest( '[data-bfu-close]' ) ) {
+                    e.preventDefault();
+                    closeModal();
+                    return;
+                }
+
+                if ( e.target.closest( '.bfu-cloud-banner__dismiss' ) ) {
+                    try {
+                        if ( window.localStorage ) {
+                            localStorage.setItem( BANNER_KEY, '1' );
+                        }
+                    } catch ( err ) {}
+                    hideBanners();
+                }
+            } );
+
+            document.addEventListener( 'keydown', function ( e ) {
+                if ( e.key === 'Escape' && modal && modal.classList.contains( 'is-open' ) ) {
+                    closeModal();
+                }
+            } );
+        } )();
+        </script>
+        <?php
+    }
+
+    /**
      * Get data array of filescan results.
      *
      * @param  false  $is_chart  If data should be formatted for chart.
@@ -1510,7 +1837,7 @@ class BigFileUploads {
                 'document' => [ 'color' => '#EE7C1E', 'label' => esc_html__( 'Documents', 'tuxedo-big-file-uploads' ) ],
                 'archive'  => [ 'color' => '#EC008C', 'label' => esc_html__( 'Archives', 'tuxedo-big-file-uploads' ) ],
                 'code'     => [ 'color' => '#EFED27', 'label' => esc_html__( 'Code', 'tuxedo-big-file-uploads' ) ],
-                'other'    => [ 'color' => '#F1F1F1', 'label' => esc_html__( 'Other', 'tuxedo-big-file-uploads' ) ],
+                'other'    => [ 'color' => '#8A94A6', 'label' => esc_html__( 'Other', 'tuxedo-big-file-uploads' ) ],
         ];
 
         if ( isset( $labels[ $type ] ) ) {

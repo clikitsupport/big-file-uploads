@@ -52,6 +52,23 @@ class BFFU_Promo_Notice {
             return;
         }
 
+        // Skip when Infinite Uploads is already active — no point upselling it.
+        if ( $this->is_infinite_uploads_active() ) {
+            return;
+        }
+
+        // Only show on relevant admin pages.
+        $screen = get_current_screen();
+        if ( ! $screen || ! in_array( $screen->id, [
+                'dashboard',
+                'plugins',
+                'upload',
+                'settings_page_big_file_uploads',
+                'settings_page_big_file_uploads-network',
+        ], true ) ) {
+            return;
+        }
+
         foreach ( $this->notices as $notice ) {
             if ( $this->should_display_notice( $notice ) ) {
                 $this->render_notice( $notice );
@@ -59,6 +76,19 @@ class BFFU_Promo_Notice {
         }
 
         $this->enqueue_scripts();
+    }
+
+    /**
+     * Check whether Infinite Uploads is already active.
+     *
+     * @return bool
+     */
+    private function is_infinite_uploads_active() {
+        if ( function_exists( 'is_plugin_active' ) && is_plugin_active( 'infinite-uploads/infinite-uploads.php' ) ) {
+            return true;
+        }
+
+        return function_exists( 'infinite_uploads_init' ) || class_exists( 'Infinite_Uploads' );
     }
 
     /**
@@ -184,6 +214,17 @@ class BFFU_Promo_Notice {
      * Enqueue necessary scripts
      */
     private function enqueue_scripts() {
+        // Branded card styling for the notice. Versioned by file mtime so CSS
+        // edits bust the browser cache even when the plugin version is unchanged.
+        $notice_css_path = plugin_dir_path( dirname( __FILE__ ) ) . 'assets/css/promo-notices.css';
+        $notice_css_ver  = file_exists( $notice_css_path ) ? filemtime( $notice_css_path ) : BIG_FILE_UPLOADS_VERSION;
+        wp_enqueue_style(
+                'bffu-promo-notice',
+                BIG_FILE_UPLOADS_PLUGIN_URL . 'assets/css/promo-notices.css',
+                [],
+                $notice_css_ver
+        );
+
         wp_enqueue_script(
                 'bffu-promo-notices',
                 BIG_FILE_UPLOADS_PLUGIN_URL . 'assets/js/promo-notices.js',

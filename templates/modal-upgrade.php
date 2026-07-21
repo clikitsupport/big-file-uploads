@@ -20,23 +20,15 @@
 					<div class="row justify-content-center mb-3">
 						<div class="col text-center">
 							<?php
-							if ( current_user_can( 'install_plugins' ) ) {
-								$installed_plugins = get_plugins();
-								if ( array_key_exists( 'infinite-uploads/infinite-uploads.php', $installed_plugins ) || in_array( 'infinite-uploads/infinite-uploads.php', $installed_plugins, true ) ) {
-									if ( class_exists( 'Infinite_Uploads_Admin' ) ) {
-										$url = Infinite_Uploads_Admin::get_instance()->settings_url();
-										?><a class="btn text-nowrap btn-primary btn-lg mb-2" href="<?php echo esc_url( $url ); ?>" role="button"><?php esc_html_e( 'Configure Infinite Uploads', 'tuxedo-big-file-uploads' ); ?></a><?php
-									} else {
-										$url = wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . urlencode( 'infinite-uploads/infinite-uploads.php' ), 'activate-plugin_infinite-uploads/infinite-uploads.php' );
-										?><a class="btn text-nowrap btn-primary btn-lg mb-2" href="<?php echo esc_url( $url ); ?>" role="button"><?php esc_html_e( 'Activate Infinite Uploads', 'tuxedo-big-file-uploads' ); ?></a><?php
-									}
-								} else {
-									$url = wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=infinite-uploads' ), 'install-plugin_infinite-uploads' );
-									?><a class="btn text-nowrap btn-primary btn-lg mb-2" href="<?php echo esc_url( $url ); ?>" role="button"><?php esc_html_e( 'Install Infinite Uploads', 'tuxedo-big-file-uploads' ); ?></a><?php
-								}
-								?>
-							<?php } ?>
-							<p><small class="text-muted"><?php printf( esc_html__( 'Get 7 days of %s storage FREE. Plans starting at just $16/mo', 'tuxedo-big-file-uploads' ), '<span class="dashicons dashicons-cloud"></span>' ); ?></small></p>
+							// Single source of truth for the install / activate / configure state, so this
+							// modal cannot drift from the rest of the plugin (it previously keyed off the
+							// legacy Infinite_Uploads_Admin class and offered "Activate" for an active plugin).
+							$bfu_iu_action = $this->get_infinite_uploads_action();
+							if ( $bfu_iu_action ) {
+								?><a class="btn text-nowrap btn-primary btn-lg mb-2" href="<?php echo esc_url( $bfu_iu_action['url'] ); ?>" role="button"><?php echo esc_html( $bfu_iu_action['label'] ); ?></a><?php
+							}
+							?>
+							<p><small class="text-muted"><?php printf( esc_html__( 'Get 7 days of %s storage FREE. Plans starting at just $8.25/mo', 'tuxedo-big-file-uploads' ), '<span class="dashicons dashicons-cloud"></span>' ); ?></small></p>
 						</div>
 					</div>
 				</div>

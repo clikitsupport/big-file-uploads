@@ -114,9 +114,8 @@ jQuery(document).ready(function ($) {
     bfu_is_roles(this);
   });
 
-  $('#bfu-view-results').on('click', function () {
+  $('#bfu-view-results, #subscribe-modal .bfu-subscribe__close').on('click', function () {
     $.get(ajaxurl + '?action=bfu_subscribe_dismiss', function( data ) {
-      console.log(data);
       location.reload();
     });
   });
