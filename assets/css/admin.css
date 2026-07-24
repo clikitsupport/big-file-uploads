@@ -1673,7 +1673,7 @@ body.bfu-modal-open {
 .bfu-settings__actions {
   display: flex;
   justify-content: center;
-  padding: 0 32px 8px;
+  padding: 0 32px 30px;
 }
 
 .bfu-save {
@@ -1708,25 +1708,6 @@ body.bfu-modal-open {
   box-shadow: 0 2px 8px rgba(38, 169, 224, 0.3);
 }
 
-.bfu-settings__upsell {
-  margin: 0;
-  padding: 4px 32px 26px;
-  text-align: center;
-  font-size: 13px;
-  color: #64748b;
-}
-
-.bfu-settings__upsell a {
-  color: #0b6d95;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.bfu-settings__upsell a:hover,
-.bfu-settings__upsell a:focus {
-  text-decoration: underline;
-}
-
 @media screen and (max-width: 960px) {
   .bfu-settings__body {
     flex-direction: column;
@@ -1743,12 +1724,9 @@ body.bfu-modal-open {
     padding: 18px 20px;
   }
   .bfu-settings__actions {
-    padding: 0 20px 8px;
+    padding: 0 20px 24px;
   }
   .bfu-save {
     width: 100%;
-  }
-  .bfu-settings__upsell {
-    padding: 4px 20px 22px;
   }
 }

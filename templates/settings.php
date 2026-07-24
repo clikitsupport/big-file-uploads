@@ -120,8 +120,5 @@ $bfu_default = size_format( $this->max_upload_size );
 			</button>
 		</div>
 
-		<?php if ( ! $this->is_infinite_uploads_active() ) { ?>
-			<p class="bfu-settings__upsell"><?php esc_html_e( 'Want unlimited storage space, CDN, video hosting, folders, and enhanced media library search?', 'tuxedo-big-file-uploads' ); ?> <a href="" data-toggle="modal" data-target="#upgrade-modal"><?php esc_html_e( 'Move your media files to the Infinite Uploads cloud', 'tuxedo-big-file-uploads' ); ?></a>.</p>
-		<?php } ?>
 	</form>
 </div>
