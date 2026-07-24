@@ -18,7 +18,7 @@ $bfu_default = size_format( $this->max_upload_size );
 
 		<div class="bfu-settings__header">
 			<span class="bfu-settings__logo" aria-hidden="true">
-				<img src="<?php echo esc_url( $bfu_logo ); ?>" alt="" width="28" height="28" />
+				<img src="<?php echo esc_url( $bfu_logo ); ?>" alt="" width="22" height="30" />
 			</span>
 			<h2 class="bfu-settings__title"><?php esc_html_e( 'Settings', 'tuxedo-big-file-uploads' ); ?></h2>
 		</div>

@@ -1352,20 +1352,19 @@ body.bfu-modal-open {
   border-bottom: 1px solid #eef4f9;
 }
 
+/* The logo PNG is a self-contained icon on a transparent background, so it
+   needs no tile behind it - one would read as a second, mismatched shape. */
 .bfu-settings__logo {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: #e8f4fb;
+  flex: 0 0 auto;
 }
 
 .bfu-settings__logo img {
   display: block;
-  width: 26px;
-  height: auto;
+  width: auto;
+  height: 30px;
 }
 
 /* Explicit sizing: WP admin styles bare h2/h3 inside .wrap. */
