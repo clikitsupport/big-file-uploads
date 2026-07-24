@@ -1328,3 +1328,427 @@ body.bfu-modal-open {
     text-align: center;
   }
 }
+
+/* ==========================================================================
+   Settings card (maximum upload size)
+   Shares the tokens used by the scan/results cards: 16px radius, #e6eef4
+   border, #1f2d3d headings, #26a9e0 accent.
+   ========================================================================== */
+
+.bfu-settings-card {
+  margin-bottom: 24px;
+  border: 1px solid #e6eef4;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
+  overflow: hidden;
+}
+
+.bfu-settings__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 32px;
+  border-bottom: 1px solid #eef4f9;
+}
+
+.bfu-settings__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #e8f4fb;
+}
+
+.bfu-settings__logo img {
+  display: block;
+  width: 26px;
+  height: auto;
+}
+
+/* Explicit sizing: WP admin styles bare h2/h3 inside .wrap. */
+.bfu-settings-card .bfu-settings__title {
+  margin: 0;
+  padding: 0;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #1f2d3d;
+}
+
+.bfu-settings__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 48px;
+  padding: 30px 32px 26px;
+}
+
+/* Left: the numbered how-to */
+.bfu-settings__guide {
+  flex: 0 1 340px;
+  min-width: 0;
+}
+
+.bfu-settings-card .bfu-settings__guide-title {
+  margin: 0 0 18px;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #1f2d3d;
+}
+
+.bfu-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.bfu-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 0 16px;
+}
+
+.bfu-step:last-child {
+  margin-bottom: 0;
+}
+
+.bfu-step__num {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #e8f4fb;
+  color: #0b6d95;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.bfu-step__text {
+  display: block;
+  min-width: 0;
+}
+
+.bfu-step__title {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #1f2d3d;
+}
+
+.bfu-step__desc {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #64748b;
+}
+
+.bfu-settings__hint {
+  margin: 18px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+/* Right: the limit panel */
+.bfu-settings__panel {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 1px solid #e6eef4;
+  border-radius: 12px;
+  background: #fcfdfe;
+  padding: 22px 24px;
+}
+
+.bfu-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.bfu-settings-card .bfu-panel__title {
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #1f2d3d;
+}
+
+.bfu-panel__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bfu-settings-card .bfu-info {
+  color: #a8b6c5;
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  cursor: help;
+}
+
+/* Toggle switch */
+.bfu-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.bfu-switch__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.bfu-switch__track {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 21px;
+  border-radius: 999px;
+  background: #cfd8e3;
+  box-shadow: inset 0 0 0 1px #8595a9;
+  transition: background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.bfu-switch__thumb {
+  position: absolute;
+  top: 2.5px;
+  left: 2.5px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.2);
+  transition: transform 0.18s ease;
+}
+
+.bfu-switch__input:checked + .bfu-switch__track {
+  background: #26a9e0;
+  box-shadow: inset 0 0 0 1px #1c93c6;
+}
+
+.bfu-switch__input:checked + .bfu-switch__track .bfu-switch__thumb {
+  transform: translateX(17px);
+}
+
+.bfu-switch__input:focus-visible + .bfu-switch__track {
+  outline: 2px solid #26a9e0;
+  outline-offset: 2px;
+}
+
+.bfu-switch__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #445566;
+}
+
+/* Limit rows */
+.bfu-limit + .bfu-limit {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #eef4f9;
+}
+
+.bfu-settings-card .bfu-input-limit {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  border: 1px solid #dbe4ec;
+  border-radius: 10px;
+  background: #ffffff;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bfu-settings-card .bfu-input-limit:focus-within {
+  border-color: #26a9e0;
+  box-shadow: 0 0 0 3px rgba(38, 169, 224, 0.15);
+}
+
+/* Reset the WP/Bootstrap field chrome - the wrapper carries the border now. */
+.bfu-settings-card .bfu-limit__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 46px;
+  margin: 0;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+  color: #1f2d3d;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 46px;
+}
+
+.bfu-settings-card .bfu-limit__input:focus {
+  border: 0;
+  box-shadow: none;
+  outline: none;
+}
+
+.bfu-settings-card .bfu-limit__unit {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: stretch;
+  border-left: 1px solid #e6eef4;
+}
+
+.bfu-settings-card .bfu-limit__unit select {
+  height: 46px;
+  min-height: 46px;
+  margin: 0;
+  padding: 0 34px 0 14px;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+  color: #445566;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.bfu-settings-card .bfu-limit__unit select:focus {
+  border: 0;
+  box-shadow: none;
+  outline: none;
+}
+
+.bfu-limit__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.bfu-limit__for {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.bfu-limit__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #e8f4fb;
+  color: #0b6d95;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: help;
+}
+
+/* Save */
+.bfu-settings__actions {
+  display: flex;
+  justify-content: center;
+  padding: 0 32px 8px;
+}
+
+.bfu-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 12px 26px;
+  border: 0;
+  border-radius: 10px;
+  background: #26a9e0;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bfu-save svg {
+  width: 17px;
+  height: 17px;
+}
+
+.bfu-save:hover,
+.bfu-save:focus,
+.bfu-save:active {
+  background: #1c93c6;
+  color: #ffffff;
+  /* keep the radius on focus; WP admin forces a smaller one on focused controls */
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(38, 169, 224, 0.3);
+}
+
+.bfu-settings__upsell {
+  margin: 0;
+  padding: 4px 32px 26px;
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.bfu-settings__upsell a {
+  color: #0b6d95;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.bfu-settings__upsell a:hover,
+.bfu-settings__upsell a:focus {
+  text-decoration: underline;
+}
+
+@media screen and (max-width: 960px) {
+  .bfu-settings__body {
+    flex-direction: column;
+    gap: 28px;
+    padding: 24px 20px 20px;
+  }
+  .bfu-settings__guide {
+    flex: 1 1 auto;
+  }
+  .bfu-settings__panel {
+    width: 100%;
+  }
+  .bfu-settings__header {
+    padding: 18px 20px;
+  }
+  .bfu-settings__actions {
+    padding: 0 20px 8px;
+  }
+  .bfu-save {
+    width: 100%;
+  }
+  .bfu-settings__upsell {
+    padding: 4px 20px 22px;
+  }
+}
