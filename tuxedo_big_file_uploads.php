@@ -1281,10 +1281,10 @@ class BigFileUploads {
 
             if ( $save_success ) {
                 ?>
-                <div class="alert alert-success mt-2 alert-dismissible fade show" role="alert">
-                    <?php
-                    esc_html_e( 'Settings saved!', 'tuxedo-big-file-uploads' ); ?>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <div class="alert alert-dismissible fade show bfu-alert bfu-alert--success" role="alert">
+                    <svg class="bfu-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span class="bfu-alert__text"><?php esc_html_e( 'Settings saved!', 'tuxedo-big-file-uploads' ); ?></span>
+                    <button type="button" class="close bfu-alert__close" data-dismiss="alert" aria-label="<?php esc_attr_e( 'Close', 'tuxedo-big-file-uploads' ); ?>">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -1292,17 +1292,17 @@ class BigFileUploads {
             }
 
             if ( $save_error ) { ?>
-                <div class="alert alert-danger mt-2 alert-dismissible fade show" role="alert">
-                    <?php
-                    esc_html_e( 'Please choose a maximum size for each option.', 'tuxedo-big-file-uploads' ); ?>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <div class="alert alert-dismissible fade show bfu-alert bfu-alert--error" role="alert">
+                    <svg class="bfu-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span class="bfu-alert__text"><?php esc_html_e( 'Please choose a maximum size for each option.', 'tuxedo-big-file-uploads' ); ?></span>
+                    <button type="button" class="close bfu-alert__close" data-dismiss="alert" aria-label="<?php esc_attr_e( 'Close', 'tuxedo-big-file-uploads' ); ?>">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <?php
             } ?>
 
-            <div id="bfu-error" class="alert alert-danger mt-1" role="alert"></div>
+            <div id="bfu-error" class="alert bfu-alert bfu-alert--error" role="alert"></div>
 
             <?php
             $settings = $this->get_settings( true );

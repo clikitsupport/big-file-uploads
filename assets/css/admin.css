@@ -168,6 +168,17 @@ p.lead {
   display: none;
 }
 
+/* jQuery .show() sets an inline display:block on this one, so it cannot rely on
+   flex; the icon comes from a background image instead of a child element
+   (admin.js replaces its contents with .text()). */
+#bfu-error.bfu-alert {
+  padding-left: 46px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b3312c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 16px center;
+  background-size: 18px 18px;
+}
+
 #bfu-scan-progress, #bfu-scan-remote-progress, #bfu-upload-progress, #bfu-download-progress {
   display: none;
 }
@@ -1728,4 +1739,78 @@ body.bfu-modal-open {
   .bfu-save {
     width: 100%;
   }
+}
+
+/* ==========================================================================
+   Admin notices (settings saved / validation errors)
+   Overrides Bootstrap's .alert so notices match the card system.
+   ========================================================================== */
+
+.bfu-alert {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 13px 46px 13px 16px;
+  border: 1px solid;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.bfu-alert__icon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+}
+
+.bfu-alert__text {
+  min-width: 0;
+}
+
+.bfu-alert--success {
+  border-color: #b5e3ca;
+  background: #eff9f4;
+  color: #0f6b45;
+}
+
+.bfu-alert--error {
+  border-color: #f3c9c5;
+  background: #fdf3f2;
+  color: #96231f;
+}
+
+/* Bootstrap's .close is a floated 1.5rem xmark; make it a quiet inline control. */
+.bfu-alert .bfu-alert__close {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  float: none;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  opacity: 0.55;
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 1;
+  text-shadow: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+
+.bfu-alert .bfu-alert__close:hover,
+.bfu-alert .bfu-alert__close:focus {
+  opacity: 1;
+  background: rgba(16, 24, 40, 0.06);
+  color: inherit;
+  border-radius: 6px;
 }
