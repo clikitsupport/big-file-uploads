@@ -230,7 +230,7 @@ class BigFileUploads {
         $promo->add_notice( [
                 'id'      => 'iu_enhanced_folder_management',
                 'title'   => 'Scale Your WordPress Media Library. Upgrade to Infinite Uploads',
-                'message' => 'Infinite Uploads adds folders, smart organization, cloud storage, CDN delivery, and media scalability - Start 7 Day Free Trial',
+                'message' => 'Infinite Uploads adds cloud storage, CDN delivery, image optimization, folders, smart organization, and media scalability - Start a 7-day free trial.',
                 'type'    => 'info',
                 'delay_days' => 10,
                 'buttons' => [
@@ -1567,8 +1567,8 @@ class BigFileUploads {
                 'icon'     => '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
             ),
             array(
-                'title'    => __( 'CDN Delivery', 'tuxedo-big-file-uploads' ),
-                'desc'     => __( 'Deliver media via global CDN for faster sites.', 'tuxedo-big-file-uploads' ),
+                'title'    => __( 'CDN Delivery and Image Optimization', 'tuxedo-big-file-uploads' ),
+                'desc'     => __( 'Deliver optimized media via a global CDN for faster sites.', 'tuxedo-big-file-uploads' ),
                 'heading'  => __( 'Deliver your media faster worldwide with Global CDN', 'tuxedo-big-file-uploads' ),
                 'subtitle' => __( 'Try Infinite Uploads for free for 7 days and serve your media through a global CDN.', 'tuxedo-big-file-uploads' ),
                 'icon'     => '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
