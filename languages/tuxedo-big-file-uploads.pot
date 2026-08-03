@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-28T01:14:28+00:00\n"
+"POT-Creation-Date: 2026-08-03T17:55:48+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: tuxedo-big-file-uploads\n"
@@ -363,7 +363,7 @@ msgid "Change"
 msgstr ""
 
 #: tuxedo_big_file_uploads.php:375
-msgid "Want unlimited storage space, CDN, video hosting, folders, and enhanced media library search?"
+msgid "Want a smarter way to manage all of your WordPress media with unlimited storage space, CDN, image optimization, video hosting, folders, and enhanced media library search?"
 msgstr ""
 
 #: tuxedo_big_file_uploads.php:375
