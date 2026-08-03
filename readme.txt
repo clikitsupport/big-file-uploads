@@ -88,8 +88,6 @@ Learn how to manage large files on our blog:
 
 [Contribute to the plugin's development on Github!](https://github.com/uglyrobot/big-file-uploads)
 
-Want to use your WordPress site to train an AI chatbot to provide instant answers to your customers? Check out our sister project [DocsBot AI](https://docsbot.ai/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=bfu_readme)!
-
 Enjoy!
 
 == Contact and Credits ==
