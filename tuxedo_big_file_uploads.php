@@ -372,7 +372,7 @@ class BigFileUploads {
             ?>
 			(function ($) {
 				'use strict';
-				$(".max-upload-size").after('<span class="bfu-upload-notice"><p class="small"><?php esc_html_e( 'Want a smarter way to manage all of your WordPress media with unlimited storage space, CDN, image optimization, video hosting, folders, and enhanced media library search?', 'tuxedo-big-file-uploads' ); ?> <a href="<?php echo esc_url( $this->settings_url() ); ?>#upgrade-modal"><?php esc_html_e( 'Move your media files to the Infinite Uploads cloud', 'tuxedo-big-file-uploads' ); ?>.</a></p><a style="width:12px;height:12px;font-size:12px;vertical-align:middle;" class="dashicons dashicons-no" title="<?php esc_attr_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?>" href="#"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?></span></a></span>');
+				$(".max-upload-size").after('<span class="bfu-upload-notice"><p class="small"><?php esc_html_e( 'Want a faster WordPress site and a media library that stays easy to manage as it grows?', 'tuxedo-big-file-uploads' ); ?> <a href="<?php echo esc_url( $this->settings_url() ); ?>#upgrade-modal"><?php esc_html_e( 'See how Infinite Uploads can help', 'tuxedo-big-file-uploads' ); ?>.</a></p><a style="width:12px;height:12px;font-size:12px;vertical-align:middle;" class="dashicons dashicons-no" title="<?php esc_attr_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?>" href="#"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?></span></a></span>');
 				$(function () {
 					var $notice = $('.bfu-upload-notice');
 					$notice.children('a.dashicons').on('click', function (event, el) {
