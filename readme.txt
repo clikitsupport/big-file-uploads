@@ -3,7 +3,7 @@ Contributors: bww
 Tags: increase file size limit, increase upload limit, max upload file size, post max size, upload limit, file upload, files uploader, ftp, video uploader, AJAX
 Requires at least: 5.3
 Tested up to: 7.0
-Stable tag: 2.1.9
+Stable tag: 2.2.0
 Requires PHP: 5.6
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -130,6 +130,17 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 4. Increase upload size for built-in file uploader.
 
 == Changelog ==
+
+2.2.0 [2026-08-19]
+----------------------------------------------------------------------
+
+- New: Set a separate maximum upload size per file type - images, audio, video, documents, archives, and code - for all users or for each role. Leave a field blank to use the main limit.
+- New: bfu_upload_limit filter for developers to adjust the resolved limit per file.
+- New: Redesigned settings screen with a step-by-step guide and per-role sections.
+- Fix: The upload size limit is now enforced on the very first chunk, so a single-chunk upload can no longer exceed it.
+- Fix: Review notice strings are now translatable; removed a stale duplicate translation template.
+- Update: Refreshed the Infinite Uploads recommendation copy.
+- Translation updates.
 
 2.1.9 [2026-07-21]
 ----------------------------------------------------------------------

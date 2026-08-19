@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Big File Uploads 2.1.9\n"
+"Project-Id-Version: Big File Uploads 2.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/tuxedo-big-file-uploads\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
