@@ -533,7 +533,11 @@ class BigFileUploads {
         }
 
         $tuxbfu_max_upload_size = $this->get_upload_limit( $fileName );
-        if ( file_exists( $filePath ) && filesize( $filePath ) + filesize( $_FILES['async-upload']['tmp_name'] ) > $tuxbfu_max_upload_size ) {
+        // Measure what is already on disk plus the incoming part. Guarding this on
+        // file_exists() skipped the very first chunk, so anything that arrived in a
+        // single chunk was never weighed here at all.
+        $bfu_received_size = file_exists( $filePath ) ? filesize( $filePath ) : 0;
+        if ( ( $bfu_received_size + filesize( $_FILES['async-upload']['tmp_name'] ) ) > $tuxbfu_max_upload_size ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
                 error_log( "BFU: File size limit exceeded." );
             }
