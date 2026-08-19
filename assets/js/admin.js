@@ -86,6 +86,11 @@ jQuery(document).ready(function ($) {
   //handle upload limit field MB/GB changes
   $('.bfu-input-limit select').on('change', function () {
     var field = $(this).parents('.bfu-input-limit').children('input');
+    // A blank per-type field means "inherit"; converting it would write a 0 and
+    // turn that into a real limit.
+    if (field.val() === '') {
+      return;
+    }
     if ($(this).val() === 'MB') {
       field.val(Math.round(field.val() * 1024));
     } else {
@@ -112,6 +117,20 @@ jQuery(document).ready(function ($) {
   //oon toggle change
   $('#customSwitch_role').on('change', function () {
     bfu_is_roles(this);
+  });
+
+  //show or hide the per-file-type limits
+  function bfu_is_types($checkbox) {
+    if ($checkbox && $checkbox.checked) {
+      $('.bfu-types').removeClass('bfu-disabled');
+    } else {
+      $('.bfu-types').addClass('bfu-disabled');
+    }
+  }
+
+  bfu_is_types($('#customSwitch_type')[0]); //init
+  $('#customSwitch_type').on('change', function () {
+    bfu_is_types(this);
   });
 
   $('#bfu-view-results, #subscribe-modal .bfu-subscribe__close').on('click', function () {

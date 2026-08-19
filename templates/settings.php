@@ -56,13 +56,23 @@ $bfu_default = size_format( $this->max_upload_size );
 			<div class="bfu-settings__panel">
 				<div class="bfu-panel__head">
 					<h3 class="bfu-panel__title"><?php esc_html_e( 'Maximum Upload Size', 'tuxedo-big-file-uploads' ); ?></h3>
-					<span class="bfu-panel__toggle">
-						<label class="bfu-switch" for="customSwitch_role">
-							<input type="checkbox" name="by_role" class="bfu-switch__input" id="customSwitch_role" value="1" <?php checked( $settings['by_role'] ); ?>>
-							<span class="bfu-switch__track" aria-hidden="true"><span class="bfu-switch__thumb"></span></span>
-							<span class="bfu-switch__label"><?php esc_html_e( 'Customize by user role', 'tuxedo-big-file-uploads' ); ?></span>
-						</label>
-						<span class="bfu-info dashicons dashicons-info-outline" data-toggle="tooltip" title="<?php esc_attr_e( 'Set a different maximum upload size for each user role that can upload files.', 'tuxedo-big-file-uploads' ); ?>"></span>
+					<span class="bfu-panel__toggles">
+						<span class="bfu-panel__toggle">
+							<label class="bfu-switch" for="customSwitch_role">
+								<input type="checkbox" name="by_role" class="bfu-switch__input" id="customSwitch_role" value="1" <?php checked( $settings['by_role'] ); ?>>
+								<span class="bfu-switch__track" aria-hidden="true"><span class="bfu-switch__thumb"></span></span>
+								<span class="bfu-switch__label"><?php esc_html_e( 'Customize by user role', 'tuxedo-big-file-uploads' ); ?></span>
+							</label>
+							<span class="bfu-info dashicons dashicons-info-outline" data-toggle="tooltip" title="<?php esc_attr_e( 'Set a different maximum upload size for each user role that can upload files.', 'tuxedo-big-file-uploads' ); ?>"></span>
+						</span>
+						<span class="bfu-panel__toggle">
+							<label class="bfu-switch" for="customSwitch_type">
+								<input type="checkbox" name="by_type" class="bfu-switch__input" id="customSwitch_type" value="1" <?php checked( $settings['by_type'] ); ?>>
+								<span class="bfu-switch__track" aria-hidden="true"><span class="bfu-switch__thumb"></span></span>
+								<span class="bfu-switch__label"><?php esc_html_e( 'Customize by file type', 'tuxedo-big-file-uploads' ); ?></span>
+							</label>
+							<span class="bfu-info dashicons dashicons-info-outline" data-toggle="tooltip" title="<?php esc_attr_e( 'Give images, audio, video and other file types their own limit. Anything left blank uses the limit above it.', 'tuxedo-big-file-uploads' ); ?>"></span>
+						</span>
 					</span>
 				</div>
 
@@ -82,6 +92,7 @@ $bfu_default = size_format( $this->max_upload_size );
 							<span class="bfu-limit__for"><?php esc_html_e( 'Default for all users', 'tuxedo-big-file-uploads' ); ?></span>
 							<span class="bfu-limit__badge" data-toggle="tooltip" title="<?php esc_attr_e( 'Default size is defined by your hosting provider', 'tuxedo-big-file-uploads' ); ?>"><?php printf( esc_html__( 'Default is %s', 'tuxedo-big-file-uploads' ), esc_html( $bfu_default ) ); ?></span>
 						</div>
+						<?php $this->render_type_limits( 'all', $settings ); ?>
 					</div>
 				</div>
 
@@ -105,6 +116,7 @@ $bfu_default = size_format( $this->max_upload_size );
 									<span class="bfu-limit__for"><?php echo esc_html( translate_user_role( $role['name'] ) ); ?></span>
 									<span class="bfu-limit__badge" data-toggle="tooltip" title="<?php esc_attr_e( 'Default size is defined by your hosting provider', 'tuxedo-big-file-uploads' ); ?>"><?php printf( esc_html__( 'Default is %s', 'tuxedo-big-file-uploads' ), esc_html( $bfu_default ) ); ?></span>
 								</div>
+								<?php $this->render_type_limits( $role_key, $settings ); ?>
 							</div>
 						<?php }
 					} ?>
