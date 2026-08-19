@@ -997,20 +997,50 @@ class BigFileUploads {
      * File type groups that can carry their own upload limit.
      *
      * Keys match get_file_type(). "other" is deliberately absent: anything that
-     * does not fall into a listed group inherits the scope limit.
+     * does not fall into a listed group inherits the scope limit. "code" is
+     * conditional: WordPress refuses css/js/html/php/md uploads out of the box,
+     * so the field only appears where the site has made a code extension
+     * uploadable and a Code limit could actually apply to something.
      *
      * @return array type key => translated label
      * @since 2.2.0
      */
     public function get_limit_file_types() {
-        return array(
+        $types = array(
             'image'    => __( 'Images', 'tuxedo-big-file-uploads' ),
             'audio'    => __( 'Audio', 'tuxedo-big-file-uploads' ),
             'video'    => __( 'Video', 'tuxedo-big-file-uploads' ),
             'document' => __( 'Documents', 'tuxedo-big-file-uploads' ),
             'archive'  => __( 'Archives', 'tuxedo-big-file-uploads' ),
-            'code'     => __( 'Code', 'tuxedo-big-file-uploads' ),
         );
+
+        if ( $this->site_allows_code_uploads() ) {
+            $types['code'] = __( 'Code', 'tuxedo-big-file-uploads' );
+        }
+
+        return $types;
+    }
+
+    /**
+     * Whether any "code" extension can currently be uploaded here.
+     *
+     * True only when an upload_mimes filter or ALLOW_UNFILTERED_UPLOADS has
+     * made one of the code extensions acceptable to core for the current user.
+     *
+     * @return bool
+     * @since 2.2.0
+     */
+    public function site_allows_code_uploads() {
+        $extensions = $this->get_file_type_extensions();
+
+        foreach ( $extensions['code'] as $ext ) {
+            $check = wp_check_filetype( 'file.' . $ext );
+            if ( ! empty( $check['type'] ) ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -1069,7 +1099,11 @@ class BigFileUploads {
 
         if ( ! empty( $settings['by_type'] ) && '' !== $filename ) {
             $type = $this->get_file_type( $filename );
-            if ( ! empty( $settings['limits'][ $scope ]['types'][ $type ]['bytes'] ) ) {
+            // Only currently-offered types apply, so an override saved while a
+            // type was available (e.g. code) goes dormant with it instead of
+            // enforcing an invisible limit.
+            if ( array_key_exists( $type, $this->get_limit_file_types() )
+                 && ! empty( $settings['limits'][ $scope ]['types'][ $type ]['bytes'] ) ) {
                 $limit = $settings['limits'][ $scope ]['types'][ $type ]['bytes'];
             }
         }
@@ -1207,10 +1241,14 @@ class BigFileUploads {
         $scope    = $this->get_upload_limit_scope( $settings );
         $limit    = $this->get_upload_limit();
 
-        if ( ! empty( $settings['by_type'] ) && ! empty( $settings['limits'][ $scope ]['types'] ) ) {
-            foreach ( $settings['limits'][ $scope ]['types'] as $type_limit ) {
-                if ( ! empty( $type_limit['bytes'] ) && $type_limit['bytes'] > $limit ) {
-                    $limit = $type_limit['bytes'];
+        if ( ! empty( $settings['by_type'] ) ) {
+            // Walk the canonical type list, not the stored array: rows persist in
+            // the option after a type stops being offered, and a stale override
+            // must not inflate the advertised ceiling.
+            foreach ( array_keys( $this->get_limit_file_types() ) as $type ) {
+                if ( ! empty( $settings['limits'][ $scope ]['types'][ $type ]['bytes'] )
+                     && $settings['limits'][ $scope ]['types'][ $type ]['bytes'] > $limit ) {
+                    $limit = $settings['limits'][ $scope ]['types'][ $type ]['bytes'];
                 }
             }
         }
