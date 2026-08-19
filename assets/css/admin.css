@@ -1499,9 +1499,12 @@ body.bfu-modal-open {
   color: #1f2d3d;
 }
 
+/* Rows stretch to the widest one, so every switch pill starts on the same
+   vertical line and every info icon ends on one. */
 .bfu-panel__toggle {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 6px;
 }
 
@@ -1580,9 +1583,9 @@ body.bfu-modal-open {
 
 /* Limit rows */
 .bfu-limit + .bfu-limit {
-  margin-top: 18px;
-  padding-top: 18px;
-  border-top: 1px solid #eef4f9;
+  margin-top: 26px;
+  padding-top: 24px;
+  border-top: 1px solid #d5e2ec;
 }
 
 .bfu-settings-card .bfu-input-limit {
@@ -1652,19 +1655,20 @@ body.bfu-modal-open {
   outline: none;
 }
 
-.bfu-limit__meta {
+.bfu-limit__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
-.bfu-limit__for {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #64748b;
+/* The scope's name leads its section, so each role reads as its own group. */
+.bfu-limit__role {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #1f2d3d;
 }
 
 .bfu-limit__badge {
@@ -1822,7 +1826,7 @@ body.bfu-modal-open {
 .bfu-panel__toggles {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: stretch;
   gap: 8px;
 }
 
@@ -1889,9 +1893,6 @@ body.bfu-modal-open {
 }
 
 @media screen and (max-width: 960px) {
-  .bfu-panel__toggles {
-    align-items: flex-start;
-  }
   .bfu-types__grid {
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   }

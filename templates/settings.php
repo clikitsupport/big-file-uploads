@@ -78,6 +78,10 @@ $bfu_default = size_format( $this->max_upload_size );
 
 				<div class="bfu-panel__body <?php echo $settings['by_role'] ? 'bfu-disabled' : ''; ?>" id="bfu-settings">
 					<div class="bfu-limit">
+						<div class="bfu-limit__head">
+							<span class="bfu-limit__role"><?php esc_html_e( 'Default for all users', 'tuxedo-big-file-uploads' ); ?></span>
+							<span class="bfu-limit__badge" data-toggle="tooltip" title="<?php esc_attr_e( 'Default size is defined by your hosting provider', 'tuxedo-big-file-uploads' ); ?>"><?php printf( esc_html__( 'Default is %s', 'tuxedo-big-file-uploads' ), esc_html( $bfu_default ) ); ?></span>
+						</div>
 						<div class="input-group bfu-input-limit">
 							<input name="upload_limit" id="upload-limit" type="number" step="0.1" min="0" value="<?php echo esc_attr( $settings['limits']['all']['bytes'] ); ?>" class="form-control bfu-limit__input"
 							       aria-label="<?php esc_attr_e( 'All users upload limit', 'tuxedo-big-file-uploads' ); ?>">
@@ -87,10 +91,6 @@ $bfu_default = size_format( $this->max_upload_size );
 									<option <?php selected( $settings['limits']['all']['format'], 'GB' ); ?> value="GB">GB</option>
 								</select>
 							</div>
-						</div>
-						<div class="bfu-limit__meta">
-							<span class="bfu-limit__for"><?php esc_html_e( 'Default for all users', 'tuxedo-big-file-uploads' ); ?></span>
-							<span class="bfu-limit__badge" data-toggle="tooltip" title="<?php esc_attr_e( 'Default size is defined by your hosting provider', 'tuxedo-big-file-uploads' ); ?>"><?php printf( esc_html__( 'Default is %s', 'tuxedo-big-file-uploads' ), esc_html( $bfu_default ) ); ?></span>
 						</div>
 						<?php $this->render_type_limits( 'all', $settings ); ?>
 					</div>
@@ -102,6 +102,10 @@ $bfu_default = size_format( $this->max_upload_size );
 						if ( isset( $role['capabilities']['upload_files'] ) && $role['capabilities']['upload_files'] ) {
 							?>
 							<div class="bfu-limit">
+								<div class="bfu-limit__head">
+									<span class="bfu-limit__role"><?php echo esc_html( translate_user_role( $role['name'] ) ); ?></span>
+									<span class="bfu-limit__badge" data-toggle="tooltip" title="<?php esc_attr_e( 'Default size is defined by your hosting provider', 'tuxedo-big-file-uploads' ); ?>"><?php printf( esc_html__( 'Default is %s', 'tuxedo-big-file-uploads' ), esc_html( $bfu_default ) ); ?></span>
+								</div>
 								<div class="input-group bfu-input-limit">
 									<input name="upload_limit[<?php echo esc_attr( $role_key ); ?>]" id="upload-limit-<?php echo esc_attr( $role_key ); ?>" type="number" step="0.1" min="0" value="<?php echo esc_attr( $settings['limits'][ $role_key ]['bytes'] ); ?>"
 									       class="form-control bfu-limit__input" aria-label="<?php printf( esc_attr__( '%s upload limit', 'tuxedo-big-file-uploads' ), translate_user_role( $role['name'] ) ); ?>">
@@ -111,10 +115,6 @@ $bfu_default = size_format( $this->max_upload_size );
 											<option <?php selected( $settings['limits'][ $role_key ]['format'], 'GB' ); ?> value="GB">GB</option>
 										</select>
 									</div>
-								</div>
-								<div class="bfu-limit__meta">
-									<span class="bfu-limit__for"><?php echo esc_html( translate_user_role( $role['name'] ) ); ?></span>
-									<span class="bfu-limit__badge" data-toggle="tooltip" title="<?php esc_attr_e( 'Default size is defined by your hosting provider', 'tuxedo-big-file-uploads' ); ?>"><?php printf( esc_html__( 'Default is %s', 'tuxedo-big-file-uploads' ), esc_html( $bfu_default ) ); ?></span>
 								</div>
 								<?php $this->render_type_limits( $role_key, $settings ); ?>
 							</div>
