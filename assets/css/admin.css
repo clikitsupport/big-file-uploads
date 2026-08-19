@@ -1852,10 +1852,16 @@ body.bfu-modal-open {
   color: #64748b;
 }
 
+/* One row: every type shares the line and shrinks equally. Narrow screens
+   fall back to wrapping (media query below). */
 .bfu-types__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
-  gap: 10px 12px;
+  display: flex;
+  gap: 10px 8px;
+}
+
+.bfu-type {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .bfu-type__label {
@@ -1872,8 +1878,9 @@ body.bfu-modal-open {
 }
 
 .bfu-settings-card .bfu-input-limit--sm .bfu-limit__input {
+  min-width: 0;
   height: 34px;
-  padding: 0 10px;
+  padding: 0 8px;
   font-size: 13px;
   font-weight: 600;
   line-height: 34px;
@@ -1888,12 +1895,15 @@ body.bfu-modal-open {
 .bfu-settings-card .bfu-input-limit--sm .bfu-limit__unit select {
   height: 34px;
   min-height: 34px;
-  padding: 0 26px 0 8px;
+  padding: 0 22px 0 6px;
   font-size: 12px;
 }
 
 @media screen and (max-width: 960px) {
   .bfu-types__grid {
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    flex-wrap: wrap;
+  }
+  .bfu-type {
+    flex: 1 1 140px;
   }
 }
