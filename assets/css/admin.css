@@ -1396,8 +1396,10 @@ body.bfu-modal-open {
 }
 
 /* Left: the numbered how-to */
+/* Fixed column: the split must not depend on panel content, or toggling the
+   per-type grid makes both columns reflow. */
 .bfu-settings__guide {
-  flex: 0 1 340px;
+  flex: 0 0 340px;
   min-width: 0;
 }
 
@@ -1473,7 +1475,8 @@ body.bfu-modal-open {
 
 /* Right: the limit panel */
 .bfu-settings__panel {
-  flex: 1 1 auto;
+  /* Zero basis: width comes from the container, never from content. */
+  flex: 1 1 0;
   min-width: 0;
   border: 1px solid #e6eef4;
   border-radius: 12px;
@@ -1857,6 +1860,7 @@ body.bfu-modal-open {
 .bfu-types__grid {
   display: flex;
   gap: 10px 8px;
+  overflow-x: auto;
 }
 
 .bfu-type {

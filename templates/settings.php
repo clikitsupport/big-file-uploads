@@ -38,8 +38,8 @@ $bfu_default = size_format( $this->max_upload_size );
 					<li class="bfu-step">
 						<span class="bfu-step__num" aria-hidden="true">2</span>
 						<span class="bfu-step__text">
-							<span class="bfu-step__title"><?php esc_html_e( 'Customize by user role (optional)', 'tuxedo-big-file-uploads' ); ?></span>
-							<span class="bfu-step__desc"><?php esc_html_e( 'Enable this to set different limits for each user role.', 'tuxedo-big-file-uploads' ); ?></span>
+							<span class="bfu-step__title"><?php esc_html_e( 'Customize by role or file type (optional)', 'tuxedo-big-file-uploads' ); ?></span>
+							<span class="bfu-step__desc"><?php esc_html_e( 'Use the toggles to set different limits per user role or per file type.', 'tuxedo-big-file-uploads' ); ?></span>
 						</span>
 					</li>
 					<li class="bfu-step">
