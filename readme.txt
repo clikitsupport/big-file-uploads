@@ -29,6 +29,7 @@ No messing with Apache/PHP initialization files or settings. Just activate the p
 - Control maximum upload size limit
 - Get smart recommendations based on available space in your temporary uploads directory
 - Set maximum file size for each user role with upload capabilities (Administrator, Editor, Author)
+- Set a separate maximum file size by file type - images, audio, video, documents, and archives
 - Set the max file size in Megabytes (MB) or Gigabytes (GB)
 - Works with any server or hosting provider
 - Upload any size file directly to a connected Infinite Uploads cloud account
@@ -49,6 +50,10 @@ Fix “The Uploaded File Exceeds the upload_max_filesize” error that is so com
 ### Set Upload Size Based on User Role
 
 Big File Uploads lets you set a new maximum upload size limit for all uploads or customize the maximum file upload size for each of your user roles with upload capabilities. Set custom upload limits for Administrators, Editors, Authors, or even custom roles.
+
+### Set Upload Size by File Type
+
+Not every file needs the same limit. Turn on "Customize by file type" to give images, audio, video, documents, and archives their own maximum upload size, plus code files on sites that allow them. Leave a file type blank and it falls back to the limit above it, so you can cap images at 10 MB while still allowing 5 GB video. Per-type limits work alongside per-role limits - set them once for all users, or separately for each role.
 
 ### Uploads Disk Utility
 
@@ -102,6 +107,10 @@ Big File Uploads was originally "Tuxedo Big File Uploads" created by Trevor Ande
 
 Uploads can be as large as available disk space for temporary files allows, or up to the maximum upload size limit you set in Settings -> Big File Uploads -> Uploading Files.
 
+= Can I set a different upload limit for videos than for images? =
+
+Yes. Turn on "Customize by file type" in Settings -> Big File Uploads and give images, audio, video, documents, and archives their own maximum size. Any type you leave blank uses the main limit, and the per-type limits can be set once for all users or separately for each user role.
+
 = Is Big File Uploads a free plugin? =
 
 Yes all features of the Big File Uploads plugin are completely free and do not have a premium upgrade.
@@ -139,6 +148,7 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 - New: Redesigned settings screen with a step-by-step guide and per-role sections.
 - Fix: The upload size limit is now enforced on the very first chunk, so a single-chunk upload can no longer exceed it.
 - Fix: Review notice strings are now translatable; removed a stale duplicate translation template.
+- Update: The size field now labels the hosting limit as "Host limit" so a saved value is not mistaken for a reverted one.
 - Update: Refreshed the Infinite Uploads recommendation copy.
 - Translation updates.
 
