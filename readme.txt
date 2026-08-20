@@ -53,7 +53,7 @@ Big File Uploads lets you set a new maximum upload size limit for all uploads or
 
 ### Set Upload Size by File Type
 
-Not every file needs the same limit. Turn on "Customize by file type" to give images, audio, video, documents, and archives their own maximum upload size, plus code files on sites that allow them. Leave a file type blank and it falls back to the limit above it, so you can cap images at 10 MB while still allowing 5 GB video. Per-type limits work alongside per-role limits - set them once for all users, or separately for each role.
+Not every file needs the same limit. Turn on "Customize by file type" to give images, audio, video, documents, and archives their own maximum upload size, plus code files on sites that allow them. Fill in only the types you want to treat differently - cap images at 10 MB while still allowing 5 GB video. Any type you leave blank keeps your main upload limit. Per-type limits work alongside per-role limits - set them once for all users, or separately for each role.
 
 ### Uploads Disk Utility
 
