@@ -47,6 +47,28 @@ So there are two different ceilings, and the two tests each lean on one:
 If you change the 2MB value in the `.htaccess`, restart with `npm run env:start` for it to take
 effect, and keep it below the 5MB fixture in `chunked-upload.spec.js`.
 
+A third test, `a large image still rides the chunked path, not client-side media processing`,
+uploads a ~3.7MB PNG and asserts it was chunked by BFU (not sent over the REST media endpoint) and
+stored byte-for-byte. WordPress 7.1 added client-side media processing, which resizes/converts
+images in the browser and uploads them over REST — but only in the block editor, not the media
+library. This test is the guard against a future release extending that to the media library and
+quietly taking image uploads away from BFU.
+
+To test against a specific WordPress version locally, pin it with a personal (git-ignored)
+`.wp-env.override.json` and restart:
+
+```json
+{ "core": "https://wordpress.org/wordpress-7.1.zip" }
+```
+
+```bash
+npm run env:start        # re-provisions both sites on the pinned version
+npm run test:all         # PHPUnit, all three suites
+npm run test:e2e         # the browser suite
+```
+
+Delete the override file and restart to go back to the latest release.
+
 ## Notes for anyone extending these
 
 A few things here were non-obvious enough to be worth writing down:
