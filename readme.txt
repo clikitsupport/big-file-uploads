@@ -30,6 +30,7 @@ No messing with Apache/PHP initialization files or settings. Just activate the p
 - Get smart recommendations based on available space in your temporary uploads directory
 - Set maximum file size for each user role with upload capabilities (Administrator, Editor, Author)
 - Set a separate maximum file size by file type - images, audio, video, documents, and archives
+- Get a heads up when you upload video, which is better streamed from the cloud than served off your host
 - Set the max file size in Megabytes (MB) or Gigabytes (GB)
 - Works with any server or hosting provider
 - Upload any size file directly to a connected Infinite Uploads cloud account
@@ -145,6 +146,7 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 - New: Set a separate maximum upload size per file type - images, audio, video, documents, archives, and code - for all users or for each role. Leave a field blank to use the main limit.
 - New: bfu_upload_limit filter for developers to adjust the resolved limit per file.
+- New: Queueing a video in the media uploader now shows a short note that video is better streamed from Infinite Uploads Video Hosting than stored in WordPress. Hidden when Infinite Uploads is active, and switchable with the bfu_promote_video_hosting filter.
 - New: Redesigned settings screen with a step-by-step guide and per-role sections.
 - Fix: The upload size limit is now enforced on the very first chunk, so a single-chunk upload can no longer exceed it.
 - Fix: Review notice strings are now translatable; removed a stale duplicate translation template.

@@ -9,19 +9,19 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-19T18:12:17+00:00\n"
+"POT-Creation-Date: 2026-08-20T02:56:47+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: tuxedo-big-file-uploads\n"
 
 #. Plugin Name of the plugin
 #: tuxedo_big_file_uploads.php
-#: tuxedo_big_file_uploads.php:269
-#: tuxedo_big_file_uploads.php:1388
-#: tuxedo_big_file_uploads.php:1389
-#: tuxedo_big_file_uploads.php:1399
-#: tuxedo_big_file_uploads.php:1400
-#: tuxedo_big_file_uploads.php:1557
+#: tuxedo_big_file_uploads.php:276
+#: tuxedo_big_file_uploads.php:1468
+#: tuxedo_big_file_uploads.php:1469
+#: tuxedo_big_file_uploads.php:1479
+#: tuxedo_big_file_uploads.php:1480
+#: tuxedo_big_file_uploads.php:1637
 msgid "Big File Uploads"
 msgstr ""
 
@@ -45,8 +45,8 @@ msgid "Learn More"
 msgstr ""
 
 #: classes/class-promo-notice.php:33
-#: tuxedo_big_file_uploads.php:383
-#: tuxedo_big_file_uploads.php:1914
+#: tuxedo_big_file_uploads.php:390
+#: tuxedo_big_file_uploads.php:1994
 msgid "Dismiss"
 msgstr ""
 
@@ -86,7 +86,7 @@ msgid "Made with %s by Infinite Uploads"
 msgstr ""
 
 #: templates/footer.php:9
-#: tuxedo_big_file_uploads.php:1317
+#: tuxedo_big_file_uploads.php:1397
 msgid "Support"
 msgstr ""
 
@@ -109,9 +109,9 @@ msgstr ""
 
 #: templates/modal-scan.php:15
 #: templates/modal-subscribe.php:15
-#: tuxedo_big_file_uploads.php:1573
-#: tuxedo_big_file_uploads.php:1584
-#: tuxedo_big_file_uploads.php:1940
+#: tuxedo_big_file_uploads.php:1653
+#: tuxedo_big_file_uploads.php:1664
+#: tuxedo_big_file_uploads.php:2020
 msgid "Close"
 msgstr ""
 
@@ -257,7 +257,7 @@ msgstr ""
 
 #: templates/settings-filetypes.php:4
 #: templates/settings.php:23
-#: tuxedo_big_file_uploads.php:1316
+#: tuxedo_big_file_uploads.php:1396
 msgid "Settings"
 msgstr ""
 
@@ -358,7 +358,7 @@ msgid "All users upload limit"
 msgstr ""
 
 #: templates/settings.php:111
-#: tuxedo_big_file_uploads.php:1180
+#: tuxedo_big_file_uploads.php:1256
 #, php-format
 msgid "%s upload limit"
 msgstr ""
@@ -367,267 +367,275 @@ msgstr ""
 msgid "Save Changes"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:376
+#: tuxedo_big_file_uploads.php:383
 msgid "Change"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:383
+#: tuxedo_big_file_uploads.php:390
 msgid "Want a faster WordPress site and a media library that stays easy to manage as it grows?"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:383
+#: tuxedo_big_file_uploads.php:390
 msgid "See how Infinite Uploads can help"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:425
+#: tuxedo_big_file_uploads.php:432
 msgid "Tuxedo Big File Uploads has a new maintainer and <strong>new free features</strong>!"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:429
+#: tuxedo_big_file_uploads.php:436
 msgid "Review your upload settings now, configure different limits per role, or analyze your uploads storage usage."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:548
+#: tuxedo_big_file_uploads.php:555
 msgid "The file size has exceeded the maximum file size setting."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:560
+#: tuxedo_big_file_uploads.php:567
 #, php-format
 msgid "There was an error reading uploaded part %d of %d."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:783
+#: tuxedo_big_file_uploads.php:790
 msgid "There was an error opening the temp file for writing. Available temp directory space may be exceeded or the temp file was cleaned up before the upload completed."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:796
-#: tuxedo_big_file_uploads.php:811
+#: tuxedo_big_file_uploads.php:803
+#: tuxedo_big_file_uploads.php:818
 msgid "There was an error reading the uploaded part."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1007
-#: tuxedo_big_file_uploads.php:2120
+#: tuxedo_big_file_uploads.php:1017
+#: tuxedo_big_file_uploads.php:2200
 msgid "Images"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1008
-#: tuxedo_big_file_uploads.php:2121
+#: tuxedo_big_file_uploads.php:1018
+#: tuxedo_big_file_uploads.php:2201
 msgid "Audio"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1009
-#: tuxedo_big_file_uploads.php:2122
+#: tuxedo_big_file_uploads.php:1019
+#: tuxedo_big_file_uploads.php:2202
 msgid "Video"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1010
-#: tuxedo_big_file_uploads.php:2123
+#: tuxedo_big_file_uploads.php:1020
+#: tuxedo_big_file_uploads.php:2203
 msgid "Documents"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1011
-#: tuxedo_big_file_uploads.php:2124
+#: tuxedo_big_file_uploads.php:1021
+#: tuxedo_big_file_uploads.php:2204
 msgid "Archives"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1012
-#: tuxedo_big_file_uploads.php:2125
+#: tuxedo_big_file_uploads.php:1025
+#: tuxedo_big_file_uploads.php:2205
 msgid "Code"
 msgstr ""
 
 #. translators: 1: file name, 2: file type label, 3: size limit
-#: tuxedo_big_file_uploads.php:1141
+#: tuxedo_big_file_uploads.php:1207
 #, php-format
 msgid "%1$s is bigger than the %2$s limit of %3$s."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1162
+#: tuxedo_big_file_uploads.php:1213
+msgid "Heads up: hosting video in WordPress slows your site and fills your storage."
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1214
+msgid "Stream it with Infinite Uploads Video Hosting"
+msgstr ""
+
+#: tuxedo_big_file_uploads.php:1238
 msgid "Limits by file type"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1163
+#: tuxedo_big_file_uploads.php:1239
 msgid "optional - leave blank to use the limit above"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1178
+#: tuxedo_big_file_uploads.php:1254
 msgid "Inherit"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1318
+#: tuxedo_big_file_uploads.php:1398
 msgid "Go Pro"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1434
+#: tuxedo_big_file_uploads.php:1514
 msgid "Are you sure you want to leave this tab? The current bulk action will be canceled and you will need to continue where it left off later."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1435
+#: tuxedo_big_file_uploads.php:1515
 msgid "Too many server errors. Please try again."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1436
+#: tuxedo_big_file_uploads.php:1516
 msgid "If you leave this page the sync will be interrupted and you will have to continue where you left off later."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1473
-#: tuxedo_big_file_uploads.php:1479
-#: tuxedo_big_file_uploads.php:1720
+#: tuxedo_big_file_uploads.php:1553
+#: tuxedo_big_file_uploads.php:1559
+#: tuxedo_big_file_uploads.php:1800
 msgid "Permissions Error: Please refresh the page and try again."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1572
+#: tuxedo_big_file_uploads.php:1652
 msgid "Settings saved!"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1583
+#: tuxedo_big_file_uploads.php:1663
 msgid "Please choose a maximum size for each option."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1805
+#: tuxedo_big_file_uploads.php:1885
 msgid "Configure Infinite Uploads"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1812
+#: tuxedo_big_file_uploads.php:1892
 msgid "Activate Infinite Uploads"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1819
+#: tuxedo_big_file_uploads.php:1899
 msgid "Install Infinite Uploads"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1835
+#: tuxedo_big_file_uploads.php:1915
 msgid "Cloud Storage"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1836
+#: tuxedo_big_file_uploads.php:1916
 msgid "Store your media securely in the cloud."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1837
+#: tuxedo_big_file_uploads.php:1917
 msgid "Offload your media to the cloud with Infinite Uploads"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1838
+#: tuxedo_big_file_uploads.php:1918
 msgid "Try Infinite Uploads for free for 7 days and reduce server load while improving performance."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1842
+#: tuxedo_big_file_uploads.php:1922
 msgid "Folders"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1843
+#: tuxedo_big_file_uploads.php:1923
 msgid "Organize your media files with folders."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1844
+#: tuxedo_big_file_uploads.php:1924
 msgid "Organize your media library with smart folders"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1845
+#: tuxedo_big_file_uploads.php:1925
 msgid "Try Infinite Uploads for free for 7 days and manage your media files with ease."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1849
+#: tuxedo_big_file_uploads.php:1929
 msgid "Smart Organization"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1850
+#: tuxedo_big_file_uploads.php:1930
 msgid "Drag & drop media to keep your library organized."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1851
+#: tuxedo_big_file_uploads.php:1931
 msgid "Keep your media library effortlessly organized"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1852
+#: tuxedo_big_file_uploads.php:1932
 msgid "Try Infinite Uploads for free for 7 days and drag & drop your media into order."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1856
+#: tuxedo_big_file_uploads.php:1936
 msgid "CDN Delivery and Image Optimization"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1857
+#: tuxedo_big_file_uploads.php:1937
 msgid "Deliver optimized media via a global CDN for faster sites."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1858
+#: tuxedo_big_file_uploads.php:1938
 msgid "Deliver your media faster worldwide with Global CDN"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1859
+#: tuxedo_big_file_uploads.php:1939
 msgid "Try Infinite Uploads for free for 7 days and serve your media through a global CDN."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1863
+#: tuxedo_big_file_uploads.php:1943
 msgid "Advanced Search"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1864
+#: tuxedo_big_file_uploads.php:1944
 msgid "Find the right media instantly with advanced search."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1865
+#: tuxedo_big_file_uploads.php:1945
 msgid "Find any file instantly with advanced media search"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1866
+#: tuxedo_big_file_uploads.php:1946
 msgid "Try Infinite Uploads for free for 7 days and locate the right media in seconds."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1870
+#: tuxedo_big_file_uploads.php:1950
 msgid "Media Scalability"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1871
+#: tuxedo_big_file_uploads.php:1951
 msgid "Handle unlimited growth without limits."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1872
+#: tuxedo_big_file_uploads.php:1952
 msgid "Scale your media storage without limits"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1873
+#: tuxedo_big_file_uploads.php:1953
 msgid "Try Infinite Uploads for free for 7 days and handle unlimited growth effortlessly."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1907
+#: tuxedo_big_file_uploads.php:1987
 msgid "You can move your storage to Cloud on Infinite Uploads"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1908
+#: tuxedo_big_file_uploads.php:1988
 msgid "Try out Infinite Uploads for Free for 7 days and upload your storage to the cloud."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1910
+#: tuxedo_big_file_uploads.php:1990
 msgid "Start Free"
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:1954
+#: tuxedo_big_file_uploads.php:2034
 msgid "Learn More About Infinite Uploads"
 msgstr ""
 
 #. translators: %s is a cloud icon.
-#: tuxedo_big_file_uploads.php:1961
+#: tuxedo_big_file_uploads.php:2041
 #, php-format
 msgid "Get 7 days of %s storage, bandwidth, media folders, and more for FREE. Plans starting at just $8.25/mo."
 msgstr ""
 
-#: tuxedo_big_file_uploads.php:2095
+#: tuxedo_big_file_uploads.php:2175
 #, php-format
 msgid "%s file totalling %s"
 msgid_plural "%s files totalling %s"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tuxedo_big_file_uploads.php:2100
+#: tuxedo_big_file_uploads.php:2180
 #, php-format
 msgid "%s / %s File"
 msgid_plural "%s / %s Files"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tuxedo_big_file_uploads.php:2126
+#: tuxedo_big_file_uploads.php:2206
 msgid "Other"
 msgstr ""
 

@@ -208,6 +208,13 @@ class BigFileUploads {
             $plupload_settings['filters']['bfu_type_limits'] = $type_limits;
         }
 
+        // A filter is the only hook plupload gives us that sees every file as it joins the
+        // queue, on both the classic uploader and the media modal. This one never rejects
+        // anything - it just lets the front end know a video is worth commenting on.
+        if ( $this->should_promote_video_hosting() ) {
+            $plupload_settings['filters']['bfu_video_notice'] = true;
+        }
+
         $plupload_settings['url']                      = admin_url( 'admin-ajax.php' );
         $plupload_settings['filters']['max_file_size'] = $this->filter_upload_size_limit( '' ) . 'b';
         $plupload_settings['chunk_size']               = BIG_FILE_UPLOADS_CHUNK_SIZE_KB . 'kb';
@@ -1149,14 +1156,39 @@ class BigFileUploads {
     }
 
     /**
+     * Whether to point the user at Infinite Uploads video hosting.
+     *
+     * Video is the one file type where a bigger upload limit is the wrong answer: the file
+     * still lands on the host's disk and still streams from it. Anyone already on Infinite
+     * Uploads has that covered, and anyone who cannot install plugins cannot act on it, so
+     * neither is worth interrupting.
+     *
+     * @return bool
+     * @since 2.2.0
+     */
+    public function should_promote_video_hosting() {
+        $promote = ! $this->is_infinite_uploads_active() && current_user_can( $this->capability );
+
+        /**
+         * Filter whether the uploader nudges toward Infinite Uploads video hosting.
+         *
+         * @param  bool  $promote  Whether to show the notice when a video is queued.
+         *
+         * @since 2.2.0
+         */
+        return (bool) apply_filters( 'bfu_promote_video_hosting', $promote );
+    }
+
+    /**
      * Load the front-end guard for per-type limits.
      *
      * @since 2.2.0
      */
     public function enqueue_upload_limits() {
-        $type_limits = $this->get_type_limit_map();
+        $type_limits   = $this->get_type_limit_map();
+        $promote_video = $this->should_promote_video_hosting();
 
-        if ( empty( $type_limits ) ) {
+        if ( empty( $type_limits ) && ! $promote_video ) {
             return;
         }
 
@@ -1167,14 +1199,24 @@ class BigFileUploads {
             BIG_FILE_UPLOADS_VERSION
         );
 
-        wp_localize_script( 'bfu-upload-limits', 'bfuUploadLimits', array(
+        $data = array(
             'extensions' => $this->get_file_type_map(),
             'labels'     => $this->get_limit_file_types(),
             'strings'    => array(
                 /* translators: 1: file name, 2: file type label, 3: size limit */
                 'too_large' => __( '%1$s is bigger than the %2$s limit of %3$s.', 'tuxedo-big-file-uploads' ),
             ),
-        ) );
+        );
+
+        if ( $promote_video ) {
+            $data['video'] = array(
+                'message' => __( 'Heads up: hosting video in WordPress slows your site and fills your storage.', 'tuxedo-big-file-uploads' ),
+                'link'    => __( 'Stream it with Infinite Uploads Video Hosting', 'tuxedo-big-file-uploads' ),
+                'url'     => $this->api_url( 'features/video-hosting/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_term=video_hosting&utm_content=uploader' ),
+            );
+        }
+
+        wp_localize_script( 'bfu-upload-limits', 'bfuUploadLimits', $data );
     }
 
     /**
