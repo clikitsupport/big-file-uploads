@@ -344,13 +344,13 @@ msgstr ""
 
 #: templates/settings.php:83
 #: templates/settings.php:107
-msgid "Default size is defined by your hosting provider"
+msgid "The upload limit set by your hosting provider. Big File Uploads uploads in chunks to get past it, so the size you set here can be larger."
 msgstr ""
 
 #: templates/settings.php:83
 #: templates/settings.php:107
 #, php-format
-msgid "Default is %s"
+msgid "Host limit: %s"
 msgstr ""
 
 #: templates/settings.php:87

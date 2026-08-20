@@ -80,7 +80,7 @@ $bfu_default = size_format( $this->max_upload_size );
 					<div class="bfu-limit">
 						<div class="bfu-limit__head">
 							<span class="bfu-limit__role"><?php esc_html_e( 'Default for all users', 'tuxedo-big-file-uploads' ); ?></span>
-							<span class="bfu-limit__badge" data-toggle="tooltip" title="<?php esc_attr_e( 'Default size is defined by your hosting provider', 'tuxedo-big-file-uploads' ); ?>"><?php printf( esc_html__( 'Default is %s', 'tuxedo-big-file-uploads' ), esc_html( $bfu_default ) ); ?></span>
+							<span class="bfu-limit__badge" data-toggle="tooltip" title="<?php esc_attr_e( 'The upload limit set by your hosting provider. Big File Uploads uploads in chunks to get past it, so the size you set here can be larger.', 'tuxedo-big-file-uploads' ); ?>"><?php printf( esc_html__( 'Host limit: %s', 'tuxedo-big-file-uploads' ), esc_html( $bfu_default ) ); ?></span>
 						</div>
 						<div class="input-group bfu-input-limit">
 							<input name="upload_limit" id="upload-limit" type="number" step="0.1" min="0" value="<?php echo esc_attr( $settings['limits']['all']['bytes'] ); ?>" class="form-control bfu-limit__input"
@@ -104,7 +104,7 @@ $bfu_default = size_format( $this->max_upload_size );
 							<div class="bfu-limit">
 								<div class="bfu-limit__head">
 									<span class="bfu-limit__role"><?php echo esc_html( translate_user_role( $role['name'] ) ); ?></span>
-									<span class="bfu-limit__badge" data-toggle="tooltip" title="<?php esc_attr_e( 'Default size is defined by your hosting provider', 'tuxedo-big-file-uploads' ); ?>"><?php printf( esc_html__( 'Default is %s', 'tuxedo-big-file-uploads' ), esc_html( $bfu_default ) ); ?></span>
+									<span class="bfu-limit__badge" data-toggle="tooltip" title="<?php esc_attr_e( 'The upload limit set by your hosting provider. Big File Uploads uploads in chunks to get past it, so the size you set here can be larger.', 'tuxedo-big-file-uploads' ); ?>"><?php printf( esc_html__( 'Host limit: %s', 'tuxedo-big-file-uploads' ), esc_html( $bfu_default ) ); ?></span>
 								</div>
 								<div class="input-group bfu-input-limit">
 									<input name="upload_limit[<?php echo esc_attr( $role_key ); ?>]" id="upload-limit-<?php echo esc_attr( $role_key ); ?>" type="number" step="0.1" min="0" value="<?php echo esc_attr( $settings['limits'][ $role_key ]['bytes'] ); ?>"
