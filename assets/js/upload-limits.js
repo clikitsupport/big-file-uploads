@@ -125,6 +125,41 @@
 		cb( true );
 	} );
 
+	/**
+	 * Show the rejection to the user.
+	 *
+	 * Core's uploaders rewrite the text of any plupload FILE_SIZE_ERROR into the
+	 * generic "exceeds the maximum upload size for this site", which would sit
+	 * right under a "Maximum upload file size: 2 GB" line for a 12 MB image. So
+	 * the filter does not raise a plupload error; it places the message itself,
+	 * in the same spot and markup core uses, so the reader learns which limit
+	 * they hit.
+	 */
+	function report( uploader, file, text ) {
+		// Media modal and anything else built on wp.Uploader: the same error
+		// collection core pushes to, rendered (escaped) by the uploader status view.
+		if ( window.wp && wp.Uploader && wp.Uploader.errors ) {
+			wp.Uploader.errors.unshift( { message: text, data: { code: plupload.FILE_SIZE_ERROR }, file: file } );
+			return;
+		}
+
+		// Classic uploader (Media > Add New): mirror core's failed-item markup.
+		var list = document.getElementById( 'media-items' );
+		if ( list ) {
+			var item = document.createElement( 'div' );
+			item.className = 'media-item error bfu-upload-limit-error';
+			var p = document.createElement( 'p' );
+			p.textContent = text;
+			item.appendChild( p );
+			list.appendChild( item );
+			return;
+		}
+
+		// Unknown host: fall back to core's generic rejection so the file is
+		// at least visibly refused.
+		uploader.trigger( 'Error', { code: plupload.FILE_SIZE_ERROR, message: text, file: file } );
+	}
+
 	plupload.addFileFilter( 'bfu_type_limits', function ( limits, file, cb ) {
 		if ( ! limits ) {
 			cb( true );
@@ -135,11 +170,7 @@
 		var max  = type && limits[ type ] ? parseInt( limits[ type ], 10 ) : 0;
 
 		if ( max && file.size > max ) {
-			this.trigger( 'Error', {
-				code:    plupload.FILE_SIZE_ERROR,
-				message: message( file, type, max ),
-				file:    file
-			} );
+			report( this, file, message( file, type, max ) );
 			cb( false );
 			return;
 		}

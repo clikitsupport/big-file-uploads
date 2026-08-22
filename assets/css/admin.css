@@ -1890,6 +1890,18 @@ body.bfu-modal-open {
   line-height: 34px;
 }
 
+/* The spin buttons ate the width the placeholder needs at laptop sizes. */
+.bfu-settings-card .bfu-input-limit--sm .bfu-limit__input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.bfu-settings-card .bfu-input-limit--sm .bfu-limit__input::-webkit-outer-spin-button,
+.bfu-settings-card .bfu-input-limit--sm .bfu-limit__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .bfu-settings-card .bfu-input-limit--sm .bfu-limit__input::placeholder {
   font-weight: 500;
   font-style: italic;
