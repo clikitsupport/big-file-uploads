@@ -153,18 +153,26 @@
 	}
 
 	/**
-	 * Put the note where it does not break the screen it landed on.
+	 * Put the note directly above whatever is about to list the upload.
 	 *
-	 * Media > Add New renders the size line in a plain form, so the note follows
-	 * it. The media library renders the same line inside the dashed drop target,
-	 * where a full width box splits the drop zone in two - there the note goes
-	 * above the whole box instead.
+	 * The media library renders the size line inside the dashed drop target, where
+	 * a full width box splits the drop zone in two, so there the note goes above
+	 * the whole box. Media > Add New lists finished uploads in #media-items, and
+	 * the note belongs against that list rather than up by the size line, where an
+	 * unrelated notice can end up sitting between the two.
 	 */
 	function place( notice, anchor ) {
 		var box = anchor.closest ? anchor.closest( '.uploader-inline' ) : null;
 
 		if ( box && box.parentNode ) {
 			box.parentNode.insertBefore( notice, box );
+			return;
+		}
+
+		var items = document.getElementById( 'media-items' );
+
+		if ( items && items.parentNode === anchor.parentNode ) {
+			items.parentNode.insertBefore( notice, items );
 			return;
 		}
 
