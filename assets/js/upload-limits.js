@@ -81,13 +81,17 @@
 		'<path d="M8.4 8.2 L13 10.5 L8.4 12.8 Z" fill="#ffffff"/></svg>';
 
 	/*
-	 * Tinted panel with the same left accent the plugin's other notices use. Inline
-	 * because the uploader appears on screens that never load the plugin stylesheet,
-	 * and one note does not justify a request of its own.
+	 * Core's own upload errors stack directly below this note, so it copies their
+	 * geometry exactly - full width, white, square, 4px accent rule, the same hairline
+	 * shadow and the same 13px/#3c434a type - and changes only the accent colour. A
+	 * tinted, rounded, narrower box read as bolted on next to them.
+	 *
+	 * Inline because the uploader appears on screens that never load the plugin
+	 * stylesheet, and one note does not justify a request of its own.
 	 */
-	var NOTICE_CSS = 'display:flex;gap:9px;align-items:flex-start;max-width:640px;' +
-		'margin:10px 0 0;padding:10px 14px;background:#eaf4fc;border-left:4px solid #26a9e0;' +
-		'border-radius:0 3px 3px 0;font-size:13px;line-height:1.6;color:#1f2d3d;';
+	var NOTICE_CSS = 'display:flex;gap:8px;align-items:flex-start;' +
+		'margin:0 0 1px;padding:8px 10px;background:#fff;border-left:4px solid #26a9e0;' +
+		'box-shadow:0 1px 0 0 #dcdcde;font-size:13px;line-height:1.5;color:#3c434a;';
 
 	/**
 	 * Add the video note once, or re-reveal the one already there. Shown every
@@ -180,8 +184,13 @@
 		if ( list ) {
 			var item = document.createElement( 'div' );
 			item.className = 'media-item error bfu-upload-limit-error';
+			// .media-item reserves 70px for a thumbnail and progress bar. A file
+			// refused before it transferred has neither, and the reserved space
+			// left the message floating in an empty box.
+			item.style.cssText = 'min-height:0;padding:8px 10px;';
 			var p = document.createElement( 'p' );
-			p.textContent = text;
+			p.textContent   = text;
+			p.style.cssText = 'margin:0;';
 			item.appendChild( p );
 			list.appendChild( item );
 			return;
