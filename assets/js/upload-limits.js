@@ -90,7 +90,7 @@
 	 * stylesheet, and one note does not justify a request of its own.
 	 */
 	var NOTICE_CSS = 'display:flex;gap:8px;align-items:flex-start;' +
-		'margin:0 0 1px;padding:8px 10px;background:#fff;border-left:4px solid #26a9e0;' +
+		'margin:0 0 12px;padding:8px 10px;background:#fff;border-left:4px solid #26a9e0;' +
 		'box-shadow:0 1px 0 0 #dcdcde;font-size:13px;line-height:1.5;color:#3c434a;text-align:left;';
 
 	/**
