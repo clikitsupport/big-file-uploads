@@ -6,7 +6,7 @@
  * chunk handler enforces the same limits server side - this is purely so the
  * user finds out immediately and gets told which limit they hit.
  *
- * A second filter watches for video files and drops a one line note next to the
+ * A second filter watches for video files and drops a short note next to the
  * uploader's size text. It never rejects anything: raising the limit does let the
  * video through, it just is not the right home for it.
  */
@@ -72,9 +72,26 @@
 		return lines[ 0 ] || null;
 	}
 
+	/*
+	 * Static markup, no interpolation. A play glyph in the brand blue so the note
+	 * reads as being about video before a word of it is read.
+	 */
+	var VIDEO_ICON = '<svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" focusable="false">' +
+		'<rect x="1" y="4" width="18" height="13" rx="2.5" fill="#26a9e0"/>' +
+		'<path d="M8.4 8.2 L13 10.5 L8.4 12.8 Z" fill="#ffffff"/></svg>';
+
+	/*
+	 * Tinted panel with the same left accent the plugin's other notices use. Inline
+	 * because the uploader appears on screens that never load the plugin stylesheet,
+	 * and one note does not justify a request of its own.
+	 */
+	var NOTICE_CSS = 'display:flex;gap:9px;align-items:flex-start;max-width:640px;' +
+		'margin:10px 0 0;padding:10px 14px;background:#eaf4fc;border-left:4px solid #26a9e0;' +
+		'border-radius:0 3px 3px 0;font-size:13px;line-height:1.6;color:#1f2d3d;';
+
 	/**
 	 * Add the video note once, or re-reveal the one already there. Shown every
-	 * time a video is queued, so it stays small and carries no dismiss control.
+	 * time a video is queued, so it carries no dismiss control.
 	 */
 	function showVideoNotice() {
 		var cfg = data.video;
@@ -92,26 +109,41 @@
 		var existing = anchor.parentNode.querySelector( '.bfu-video-notice' );
 
 		if ( existing ) {
-			existing.style.display = '';
+			// Restore the layout the panel was built with, not the div default.
+			existing.style.display = 'flex';
 			return;
 		}
 
-		var notice = document.createElement( 'p' );
+		var notice = document.createElement( 'div' );
 
 		notice.className     = 'bfu-video-notice';
-		notice.style.cssText = 'margin:4px 0 0;font-size:12px;line-height:1.6;color:#646970;';
-		notice.appendChild( document.createTextNode( cfg.message + ' ' ) );
+		notice.style.cssText = NOTICE_CSS;
+
+		var icon = document.createElement( 'span' );
+
+		icon.style.cssText = 'flex:0 0 auto;margin-top:2px;';
+		icon.innerHTML     = VIDEO_ICON;
+
+		notice.appendChild( icon );
+
+		// Message and link share one block so the icon keeps a column of its own.
+		var body = document.createElement( 'span' );
+
+		body.appendChild( document.createTextNode( cfg.message + ' ' ) );
 
 		if ( cfg.url && cfg.link ) {
 			var link = document.createElement( 'a' );
 
-			link.href        = cfg.url;
-			link.target      = '_blank';
-			link.rel         = 'noopener';
-			link.textContent = cfg.link;
+			link.href          = cfg.url;
+			link.target        = '_blank';
+			link.rel           = 'noopener';
+			link.textContent   = cfg.link;
+			link.style.cssText = 'font-weight:600;color:#1c6f9c;';
 
-			notice.appendChild( link );
+			body.appendChild( link );
 		}
+
+		notice.appendChild( body );
 
 		anchor.parentNode.insertBefore( notice, anchor.nextSibling );
 	}
