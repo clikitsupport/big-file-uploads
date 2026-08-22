@@ -387,7 +387,17 @@ class BigFileUploads {
             ?>
 			(function ($) {
 				'use strict';
-				$(".max-upload-size").after('<span class="bfu-upload-notice" style="display:inline-block;margin-top:6px;"><span class="small"><?php esc_html_e( 'Want a faster WordPress site and a media library that stays easy to manage as it grows?', 'tuxedo-big-file-uploads' ); ?> <a href="<?php echo esc_url( $this->settings_url() ); ?>#upgrade-modal"><?php esc_html_e( 'See how Infinite Uploads can help', 'tuxedo-big-file-uploads' ); ?>.</a></span><a style="width:12px;height:12px;font-size:12px;vertical-align:middle;margin-left:6px;" class="dashicons dashicons-no" title="<?php esc_attr_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?>" href="#"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?></span></a></span>');
+				var $bfuLine   = $(".max-upload-size");
+				var $bfuBox    = $bfuLine.closest('.uploader-inline');
+				// The media library puts the size line inside the dashed drop target, where a
+				// notice splits the drop zone in two. There it goes above the whole box.
+				var $bfuNotice = $('<span class="bfu-upload-notice" style="display:inline-block;margin-top:6px;text-align:left;"><span class="small"><?php esc_html_e( 'Want a faster WordPress site and a media library that stays easy to manage as it grows?', 'tuxedo-big-file-uploads' ); ?> <a href="<?php echo esc_url( $this->settings_url() ); ?>#upgrade-modal"><?php esc_html_e( 'See how Infinite Uploads can help', 'tuxedo-big-file-uploads' ); ?>.</a></span><a style="width:12px;height:12px;font-size:12px;vertical-align:middle;margin-left:6px;" class="dashicons dashicons-no" title="<?php esc_attr_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?>" href="#"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?></span></a></span>');
+
+				if ( $bfuBox.length ) {
+					$bfuBox.before( $bfuNotice );
+				} else {
+					$bfuLine.after( $bfuNotice );
+				}
 				$(function () {
 					var $notice = $('.bfu-upload-notice');
 					$notice.children('a.dashicons').on('click', function (event, el) {

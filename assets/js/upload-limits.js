@@ -91,7 +91,7 @@
 	 */
 	var NOTICE_CSS = 'display:flex;gap:8px;align-items:flex-start;' +
 		'margin:0 0 1px;padding:8px 10px;background:#fff;border-left:4px solid #26a9e0;' +
-		'box-shadow:0 1px 0 0 #dcdcde;font-size:13px;line-height:1.5;color:#3c434a;';
+		'box-shadow:0 1px 0 0 #dcdcde;font-size:13px;line-height:1.5;color:#3c434a;text-align:left;';
 
 	/**
 	 * Add the video note once, or re-reveal the one already there. Shown every
@@ -110,7 +110,7 @@
 			return;
 		}
 
-		var existing = anchor.parentNode.querySelector( '.bfu-video-notice' );
+		var existing = document.querySelector( '.bfu-video-notice' );
 
 		if ( existing ) {
 			// Restore the layout the panel was built with, not the div default.
@@ -148,6 +148,25 @@
 		}
 
 		notice.appendChild( body );
+
+		place( notice, anchor );
+	}
+
+	/**
+	 * Put the note where it does not break the screen it landed on.
+	 *
+	 * Media > Add New renders the size line in a plain form, so the note follows
+	 * it. The media library renders the same line inside the dashed drop target,
+	 * where a full width box splits the drop zone in two - there the note goes
+	 * above the whole box instead.
+	 */
+	function place( notice, anchor ) {
+		var box = anchor.closest ? anchor.closest( '.uploader-inline' ) : null;
+
+		if ( box && box.parentNode ) {
+			box.parentNode.insertBefore( notice, box );
+			return;
+		}
 
 		anchor.parentNode.insertBefore( notice, anchor.nextSibling );
 	}
