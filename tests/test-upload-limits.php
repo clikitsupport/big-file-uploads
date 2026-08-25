@@ -426,4 +426,50 @@ class Test_BFU_Upload_Limits extends BFU_TestCase {
 
 		$this->assertSame( 64 * MB_IN_BYTES, $editor_settings['maxUploadFileSize'] );
 	}
+
+	public function test_plupload_settings_flag_the_video_notice() {
+		$this->login_as( 'administrator' );
+
+		$settings = apply_filters( 'plupload_init', [] );
+
+		$this->assertTrue(
+			$settings['filters']['bfu_video_notice'],
+			'The uploader needs the flag before it can spot a queued video.'
+		);
+	}
+
+	public function test_video_notice_is_withheld_from_users_who_cannot_act_on_it() {
+		// An author can upload video but cannot install Infinite Uploads, so the nudge is
+		// just noise in their way.
+		$this->login_as( 'author' );
+
+		$settings = apply_filters( 'plupload_init', [] );
+
+		$this->assertArrayNotHasKey( 'bfu_video_notice', $settings['filters'] );
+	}
+
+	public function test_video_notice_can_be_switched_off_by_filter() {
+		$this->login_as( 'administrator' );
+
+		add_filter( 'bfu_promote_video_hosting', '__return_false' );
+		$settings = apply_filters( 'plupload_init', [] );
+		remove_filter( 'bfu_promote_video_hosting', '__return_false' );
+
+		$this->assertArrayNotHasKey( 'bfu_video_notice', $settings['filters'] );
+	}
+
+	public function test_video_notice_never_blocks_the_upload_limit_filters() {
+		// The notice rides alongside the size filters; it must not disturb them.
+		$this->login_as( 'administrator' );
+		$this->set_settings(
+			[
+				'by_role' => false,
+				'limits'  => [ 'all' => [ 'bytes' => 300 * MB_IN_BYTES, 'format' => 'MB' ] ],
+			]
+		);
+
+		$settings = apply_filters( 'plupload_init', [] );
+
+		$this->assertSame( ( 300 * MB_IN_BYTES ) . 'b', $settings['filters']['max_file_size'] );
+	}
 }
