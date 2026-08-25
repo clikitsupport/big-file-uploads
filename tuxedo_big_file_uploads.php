@@ -1138,10 +1138,14 @@ class BigFileUploads {
     }
 
     /**
-     * Per-type limits in bytes for the scope that applies to the current user.
+     * Effective upload limit in bytes for every file type the browser can enforce.
      *
-     * Only the types that actually carry an override are returned, so the front
-     * end leaves everything else to the scope limit.
+     * One entry per offered type, whether or not it carries an override, so the
+     * front-end guard caps each type at exactly what the chunk receiver will
+     * allow. This has to include the types that inherit the scope limit: the
+     * advertised ceiling (get_max_upload_limit()) is the largest override, so
+     * without a per-type entry an inheriting type would be bounded only by that
+     * ceiling and could upload in full before the server rejected it.
      *
      * @return array type => bytes
      * @since 2.2.0
@@ -1153,13 +1157,17 @@ class BigFileUploads {
             return array();
         }
 
-        $scope = $this->get_upload_limit_scope( $settings );
-        $map   = array();
+        $extensions = $this->get_file_type_extensions();
+        $map        = array();
 
         foreach ( array_keys( $this->get_limit_file_types() ) as $type ) {
-            if ( ! empty( $settings['limits'][ $scope ]['types'][ $type ]['bytes'] ) ) {
-                $map[ $type ] = (int) $settings['limits'][ $scope ]['types'][ $type ]['bytes'];
+            if ( empty( $extensions[ $type ] ) ) {
+                continue;
             }
+
+            // Resolve through get_upload_limit() with a representative filename so
+            // the browser cap mirrors the server for every type - override or not.
+            $map[ $type ] = $this->get_upload_limit( 'file.' . $extensions[ $type ][0] );
         }
 
         return $map;
