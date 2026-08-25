@@ -260,6 +260,100 @@ class Test_BFU_Chunk_Receiver extends BFU_TestCase {
 		$this->assertCount( 1, $this->attachments() );
 	}
 
+	/*
+	 * ---------------------------------------------------------------------
+	 * Type spoofing
+	 * ---------------------------------------------------------------------
+	 */
+
+	/**
+	 * The opening bytes of an MP4. Enough for finfo to name the format.
+	 *
+	 * @return string
+	 */
+	private function mp4_head() {
+		return hex2bin( '000000206674797069736f6d0000020069736f6d69736f32617663316d703431' ) . str_repeat( "\0", 512 );
+	}
+
+	/**
+	 * A genuine 1x1 PNG.
+	 *
+	 * @return string
+	 */
+	private function png_bytes() {
+		return base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==' );
+	}
+
+	/**
+	 * Images roomy, video tight: the arrangement worth cheating.
+	 *
+	 * @return void
+	 */
+	private function seed_spoof_limits() {
+		$this->set_settings(
+			[
+				'by_role' => false,
+				'by_type' => true,
+				'limits'  => [
+					'all' => [
+						'bytes'  => 5 * MB_IN_BYTES,
+						'format' => 'MB',
+						'types'  => [
+							'image' => [ 'bytes' => 5 * MB_IN_BYTES, 'format' => 'MB' ],
+							'video' => [ 'bytes' => 100, 'format' => 'MB' ],
+						],
+					],
+				],
+			]
+		);
+	}
+
+	public function test_video_renamed_to_an_image_is_held_to_the_video_limit() {
+		$this->seed_spoof_limits();
+
+		// The name claims a JPEG, which would draw the 5MB image allowance. The bytes say MP4,
+		// and video is capped at 100, so the transfer must be refused rather than let a renamed
+		// file spend an allowance that was never meant for it.
+		$result = $this->post_chunk( 'sneaky.jpg', $this->mp4_head(), 0, 1 );
+
+		$this->assertStringContainsString( 'exceeded the maximum file size', $result['output'] );
+		$this->assertCount( 0, $this->attachments(), 'A spoofed video must not be published.' );
+		$this->assertFileDoesNotExist(
+			$this->bfu()->chunk_path( 'sneaky.jpg' ),
+			'The refused file must not be left behind in temp.'
+		);
+	}
+
+	public function test_a_genuine_image_still_gets_the_image_limit() {
+		$this->seed_spoof_limits();
+
+		// Same settings, honest file. The spoof check must not cost legitimate uploads anything.
+		$this->post_chunk( 'real.png', $this->png_bytes(), 0, 1 );
+
+		$this->assertCount( 1, $this->attachments(), 'A real PNG is well inside the image limit.' );
+	}
+
+	public function test_an_honest_video_is_judged_by_its_own_limit() {
+		$this->set_settings(
+			[
+				'by_role' => false,
+				'by_type' => true,
+				'limits'  => [
+					'all' => [
+						'bytes'  => 5 * MB_IN_BYTES,
+						'format' => 'MB',
+						'types'  => [ 'video' => [ 'bytes' => 5 * MB_IN_BYTES, 'format' => 'MB' ] ],
+					],
+				],
+			]
+		);
+
+		// Correctly named and comfortably inside the video limit: nothing to catch here.
+		$result = $this->post_chunk( 'honest.mp4', $this->mp4_head(), 0, 1 );
+
+		$this->assertStringNotContainsString( 'exceeded the maximum file size', $result['output'] );
+	}
+
 	public function test_limit_gate_follows_the_current_users_role() {
 		$this->set_settings(
 			[
