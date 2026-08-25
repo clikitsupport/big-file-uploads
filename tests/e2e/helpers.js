@@ -71,9 +71,10 @@ async function setUploadLimit( page, amount, unit = 'MB' ) {
 	] );
 
 	// Saving is the precondition for every assertion that follows, so make sure it actually did.
-	// Scoped by text: the subscribe modal has an .alert-success of its own.
+	// The settings page uses .bfu-alert--success; the subscribe modal has its own .alert-success,
+	// so the text filter keeps them apart.
 	await page
-		.locator( '.alert-success', { hasText: 'Settings saved' } )
+		.locator( '.bfu-alert--success', { hasText: 'Settings saved' } )
 		.waitFor( { state: 'visible', timeout: 10_000 } );
 }
 

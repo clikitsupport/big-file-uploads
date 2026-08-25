@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Big File Uploads
  * Description: Enable large file uploads in the built-in WordPress media uploader via multipart uploads, and set maximum upload file size to any value based on user role. Uploads can be as large as available disk space allows.
- * Version:     2.1.10
+ * Version:     2.2.0
  * Author:      Infinite Uploads
  * Author URI:  https://infiniteuploads.com/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=meta
  * Network:     true
@@ -36,7 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     die();
 }
 
-define( 'BIG_FILE_UPLOADS_VERSION', '2.1.10' );
+define( 'BIG_FILE_UPLOADS_VERSION', '2.2.0' );
 
 if ( ! defined( 'BIG_FILE_UPLOADS_PLUGIN_URL' ) ) {
     define( 'BIG_FILE_UPLOADS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -114,6 +114,7 @@ class BigFileUploads {
         //add_filter( 'ext2type', array( $this, 'filter_ext_types' ) );
         add_action( 'wp_ajax_bfu_chunker', array( $this, 'ajax_chunk_receiver' ) );
         add_action( 'post-upload-ui', array( $this, 'upload_output' ) );
+        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_upload_limits' ) );
         add_action( 'enqueue_block_editor_assets', array( $this, 'gutenberg_notice' ) );
         add_filter( 'block_editor_settings_all', array( $this, 'gutenberg_size_filter' ) );
 
@@ -202,6 +203,18 @@ class BigFileUploads {
             define( 'BIG_FILE_UPLOADS_RETRIES', 1 );
         }
 
+        $type_limits = $this->get_type_limit_map();
+        if ( ! empty( $type_limits ) ) {
+            $plupload_settings['filters']['bfu_type_limits'] = $type_limits;
+        }
+
+        // A filter is the only hook plupload gives us that sees every file as it joins the
+        // queue, on both the classic uploader and the media modal. This one never rejects
+        // anything - it just lets the front end know a video is worth commenting on.
+        if ( $this->should_promote_video_hosting() ) {
+            $plupload_settings['filters']['bfu_video_notice'] = true;
+        }
+
         $plupload_settings['url']                      = admin_url( 'admin-ajax.php' );
         $plupload_settings['filters']['max_file_size'] = $this->filter_upload_size_limit( '' ) . 'b';
         $plupload_settings['chunk_size']               = BIG_FILE_UPLOADS_CHUNK_SIZE_KB . 'kb';
@@ -230,7 +243,7 @@ class BigFileUploads {
         $promo->add_notice( [
                 'id'      => 'iu_enhanced_folder_management',
                 'title'   => 'Scale Your WordPress Media Library. Upgrade to Infinite Uploads',
-                'message' => 'Infinite Uploads adds folders, smart organization, cloud storage, CDN delivery, and media scalability - Start 7 Day Free Trial',
+                'message' => 'Infinite Uploads adds cloud storage, CDN delivery, image optimization, folders, smart organization, and media scalability - Start a 7-day free trial.',
                 'type'    => 'info',
                 'delay_days' => 10,
                 'buttons' => [
@@ -286,7 +299,9 @@ class BigFileUploads {
      *
      */
     public function filter_upload_size_limit( $unused ) {
-        return $this->get_upload_limit();
+        // No file is known at this point, so advertise the most permissive limit.
+        // get_upload_limit() applies the per-type rule once the file arrives.
+        return $this->get_max_upload_limit();
     }
 
     /**
@@ -372,7 +387,17 @@ class BigFileUploads {
             ?>
 			(function ($) {
 				'use strict';
-				$(".max-upload-size").after('<span class="bfu-upload-notice"><p class="small"><?php esc_html_e( 'Want unlimited storage space, CDN, video hosting, folders, and enhanced media library search?', 'tuxedo-big-file-uploads' ); ?> <a href="<?php echo esc_url( $this->settings_url() ); ?>#upgrade-modal"><?php esc_html_e( 'Move your media files to the Infinite Uploads cloud', 'tuxedo-big-file-uploads' ); ?>.</a></p><a style="width:12px;height:12px;font-size:12px;vertical-align:middle;" class="dashicons dashicons-no" title="<?php esc_attr_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?>" href="#"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?></span></a></span>');
+				var $bfuLine   = $(".max-upload-size");
+				var $bfuBox    = $bfuLine.closest('.uploader-inline');
+				// The media library puts the size line inside the dashed drop target, where a
+				// notice splits the drop zone in two. There it goes above the whole box.
+				var $bfuNotice = $('<span class="bfu-upload-notice" style="display:inline-block;margin-top:6px;text-align:left;"><span class="small"><?php esc_html_e( 'Want a faster WordPress site and a media library that stays easy to manage as it grows?', 'tuxedo-big-file-uploads' ); ?> <a href="<?php echo esc_url( $this->settings_url() ); ?>#upgrade-modal"><?php esc_html_e( 'See how Infinite Uploads can help', 'tuxedo-big-file-uploads' ); ?>.</a></span><a style="width:12px;height:12px;font-size:12px;vertical-align:middle;margin-left:6px;" class="dashicons dashicons-no" title="<?php esc_attr_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?>" href="#"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss', 'tuxedo-big-file-uploads' ); ?></span></a></span>');
+
+				if ( $bfuBox.length ) {
+					$bfuBox.before( $bfuNotice );
+				} else {
+					$bfuLine.after( $bfuNotice );
+				}
 				$(function () {
 					var $notice = $('.bfu-upload-notice');
 					$notice.children('a.dashicons').on('click', function (event, el) {
@@ -524,8 +549,23 @@ class BigFileUploads {
             error_log( "BFU: Processing \"$fileName\" part $current_part of $chunks as $filePath. $size processed so far." );
         }
 
-        $tuxbfu_max_upload_size = $this->get_upload_limit();
-        if ( file_exists( $filePath ) && filesize( $filePath ) + filesize( $_FILES['async-upload']['tmp_name'] ) > $tuxbfu_max_upload_size ) {
+        $tuxbfu_max_upload_size = $this->get_upload_limit( $fileName );
+        // Measure what is already on disk plus the incoming part. Guarding this on
+        // file_exists() skipped the very first chunk, so anything that arrived in a
+        // single chunk was never weighed here at all.
+        $bfu_received_size = file_exists( $filePath ) ? filesize( $filePath ) : 0;
+
+        // The name above comes from the request, so the extension is whatever the
+        // uploader says it is. Read the format out of the bytes instead and take the
+        // stricter of the two, so a video renamed .jpg cannot spend the image
+        // allowance. The head of the file is enough to identify it, and it is present
+        // from the very first part.
+        $bfu_head       = $bfu_received_size ? $filePath : $_FILES['async-upload']['tmp_name'];
+        $bfu_real_limit = $this->sniffed_upload_limit( $bfu_head, $fileName );
+        if ( $bfu_real_limit > 0 && $bfu_real_limit < $tuxbfu_max_upload_size ) {
+            $tuxbfu_max_upload_size = $bfu_real_limit;
+        }
+        if ( ( $bfu_received_size + filesize( $_FILES['async-upload']['tmp_name'] ) ) > $tuxbfu_max_upload_size ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
                 error_log( "BFU: File size limit exceeded." );
             }
@@ -568,6 +608,37 @@ class BigFileUploads {
             $_FILES['async-upload']['size']     = filesize( $_FILES['async-upload']['tmp_name'] );
             $wp_filetype                        = wp_check_filetype_and_ext( $_FILES['async-upload']['tmp_name'], $_FILES['async-upload']['name'] );
             $_FILES['async-upload']['type']     = $wp_filetype['type'];
+
+            /*
+             * Weigh the finished file against the type WordPress actually detected.
+             *
+             * The per-chunk gate above has to take the uploader's word for the type:
+             * the name arrives in $_REQUEST and a half-written file cannot be sniffed.
+             * On its own that lets someone rename a 2GB video to .jpg and spend the
+             * image allowance on it. The bytes are all on disk by now and the real type
+             * is known, so measure once more and refuse to hand an over-limit file to
+             * WordPress. Falls back to the claimed name when the content could not be
+             * identified, which is a file core is about to reject anyway.
+             */
+            $verified_name = $fileName;
+            if ( ! empty( $wp_filetype['proper_filename'] ) ) {
+                $verified_name = $wp_filetype['proper_filename'];
+            } elseif ( ! empty( $wp_filetype['ext'] ) ) {
+                $verified_name = 'file.' . $wp_filetype['ext'];
+            }
+
+            $verified_limit = $this->get_upload_limit( $verified_name );
+            if ( $verified_limit > 0 && $_FILES['async-upload']['size'] > $verified_limit ) {
+                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                    error_log( "BFU: \"$fileName\" is over the limit for its detected type. Discarding." );
+                }
+
+                @unlink( $filePath );
+
+                // Deliberately the same message the per-chunk gate sends: the user does
+                // not need to be told which check caught them.
+                $this->send_upload_error( __( 'The file size has exceeded the maximum file size setting.', 'tuxedo-big-file-uploads' ), $fileName );
+            }
 
             header( 'Content-Type: text/plain; charset=' . get_option( 'blog_charset' ) );
 
@@ -981,25 +1052,448 @@ class BigFileUploads {
      * @since 2.0
      *
      */
-    function get_upload_limit() {
+    /**
+     * File type groups that can carry their own upload limit.
+     *
+     * Keys match get_file_type(). "other" is deliberately absent: anything that
+     * does not fall into a listed group inherits the scope limit. "code" is
+     * conditional: WordPress refuses css/js/html/php/md uploads out of the box,
+     * so the field only appears where the site has made a code extension
+     * uploadable and a Code limit could actually apply to something.
+     *
+     * @return array type key => translated label
+     * @since 2.2.0
+     */
+    public function get_limit_file_types() {
+        $types = array(
+            'image'    => __( 'Images', 'tuxedo-big-file-uploads' ),
+            'audio'    => __( 'Audio', 'tuxedo-big-file-uploads' ),
+            'video'    => __( 'Video', 'tuxedo-big-file-uploads' ),
+            'document' => __( 'Documents', 'tuxedo-big-file-uploads' ),
+            'archive'  => __( 'Archives', 'tuxedo-big-file-uploads' ),
+        );
+
+        if ( $this->site_allows_code_uploads() ) {
+            $types['code'] = __( 'Code', 'tuxedo-big-file-uploads' );
+        }
+
+        return $types;
+    }
+
+    /**
+     * Whether any "code" extension can currently be uploaded here.
+     *
+     * True only when an upload_mimes filter or ALLOW_UNFILTERED_UPLOADS has
+     * made one of the code extensions acceptable to core for the current user.
+     *
+     * @return bool
+     * @since 2.2.0
+     */
+    public function site_allows_code_uploads() {
+        $extensions = $this->get_file_type_extensions();
+
+        foreach ( $extensions['code'] as $ext ) {
+            $check = wp_check_filetype( 'file.' . $ext );
+            if ( ! empty( $check['type'] ) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * The limit for one file type, resolved for the current user.
+     *
+     * @param  string  $type  File type key.
+     *
+     * @return int Bytes.
+     * @since 2.2.0
+     */
+    public function get_type_upload_limit( $type ) {
+        $resolved = $this->resolve_upload_limit( $type, $this->get_settings() );
+
+        return $resolved['limit'];
+    }
+
+    /**
+     * The limit implied by what a file actually contains, rather than what it is called.
+     *
+     * Only acts on audio and video, and only when the name claims to be neither. Those
+     * are the formats worth smuggling, since they are the large ones, and magic bytes
+     * identify them reliably. Everything else is left alone on purpose: archives and
+     * office documents share containers (a .docx is a zip), and audio and video share
+     * the MP4 one, so a stricter reading there would refuse legitimate uploads.
+     *
+     * @param  string  $path      File to read. The head is enough.
+     * @param  string  $filename  Name the uploader claims.
+     *
+     * @return int Bytes, or 0 when nothing should override the claimed limit.
+     * @since 2.2.0
+     */
+    protected function sniffed_upload_limit( $path, $filename ) {
         $settings = $this->get_settings();
 
-        if ( $settings['by_role'] && is_user_logged_in() ) {
-            $limit = 0;
-            $user  = wp_get_current_user();
-            foreach ( (array) $user->roles as $role ) {
-                if ( isset( $settings['limits'][ $role ]['bytes'] ) && $settings['limits'][ $role ]['bytes'] > $limit ) { //choose the highest limit for the roles they have.
-                    $limit = $settings['limits'][ $role ]['bytes'];
+        if ( empty( $settings['by_type'] ) || ! function_exists( 'finfo_open' ) || ! is_readable( $path ) ) {
+            return 0;
+        }
+
+        $claimed = $this->get_file_type( $filename );
+        if ( 'audio' === $claimed || 'video' === $claimed ) {
+            return 0;
+        }
+
+        $finfo = @finfo_open( FILEINFO_MIME_TYPE );
+        if ( ! $finfo ) {
+            return 0;
+        }
+
+        $mime = @finfo_file( $finfo, $path );
+        finfo_close( $finfo );
+
+        if ( ! is_string( $mime ) ) {
+            return 0;
+        }
+
+        foreach ( array( 'audio' => 'audio/', 'video' => 'video/' ) as $type => $prefix ) {
+            if ( 0 === strpos( $mime, $prefix ) ) {
+                return $this->get_type_upload_limit( $type );
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Every settings scope that applies to the current user.
+     *
+     * A multi-role user is measured against all of their roles, not one of them.
+     * Picking a single winning role up front worked while a scope carried one
+     * number, but with per-type limits the role holding the best base limit is
+     * not necessarily the one holding the best limit for the file in hand.
+     *
+     * Roles with no configured limit are left out so they cannot drag a user
+     * down to the all-users fallback. When that leaves nothing, the fallback is
+     * the answer.
+     *
+     * @param  array|null  $settings
+     *
+     * @return string[] Role keys, or array( 'all' ).
+     * @since 2.2.0
+     */
+    public function get_upload_limit_scopes( $settings = null ) {
+        if ( null === $settings ) {
+            $settings = $this->get_settings();
+        }
+
+        if ( empty( $settings['by_role'] ) || ! is_user_logged_in() ) {
+            return array( 'all' );
+        }
+
+        $scopes = array();
+        $user   = wp_get_current_user();
+        foreach ( (array) $user->roles as $role ) {
+            if ( ! empty( $settings['limits'][ $role ]['bytes'] ) ) {
+                $scopes[] = $role;
+            }
+        }
+
+        return $scopes ? $scopes : array( 'all' );
+    }
+
+    /**
+     * What one scope allows for one file type.
+     *
+     * A blank per-type field means the type inherits that scope's own limit, so
+     * this is the scope's effective ceiling for the type rather than just its
+     * override. Comparing effective ceilings is what keeps "most permissive
+     * wins" honest: a role that overrides nothing still offers its base limit,
+     * and must be able to win with it.
+     *
+     * @param  string  $scope     Role key, or "all".
+     * @param  string  $type      File type key, or '' when no file is known yet.
+     * @param  array   $settings  Settings from get_settings().
+     *
+     * @return int Bytes, or 0 when the scope has no limit configured.
+     * @since 2.2.0
+     */
+    private function get_scope_limit( $scope, $type, $settings ) {
+        $limit = isset( $settings['limits'][ $scope ]['bytes'] ) ? (int) $settings['limits'][ $scope ]['bytes'] : 0;
+
+        if ( ! $limit ) {
+            return 0;
+        }
+
+        // Only currently-offered types apply, so an override saved while a type
+        // was available (e.g. code) goes dormant with it instead of enforcing an
+        // invisible limit.
+        if ( ! empty( $settings['by_type'] ) && '' !== $type
+             && array_key_exists( $type, $this->get_limit_file_types() )
+             && ! empty( $settings['limits'][ $scope ]['types'][ $type ]['bytes'] ) ) {
+            $limit = (int) $settings['limits'][ $scope ]['types'][ $type ]['bytes'];
+        }
+
+        return $limit;
+    }
+
+    /**
+     * The most permissive limit across the user's scopes, and which one gave it.
+     *
+     * @param  string  $type      File type key, or '' for the plain scope limit.
+     * @param  array   $settings  Settings from get_settings().
+     *
+     * @return array{limit:int,scope:string}
+     * @since 2.2.0
+     */
+    private function resolve_upload_limit( $type, $settings ) {
+        $limit = 0;
+        $scope = 'all';
+
+        foreach ( $this->get_upload_limit_scopes( $settings ) as $candidate ) {
+            $candidate_limit = $this->get_scope_limit( $candidate, $type, $settings );
+
+            if ( $candidate_limit > $limit ) {
+                $limit = $candidate_limit;
+                $scope = $candidate;
+            }
+        }
+
+        if ( ! $limit ) {
+            $limit = $this->get_scope_limit( 'all', $type, $settings );
+            $scope = 'all';
+        }
+
+        return array( 'limit' => (int) $limit, 'scope' => $scope );
+    }
+
+    /**
+     * Which settings scope supplies the current user's plain upload limit.
+     *
+     * @param  array|null  $settings
+     *
+     * @return string A role key, or "all".
+     * @since 2.2.0
+     */
+    public function get_upload_limit_scope( $settings = null ) {
+        if ( null === $settings ) {
+            $settings = $this->get_settings();
+        }
+
+        $resolved = $this->resolve_upload_limit( '', $settings );
+
+        return $resolved['scope'];
+    }
+
+    /**
+     * Maximum upload size in bytes.
+     *
+     * Pass a filename to get the limit that actually applies to it. Without one
+     * the caller gets the scope limit, which is what the pre-upload screens want
+     * because no file has been chosen yet.
+     *
+     * @param  string  $filename  Optional. File the limit is being resolved for.
+     *
+     * @return int
+     */
+    function get_upload_limit( $filename = '' ) {
+        $settings = $this->get_settings();
+        $type     = '' !== $filename ? $this->get_file_type( $filename ) : '';
+        $resolved = $this->resolve_upload_limit( $type, $settings );
+        $limit    = $resolved['limit'];
+        $scope    = $resolved['scope'];
+
+        /**
+         * Filter the upload limit that applies to a file.
+         *
+         * @param  int     $limit     Limit in bytes.
+         * @param  string  $filename  File being checked, or '' when none is known yet.
+         * @param  string  $scope     Settings scope in play: a role key, or "all".
+         *
+         * @since 2.2.0
+         */
+        return (int) apply_filters( 'bfu_upload_limit', $limit, $filename, $scope );
+    }
+
+    /**
+     * Effective upload limit in bytes for every file type the browser can enforce.
+     *
+     * One entry per offered type, whether or not it carries an override, so the
+     * front-end guard caps each type at exactly what the chunk receiver will
+     * allow. This has to include the types that inherit the scope limit: the
+     * advertised ceiling (get_max_upload_limit()) is the largest override, so
+     * without a per-type entry an inheriting type would be bounded only by that
+     * ceiling and could upload in full before the server rejected it.
+     *
+     * @return array type => bytes
+     * @since 2.2.0
+     */
+    public function get_type_limit_map() {
+        $settings = $this->get_settings();
+
+        if ( empty( $settings['by_type'] ) ) {
+            return array();
+        }
+
+        $extensions = $this->get_file_type_extensions();
+        $map        = array();
+
+        foreach ( array_keys( $this->get_limit_file_types() ) as $type ) {
+            if ( empty( $extensions[ $type ] ) ) {
+                continue;
+            }
+
+            // Resolve through get_upload_limit() with a representative filename so
+            // the browser cap mirrors the server for every type - override or not.
+            // An inheriting type must be included too: the advertised ceiling is
+            // the largest override, so without an entry it would ride that ceiling
+            // in the browser and upload in full before the server rejected it.
+            $map[ $type ] = $this->get_upload_limit( 'file.' . $extensions[ $type ][0] );
+        }
+
+        return $map;
+    }
+
+    /**
+     * Whether to point the user at Infinite Uploads video hosting.
+     *
+     * Video is the one file type where a bigger upload limit is the wrong answer: the file
+     * still lands on the host's disk and still streams from it. Anyone already on Infinite
+     * Uploads has that covered, and anyone who cannot install plugins cannot act on it, so
+     * neither is worth interrupting.
+     *
+     * @return bool
+     * @since 2.2.0
+     */
+    public function should_promote_video_hosting() {
+        $promote = ! $this->is_infinite_uploads_active() && current_user_can( $this->capability );
+
+        /**
+         * Filter whether the uploader nudges toward Infinite Uploads video hosting.
+         *
+         * @param  bool  $promote  Whether to show the notice when a video is queued.
+         *
+         * @since 2.2.0
+         */
+        return (bool) apply_filters( 'bfu_promote_video_hosting', $promote );
+    }
+
+    /**
+     * Load the front-end guard for per-type limits.
+     *
+     * @since 2.2.0
+     */
+    public function enqueue_upload_limits() {
+        $type_limits   = $this->get_type_limit_map();
+        $promote_video = $this->should_promote_video_hosting();
+
+        if ( empty( $type_limits ) && ! $promote_video ) {
+            return;
+        }
+
+        wp_enqueue_script(
+            'bfu-upload-limits',
+            plugins_url( 'assets/js/upload-limits.js', __FILE__ ),
+            array( 'plupload' ),
+            BIG_FILE_UPLOADS_VERSION
+        );
+
+        $data = array(
+            'extensions' => $this->get_file_type_map(),
+            'labels'     => $this->get_limit_file_types(),
+            'strings'    => array(
+                /* translators: 1: file name, 2: file type label, 3: size limit */
+                'too_large' => __( '%1$s is bigger than the %2$s limit of %3$s.', 'tuxedo-big-file-uploads' ),
+            ),
+        );
+
+        if ( $promote_video ) {
+            $data['video'] = array(
+                'message' => __( 'Heads up: hosting video in WordPress slows your site and fills your storage.', 'tuxedo-big-file-uploads' ),
+                'link'    => __( 'Stream it with Infinite Uploads Video Hosting', 'tuxedo-big-file-uploads' ),
+                'url'     => $this->api_url( 'features/video-hosting/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_term=video_hosting&utm_content=uploader' ),
+            );
+        }
+
+        wp_localize_script( 'bfu-upload-limits', 'bfuUploadLimits', $data );
+    }
+
+    /**
+     * Render the optional per-file-type limits for one settings scope.
+     *
+     * Shared by the all-users block and every role block so the two cannot drift.
+     * An empty field means the file type inherits the scope limit.
+     *
+     * @param  string  $scope_key  "all" or a role key.
+     * @param  array   $settings   Settings already run through get_settings( true ).
+     *
+     * @since 2.2.0
+     */
+    public function render_type_limits( $scope_key, $settings ) {
+        $types = $this->get_limit_file_types();
+        ?>
+        <div class="bfu-types">
+            <span class="bfu-types__heading">
+                <?php esc_html_e( 'Limits by file type', 'tuxedo-big-file-uploads' ); ?>
+                <small><?php esc_html_e( 'optional - leave blank to use the limit above', 'tuxedo-big-file-uploads' ); ?></small>
+            </span>
+            <div class="bfu-types__grid">
+                <?php foreach ( $types as $type_key => $type_label ) :
+                    $type_id    = 'upload-limit-type-' . $scope_key . '-' . $type_key;
+                    $type_value = isset( $settings['limits'][ $scope_key ]['types'][ $type_key ]['bytes'] ) ? $settings['limits'][ $scope_key ]['types'][ $type_key ]['bytes'] : '';
+                    $type_fmt   = isset( $settings['limits'][ $scope_key ]['types'][ $type_key ]['format'] ) ? $settings['limits'][ $scope_key ]['types'][ $type_key ]['format'] : 'MB';
+                    ?>
+                    <div class="bfu-type">
+                        <label class="bfu-type__label" for="<?php echo esc_attr( $type_id ); ?>"><?php echo esc_html( $type_label ); ?></label>
+                        <div class="input-group bfu-input-limit bfu-input-limit--sm">
+                            <input name="upload_limit_type[<?php echo esc_attr( $scope_key ); ?>][<?php echo esc_attr( $type_key ); ?>]"
+                                   id="<?php echo esc_attr( $type_id ); ?>"
+                                   type="number" step="0.1" min="0"
+                                   value="<?php echo esc_attr( $type_value ); ?>"
+                                   placeholder="<?php esc_attr_e( 'Inherit', 'tuxedo-big-file-uploads' ); ?>"
+                                   class="form-control bfu-limit__input"
+                                   aria-label="<?php printf( esc_attr__( '%s upload limit', 'tuxedo-big-file-uploads' ), $type_label ); ?>">
+                            <div class="input-group-append bfu-limit__unit">
+                                <select name="upload_limit_type_format[<?php echo esc_attr( $scope_key ); ?>][<?php echo esc_attr( $type_key ); ?>]">
+                                    <option <?php selected( $type_fmt, 'MB' ); ?> value="MB">MB</option>
+                                    <option <?php selected( $type_fmt, 'GB' ); ?> value="GB">GB</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Highest limit any file could hit under the current settings.
+     *
+     * Front-end validation runs before a file is chosen, so it has to allow the
+     * largest per-type limit through; the per-type rule is then applied for real
+     * when the upload reaches the server.
+     *
+     * @return int
+     * @since 2.2.0
+     */
+    public function get_max_upload_limit() {
+        $settings = $this->get_settings();
+        $limit    = $this->get_upload_limit();
+
+        if ( ! empty( $settings['by_type'] ) ) {
+            // Walk the canonical type list, not the stored array: rows persist in
+            // the option after a type stops being offered, and a stale override
+            // must not inflate the advertised ceiling.
+            foreach ( array_keys( $this->get_limit_file_types() ) as $type ) {
+                $resolved = $this->resolve_upload_limit( $type, $settings );
+
+                if ( $resolved['limit'] > $limit ) {
+                    $limit = $resolved['limit'];
                 }
             }
-            if ( $limit ) {
-                return $limit;
-            } else {
-                return $settings['limits']['all']['bytes'];
-            }
-        } else {
-            return $settings['limits']['all']['bytes'];
         }
+
+        return (int) $limit;
     }
 
     /**
@@ -1019,6 +1513,10 @@ class BigFileUploads {
 
         if ( ! isset( $settings['by_role'] ) ) {
             $settings['by_role'] = false;
+        }
+
+        if ( ! isset( $settings['by_type'] ) ) {
+            $settings['by_type'] = false;
         }
 
         if ( ! isset( $settings['limits']['all']['bytes'] ) ) {
@@ -1046,10 +1544,36 @@ class BigFileUploads {
             }
         }
 
+        // Every scope carries a slot per file type. 0 bytes means "no override",
+        // which is what an empty field saves as, so the scope limit is used.
+        $file_types = array_keys( $this->get_limit_file_types() );
+        foreach ( array_keys( $settings['limits'] ) as $scope_key ) {
+            foreach ( $file_types as $type_key ) {
+                if ( ! isset( $settings['limits'][ $scope_key ]['types'][ $type_key ]['bytes'] ) ) {
+                    $settings['limits'][ $scope_key ]['types'][ $type_key ]['bytes'] = 0;
+                }
+                if ( ! isset( $settings['limits'][ $scope_key ]['types'][ $type_key ]['format'] ) ) {
+                    $settings['limits'][ $scope_key ]['types'][ $type_key ]['format'] = isset( $settings['limits'][ $scope_key ]['format'] ) ? $settings['limits'][ $scope_key ]['format'] : 'MB';
+                }
+            }
+        }
+
         if ( $format ) {
             foreach ( $settings['limits'] as $role_key => $value ) {
+                if ( ! isset( $value['bytes'], $value['format'] ) ) {
+                    continue;
+                }
                 $divisor                                  = ( $value['format'] == 'MB' ? MB_IN_BYTES : GB_IN_BYTES );
                 $settings['limits'][ $role_key ]['bytes'] = round( $value['bytes'] / $divisor, 1 );
+
+                foreach ( (array) $value['types'] as $type_key => $type_value ) {
+                    if ( empty( $type_value['bytes'] ) ) {
+                        $settings['limits'][ $role_key ]['types'][ $type_key ]['bytes'] = '';
+                        continue;
+                    }
+                    $type_divisor = ( $type_value['format'] == 'MB' ? MB_IN_BYTES : GB_IN_BYTES );
+                    $settings['limits'][ $role_key ]['types'][ $type_key ]['bytes'] = round( $type_value['bytes'] / $type_divisor, 1 );
+                }
             }
         }
 
@@ -1257,6 +1781,46 @@ class BigFileUploads {
                 }
                 $settings['by_role'] = false;
             }
+
+            // Per-type overrides. An empty field clears the override and the file
+            // type falls back to the scope limit, so blank is a valid value here
+            // and is_valid_upload_limit() only guards what was actually entered.
+            $settings['by_type'] = isset( $_POST['by_type'] );
+            if ( $settings['by_type'] ) {
+                foreach ( array_keys( $settings['limits'] ) as $scope_key ) {
+                    // The inactive scope's fields are disabled, so they never post.
+                    // Skipping it keeps its saved overrides instead of reading the
+                    // absent fields as "cleared".
+                    if ( ! isset( $_POST['upload_limit_type'][ $scope_key ] ) ) {
+                        continue;
+                    }
+
+                    foreach ( array_keys( $this->get_limit_file_types() ) as $type_key ) {
+                        $raw = isset( $_POST['upload_limit_type'][ $scope_key ][ $type_key ] )
+                            ? trim( sanitize_text_field( wp_unslash( $_POST['upload_limit_type'][ $scope_key ][ $type_key ] ) ) )
+                            : '';
+
+                        if ( '' === $raw ) {
+                            $settings['limits'][ $scope_key ]['types'][ $type_key ]['bytes'] = 0;
+                            continue;
+                        }
+
+                        if ( ! $this->is_valid_upload_limit( $raw ) ) {
+                            $save_error = true;
+                            continue;
+                        }
+
+                        $type_format = isset( $_POST['upload_limit_type_format'][ $scope_key ][ $type_key ] )
+                            ? sanitize_text_field( wp_unslash( $_POST['upload_limit_type_format'][ $scope_key ][ $type_key ] ) )
+                            : 'MB';
+                        $type_format = ( 'GB' === $type_format ) ? 'GB' : 'MB';
+
+                        $settings['limits'][ $scope_key ]['types'][ $type_key ]['bytes']  = absint( $raw * ( 'MB' === $type_format ? MB_IN_BYTES : GB_IN_BYTES ) );
+                        $settings['limits'][ $scope_key ]['types'][ $type_key ]['format'] = $type_format;
+                    }
+                }
+            }
+
             if ( ! $save_error ) {
                 update_site_option( 'tuxbfu_settings', $settings );
                 $save_success = true;
@@ -1281,10 +1845,10 @@ class BigFileUploads {
 
             if ( $save_success ) {
                 ?>
-                <div class="alert alert-success mt-2 alert-dismissible fade show" role="alert">
-                    <?php
-                    esc_html_e( 'Settings saved!', 'tuxedo-big-file-uploads' ); ?>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <div class="alert alert-dismissible fade show bfu-alert bfu-alert--success" role="alert">
+                    <svg class="bfu-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span class="bfu-alert__text"><?php esc_html_e( 'Settings saved!', 'tuxedo-big-file-uploads' ); ?></span>
+                    <button type="button" class="close bfu-alert__close" data-dismiss="alert" aria-label="<?php esc_attr_e( 'Close', 'tuxedo-big-file-uploads' ); ?>">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -1292,17 +1856,17 @@ class BigFileUploads {
             }
 
             if ( $save_error ) { ?>
-                <div class="alert alert-danger mt-2 alert-dismissible fade show" role="alert">
-                    <?php
-                    esc_html_e( 'Please choose a maximum size for each option.', 'tuxedo-big-file-uploads' ); ?>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <div class="alert alert-dismissible fade show bfu-alert bfu-alert--error" role="alert">
+                    <svg class="bfu-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span class="bfu-alert__text"><?php esc_html_e( 'Please choose a maximum size for each option.', 'tuxedo-big-file-uploads' ); ?></span>
+                    <button type="button" class="close bfu-alert__close" data-dismiss="alert" aria-label="<?php esc_attr_e( 'Close', 'tuxedo-big-file-uploads' ); ?>">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <?php
             } ?>
 
-            <div id="bfu-error" class="alert alert-danger mt-1" role="alert"></div>
+            <div id="bfu-error" class="alert bfu-alert bfu-alert--error" role="alert"></div>
 
             <?php
             $settings = $this->get_settings( true );
@@ -1567,8 +2131,8 @@ class BigFileUploads {
                 'icon'     => '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
             ),
             array(
-                'title'    => __( 'CDN Delivery', 'tuxedo-big-file-uploads' ),
-                'desc'     => __( 'Deliver media via global CDN for faster sites.', 'tuxedo-big-file-uploads' ),
+                'title'    => __( 'CDN Delivery and Image Optimization', 'tuxedo-big-file-uploads' ),
+                'desc'     => __( 'Deliver optimized media via a global CDN for faster sites.', 'tuxedo-big-file-uploads' ),
                 'heading'  => __( 'Deliver your media faster worldwide with Global CDN', 'tuxedo-big-file-uploads' ),
                 'subtitle' => __( 'Try Infinite Uploads for free for 7 days and serve your media through a global CDN.', 'tuxedo-big-file-uploads' ),
                 'icon'     => '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
@@ -1857,7 +2421,32 @@ class BigFileUploads {
      *
      */
     public function get_file_type( $filename ) {
-        $extensions = [
+        $extensions = $this->get_file_type_extensions();
+
+        $ext = preg_replace( '/^.+?\.([^.]+)$/', '$1', $filename );
+        if ( ! empty( $ext ) ) {
+            $ext = strtolower( $ext );
+            foreach ( $extensions as $type => $exts ) {
+                if ( in_array( $ext, $exts, true ) ) {
+                    return $type;
+                }
+            }
+        }
+
+        return 'other';
+    }
+
+    /**
+     * Canonical extension table, grouped by file type.
+     *
+     * Split out of get_file_type() so the same table can be handed to the
+     * front end instead of being duplicated in JavaScript.
+     *
+     * @return array type => list of extensions
+     * @since 2.2.0
+     */
+    public function get_file_type_extensions() {
+        return [
                 'image'    => [
                         'jpg',
                         'jpeg',
@@ -1972,19 +2561,30 @@ class BigFileUploads {
                 ],
                 'code'     => [ 'css', 'htm', 'html', 'php', 'js', 'md' ],
         ];
+    }
 
-        $ext = preg_replace( '/^.+?\.([^.]+)$/', '$1', $filename );
-        if ( ! empty( $ext ) ) {
-            $ext = strtolower( $ext );
-            foreach ( $extensions as $type => $exts ) {
-                if ( in_array( $ext, $exts, true ) ) {
-                    return $type;
-                }
+    /**
+     * Flat extension => type map for the file types that can carry a limit.
+     *
+     * @return array
+     * @since 2.2.0
+     */
+    public function get_file_type_map() {
+        $map        = array();
+        $limitable  = $this->get_limit_file_types();
+        foreach ( $this->get_file_type_extensions() as $type => $extensions ) {
+            if ( ! isset( $limitable[ $type ] ) ) {
+                continue;
+            }
+            foreach ( $extensions as $ext ) {
+                $map[ $ext ] = $type;
             }
         }
 
-        return 'other';
+        return $map;
     }
+
+
 
     /**
      * Get root upload dir for multisite. Based on _wp_upload_dir().

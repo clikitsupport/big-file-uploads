@@ -195,7 +195,7 @@ class Big_File_Uploads_Review_Notice {
 		// Get current user data.
 		$current_user = wp_get_current_user();
 		// Make sure we have name.
-		$name = empty( $current_user->display_name ) ? __( 'friend', $this->domain ) : ucwords( $current_user->display_name );
+		$name = empty( $current_user->display_name ) ? __( 'friend', 'tuxedo-big-file-uploads' ) : ucwords( $current_user->display_name );
 		?>
 		<style>
 			#bfu-reviews-notice {
@@ -247,7 +247,7 @@ class Big_File_Uploads_Review_Notice {
 				<?php
 				printf(
 				// translators: %1$s Current user's name, %2$s Plugin name, %3$d.
-					esc_html__( 'Hey %1$s, %2$s has been helping you upload large files for a while now – that’s awesome! If you love it, would you rate it? Giving your favorite free plugins a 5-star rating helps developers like us maintain and build free tools. Thank you for the support!', $this->domain ),
+					esc_html__( 'Hey %1$s, %2$s has been helping you upload large files for a while now – that’s awesome! If you love it, would you rate it? Giving your favorite free plugins a 5-star rating helps developers like us maintain and build free tools. Thank you for the support!', 'tuxedo-big-file-uploads' ),
 					esc_html( $name ),
 					'<strong>' . esc_html( $this->name ) . '</strong>'
 				);
@@ -255,15 +255,15 @@ class Big_File_Uploads_Review_Notice {
 			</p>
 			<p id="bfu-review-buttons">
 				<a href="https://wordpress.org/support/plugin/<?php echo esc_html( $this->slug ); ?>/reviews/#new-post" target="_blank">
-					<?php esc_html_e( 'You deserve it!', $this->domain ); ?>
+					<?php esc_html_e( 'You deserve it!', 'tuxedo-big-file-uploads' ); ?>
 				</a>
 				<a class="bfu-btn-later" href="<?php echo esc_url( wp_nonce_url( add_query_arg( $this->key( 'action' ), 'later' ), 'bfu_rate' ) ); ?>">
-					<?php esc_html_e( 'Maybe later', $this->domain ); ?>
+					<?php esc_html_e( 'Maybe later', 'tuxedo-big-file-uploads' ); ?>
 				</a>
 			</p>
 				<p>
 					<a class="bfu-btn-dismiss" href="<?php echo esc_url( wp_nonce_url( add_query_arg( $this->key( 'action' ), 'dismiss' ), 'bfu_rate' ) ); ?>">
-						<?php esc_html_e( 'Leave me alone', $this->domain ); ?>
+						<?php esc_html_e( 'Leave me alone', 'tuxedo-big-file-uploads' ); ?>
 					</a>
 				</p>
 			</div>

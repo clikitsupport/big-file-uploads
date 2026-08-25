@@ -80,4 +80,13 @@ class Test_BFU_Settings_Page_IU_Active extends BFU_TestCase {
 	public function test_upgrade_modal_still_renders_when_infinite_uploads_is_active() {
 		$this->assertStringContainsString( 'id="upgrade-modal"', $this->render() );
 	}
+
+	public function test_video_notice_is_silent_when_infinite_uploads_is_active() {
+		// The whole point of the notice is to get video off the host's disk. IU already
+		// does that, so recommending it to a customer who bought it reads as a bug.
+		$settings = apply_filters( 'plupload_init', [] );
+
+		$this->assertArrayNotHasKey( 'bfu_video_notice', $settings['filters'] );
+		$this->assertFalse( $this->bfu()->should_promote_video_hosting() );
+	}
 }

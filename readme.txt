@@ -3,7 +3,7 @@ Contributors: bww
 Tags: increase file size limit, increase upload limit, max upload file size, post max size, upload limit, file upload, files uploader, ftp, video uploader, AJAX
 Requires at least: 5.3
 Tested up to: 7.1
-Stable tag: 2.1.10
+Stable tag: 2.2.0
 Requires PHP: 5.6
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -29,6 +29,8 @@ No messing with Apache/PHP initialization files or settings. Just activate the p
 - Control maximum upload size limit
 - Get smart recommendations based on available space in your temporary uploads directory
 - Set maximum file size for each user role with upload capabilities (Administrator, Editor, Author)
+- Set a separate maximum file size by file type - images, audio, video, documents, and archives
+- Get a heads up when you upload video, which is better streamed from the cloud than served off your host
 - Set the max file size in Megabytes (MB) or Gigabytes (GB)
 - Works with any server or hosting provider
 - Upload any size file directly to a connected Infinite Uploads cloud account
@@ -49,6 +51,10 @@ Fix “The Uploaded File Exceeds the upload_max_filesize” error that is so com
 ### Set Upload Size Based on User Role
 
 Big File Uploads lets you set a new maximum upload size limit for all uploads or customize the maximum file upload size for each of your user roles with upload capabilities. Set custom upload limits for Administrators, Editors, Authors, or even custom roles.
+
+### Set Upload Size by File Type
+
+Not every file needs the same limit. Turn on "Customize by file type" to give images, audio, video, documents, and archives their own maximum upload size, plus code files on sites that allow them. Fill in only the types you want to treat differently - cap images at 10 MB while still allowing 5 GB video. Any type you leave blank keeps your main upload limit. Per-type limits work alongside per-role limits - set them once for all users, or separately for each role.
 
 ### Uploads Disk Utility
 
@@ -88,8 +94,6 @@ Learn how to manage large files on our blog:
 
 [Contribute to the plugin's development on Github!](https://github.com/uglyrobot/big-file-uploads)
 
-Want to use your WordPress site to train an AI chatbot to provide instant answers to your customers? Check out our sister project [DocsBot AI](https://docsbot.ai/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=bfu_readme)!
-
 Enjoy!
 
 == Contact and Credits ==
@@ -103,6 +107,10 @@ Big File Uploads was originally "Tuxedo Big File Uploads" created by Trevor Ande
 = What is the biggest file size that can be uploaded? =
 
 Uploads can be as large as available disk space for temporary files allows, or up to the maximum upload size limit you set in Settings -> Big File Uploads -> Uploading Files.
+
+= Can I set a different upload limit for videos than for images? =
+
+Yes. Turn on "Customize by file type" in Settings -> Big File Uploads and give images, audio, video, documents, and archives their own maximum size. Any type you leave blank uses the main limit, and the per-type limits can be set once for all users or separately for each user role.
 
 = Is Big File Uploads a free plugin? =
 
@@ -133,7 +141,21 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
+2.2.0 [2026-08-26]
+----------------------------------------------------------------------
+
+- New: Set a separate maximum upload size per file type - images, audio, video, documents, archives, and code - for all users or for each role. Leave a field blank to use the main limit.
+- New: bfu_upload_limit filter for developers to adjust the resolved limit per file.
+- New: Queueing a video in the media uploader now shows a short note that video is better streamed from Infinite Uploads Video Hosting than stored in WordPress. Hidden when Infinite Uploads is active, and switchable with the bfu_promote_video_hosting filter.
+- New: Redesigned settings screen with a step-by-step guide and per-role sections.
+- Fix: The upload size limit is now enforced on the very first chunk, so a single-chunk upload can no longer exceed it.
+- Fix: Review notice strings are now translatable; removed a stale duplicate translation template.
+- Update: The size field now labels the hosting limit as "Host limit" so a saved value is not mistaken for a reverted one.
+- Update: Refreshed the Infinite Uploads recommendation copy.
+- Translation updates.
+
 2.1.10 [2026-08-24]
+----------------------------------------------------------------------
 
 - Update: WordPress 7.1 compatibility check.
 

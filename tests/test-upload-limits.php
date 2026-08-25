@@ -194,6 +194,143 @@ class Test_BFU_Upload_Limits extends BFU_TestCase {
 
 	/*
 	 * ---------------------------------------------------------------------
+	 * by_role and by_type together
+	 * ---------------------------------------------------------------------
+	 */
+
+	/**
+	 * Role limits carrying per-type overrides.
+	 *
+	 * Deliberately crossed over: Author holds the better base limit, Editor the better video
+	 * limit. Any resolver that elects one winning role and then reads that role's types can
+	 * only ever get one of the two right.
+	 *
+	 * @return array
+	 */
+	private function seed_role_type_limits() {
+		$settings = [
+			'by_role' => true,
+			'by_type' => true,
+			'limits'  => [
+				'all'    => [ 'bytes' => 750 * MB_IN_BYTES, 'format' => 'MB' ],
+				'editor' => [
+					'bytes'  => 1 * GB_IN_BYTES,
+					'format' => 'GB',
+					'types'  => [ 'video' => [ 'bytes' => 500 * MB_IN_BYTES, 'format' => 'MB' ] ],
+				],
+				'author' => [
+					'bytes'  => 2 * GB_IN_BYTES,
+					'format' => 'GB',
+					'types'  => [ 'video' => [ 'bytes' => 50 * MB_IN_BYTES, 'format' => 'MB' ] ],
+				],
+			],
+		];
+
+		$this->set_settings( $settings );
+
+		return $settings;
+	}
+
+	public function test_multi_role_user_gets_the_most_permissive_per_type_limit() {
+		$this->seed_role_type_limits();
+
+		$this->login_with_roles( [ 'author', 'editor' ] );
+
+		$this->assertSame(
+			500 * MB_IN_BYTES,
+			$this->bfu()->get_upload_limit( 'webinar.mp4' ),
+			'Editor allows 500MB of video, so an Editor who is also an Author must not be held to the Author 50MB.'
+		);
+	}
+
+	public function test_per_type_resolution_does_not_depend_on_role_order() {
+		$this->seed_role_type_limits();
+
+		$this->login_with_roles( [ 'editor', 'author' ] );
+
+		$this->assertSame( 500 * MB_IN_BYTES, $this->bfu()->get_upload_limit( 'webinar.mp4' ) );
+	}
+
+	public function test_role_without_an_override_wins_the_type_with_its_base_limit() {
+		// Editor leaves video blank, which means video inherits the Editor 1GB. That is more
+		// generous than the Author explicit 50MB, so 1GB has to win.
+		$this->set_settings( [
+			'by_role' => true,
+			'by_type' => true,
+			'limits'  => [
+				'all'    => [ 'bytes' => 750 * MB_IN_BYTES, 'format' => 'MB' ],
+				'editor' => [ 'bytes' => 1 * GB_IN_BYTES, 'format' => 'GB' ],
+				'author' => [
+					'bytes'  => 100 * MB_IN_BYTES,
+					'format' => 'MB',
+					'types'  => [ 'video' => [ 'bytes' => 50 * MB_IN_BYTES, 'format' => 'MB' ] ],
+				],
+			],
+		] );
+
+		$this->login_with_roles( [ 'author', 'editor' ] );
+
+		$this->assertSame(
+			1 * GB_IN_BYTES,
+			$this->bfu()->get_upload_limit( 'webinar.mp4' ),
+			'A blank per-type field inherits that role base limit, so the role can still win the type with it.'
+		);
+	}
+
+	public function test_type_nobody_overrides_falls_back_to_the_best_base_limit() {
+		$this->seed_role_type_limits();
+
+		$this->login_with_roles( [ 'author', 'editor' ] );
+
+		$this->assertSame(
+			2 * GB_IN_BYTES,
+			$this->bfu()->get_upload_limit( 'photo.jpg' ),
+			'No role overrides images, so the most permissive base limit applies.'
+		);
+	}
+
+	public function test_single_role_user_is_unaffected_by_another_roles_override() {
+		$this->seed_role_type_limits();
+
+		$this->login_as( 'author' );
+
+		$this->assertSame(
+			50 * MB_IN_BYTES,
+			$this->bfu()->get_upload_limit( 'webinar.mp4' ),
+			'An Author on their own is still held to the Author video limit.'
+		);
+	}
+
+	public function test_browser_type_map_carries_the_most_permissive_limit() {
+		$this->seed_role_type_limits();
+
+		$this->login_with_roles( [ 'author', 'editor' ] );
+
+		$map = $this->bfu()->get_type_limit_map();
+
+		// The map is what rejects a file in the browser. If it kept the stricter number the user
+		// would be blocked client side no matter what the server would have allowed.
+		$this->assertSame( 500 * MB_IN_BYTES, $map['video'] );
+
+		// A type nobody overrides still needs an entry: the advertised ceiling is the largest
+		// limit any type can reach (here 2GB), so without one an image would ride that ceiling in
+		// the browser and upload in full before the server rejected it at the base. It is capped at
+		// the most permissive base across the user's roles.
+		$this->assertSame( 2 * GB_IN_BYTES, $map['image'] );
+	}
+
+	public function test_advertised_ceiling_covers_the_best_limit_across_roles() {
+		$this->seed_role_type_limits();
+
+		$this->login_with_roles( [ 'author', 'editor' ] );
+
+		// upload_size_limit has to clear the highest limit any of the user's roles can reach,
+		// or core rejects the file before the per-type rule is ever consulted.
+		$this->assertSame( 2 * GB_IN_BYTES, $this->bfu()->get_max_upload_limit() );
+	}
+
+	/*
+	 * ---------------------------------------------------------------------
 	 * Defaults for missing / malformed stored settings
 	 * ---------------------------------------------------------------------
 	 */
@@ -425,5 +562,152 @@ class Test_BFU_Upload_Limits extends BFU_TestCase {
 		$editor_settings = apply_filters( 'block_editor_settings_all', [], null );
 
 		$this->assertSame( 64 * MB_IN_BYTES, $editor_settings['maxUploadFileSize'] );
+	}
+
+	public function test_plupload_settings_flag_the_video_notice() {
+		$this->login_as( 'administrator' );
+
+		$settings = apply_filters( 'plupload_init', [] );
+
+		$this->assertTrue(
+			$settings['filters']['bfu_video_notice'],
+			'The uploader needs the flag before it can spot a queued video.'
+		);
+	}
+
+	public function test_video_notice_is_withheld_from_users_who_cannot_act_on_it() {
+		// An author can upload video but cannot install Infinite Uploads, so the nudge is
+		// just noise in their way.
+		$this->login_as( 'author' );
+
+		$settings = apply_filters( 'plupload_init', [] );
+
+		$this->assertArrayNotHasKey( 'bfu_video_notice', $settings['filters'] );
+	}
+
+	public function test_video_notice_can_be_switched_off_by_filter() {
+		$this->login_as( 'administrator' );
+
+		add_filter( 'bfu_promote_video_hosting', '__return_false' );
+		$settings = apply_filters( 'plupload_init', [] );
+		remove_filter( 'bfu_promote_video_hosting', '__return_false' );
+
+		$this->assertArrayNotHasKey( 'bfu_video_notice', $settings['filters'] );
+	}
+
+	public function test_video_notice_never_blocks_the_upload_limit_filters() {
+		// The notice rides alongside the size filters; it must not disturb them.
+		$this->login_as( 'administrator' );
+		$this->set_settings(
+			[
+				'by_role' => false,
+				'limits'  => [ 'all' => [ 'bytes' => 300 * MB_IN_BYTES, 'format' => 'MB' ] ],
+			]
+		);
+
+		$settings = apply_filters( 'plupload_init', [] );
+
+		$this->assertSame( ( 300 * MB_IN_BYTES ) . 'b', $settings['filters']['max_file_size'] );
+	}
+
+	/*
+	 * ---------------------------------------------------------------------
+	 * Per-type limit map: the browser cap must mirror server enforcement
+	 * ---------------------------------------------------------------------
+	 */
+
+	/**
+	 * Settings where one type carries an override larger than the base, so the advertised ceiling
+	 * (the largest override) sits above what every inheriting type is actually allowed.
+	 *
+	 * @return void
+	 */
+	private function seed_type_limits() {
+		$this->set_settings(
+			[
+				'by_role' => false,
+				'by_type' => true,
+				'limits'  => [
+					'all' => [
+						'bytes'  => 100 * MB_IN_BYTES,
+						'format' => 'MB',
+						'types'  => [ 'video' => [ 'bytes' => 200 * MB_IN_BYTES, 'format' => 'MB' ] ],
+					],
+				],
+			]
+		);
+	}
+
+	public function test_type_limit_map_covers_every_offered_type() {
+		$this->login_as( 'administrator' );
+		$this->seed_type_limits();
+
+		$map = $this->bfu()->get_type_limit_map();
+
+		foreach ( array_keys( $this->bfu()->get_limit_file_types() ) as $type ) {
+			$this->assertArrayHasKey(
+				$type,
+				$map,
+				"$type must be in the map, or it rides the advertised ceiling in the browser."
+			);
+		}
+	}
+
+	public function test_inheriting_type_is_capped_at_the_base_not_the_largest_override() {
+		// Regression test for the bug where a type with no override (here, image) was advertised to
+		// plupload only through the global ceiling - which had been raised to the 200MB video
+		// override - so a 150MB image uploaded in full before the server rejected it at 100MB.
+		$this->login_as( 'administrator' );
+		$this->seed_type_limits();
+
+		$map = $this->bfu()->get_type_limit_map();
+
+		$this->assertSame( 100 * MB_IN_BYTES, $map['image'], 'An inheriting type must be capped at the base limit.' );
+		$this->assertSame( 200 * MB_IN_BYTES, $map['video'], 'An overridden type keeps its override.' );
+	}
+
+	public function test_type_limit_map_entry_matches_server_enforcement_for_every_type() {
+		// The whole point of the map: what the browser blocks equals what the chunk receiver blocks.
+		$this->login_as( 'administrator' );
+		$this->seed_type_limits();
+
+		$map        = $this->bfu()->get_type_limit_map();
+		$extensions = $this->bfu()->get_file_type_extensions();
+
+		foreach ( $map as $type => $bytes ) {
+			$filename = 'file.' . $extensions[ $type ][0];
+			$this->assertSame(
+				$this->bfu()->get_upload_limit( $filename ),
+				$bytes,
+				"The browser cap for $type must equal the server limit for a $type file."
+			);
+		}
+	}
+
+	public function test_advertised_ceiling_stays_the_largest_override() {
+		// The fix must not shrink the ceiling: a video up to its 200MB override must still be
+		// offered to the browser, even though other types are capped lower.
+		$this->login_as( 'administrator' );
+		$this->seed_type_limits();
+
+		$this->assertSame( 200 * MB_IN_BYTES, $this->bfu()->get_max_upload_limit() );
+
+		$settings = apply_filters( 'plupload_init', [] );
+		$this->assertSame( ( 200 * MB_IN_BYTES ) . 'b', $settings['filters']['max_file_size'] );
+		$this->assertSame( 200 * MB_IN_BYTES, $settings['filters']['bfu_type_limits']['video'] );
+		$this->assertSame( 100 * MB_IN_BYTES, $settings['filters']['bfu_type_limits']['image'] );
+	}
+
+	public function test_type_limit_map_is_empty_when_by_type_is_off() {
+		$this->login_as( 'administrator' );
+		$this->set_settings(
+			[
+				'by_role' => false,
+				'by_type' => false,
+				'limits'  => [ 'all' => [ 'bytes' => 100 * MB_IN_BYTES, 'format' => 'MB' ] ],
+			]
+		);
+
+		$this->assertSame( [], $this->bfu()->get_type_limit_map() );
 	}
 }
