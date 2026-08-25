@@ -6,6 +6,7 @@ const fs = require( 'fs' );
 const os = require( 'os' );
 const path = require( 'path' );
 const crypto = require( 'crypto' );
+const zlib = require( 'zlib' );
 
 const WP_USERNAME = process.env.WP_USERNAME || 'admin';
 const WP_PASSWORD = process.env.WP_PASSWORD || 'password';
@@ -115,6 +116,94 @@ function makeTextFile( sizeBytes, name ) {
 }
 
 /**
+ * CRC32, as PNG chunks require it.
+ *
+ * @param {Buffer} buf
+ * @return {number}
+ */
+function crc32( buf ) {
+	let crc = 0xffffffff;
+	for ( let i = 0; i < buf.length; i++ ) {
+		let c = ( crc ^ buf[ i ] ) & 0xff;
+		for ( let k = 0; k < 8; k++ ) {
+			c = c & 1 ? 0xedb88320 ^ ( c >>> 1 ) : c >>> 1;
+		}
+		crc = ( crc >>> 8 ) ^ c;
+	}
+	return ( crc ^ 0xffffffff ) >>> 0;
+}
+
+/**
+ * Assemble one PNG chunk (length + type + data + CRC).
+ *
+ * @param {string} type
+ * @param {Buffer} data
+ * @return {Buffer}
+ */
+function pngChunk( type, data ) {
+	const len = Buffer.alloc( 4 );
+	len.writeUInt32BE( data.length, 0 );
+	const typeBuf = Buffer.from( type, 'ascii' );
+	const crc = Buffer.alloc( 4 );
+	crc.writeUInt32BE( crc32( Buffer.concat( [ typeBuf, data ] ) ), 0 );
+	return Buffer.concat( [ len, typeBuf, data, crc ] );
+}
+
+/**
+ * Write a valid, decodable PNG whose pixels are random noise, so it is genuinely image data that
+ * WordPress accepts as `image/png` yet does not compress below the target size.
+ *
+ * Built by hand rather than pulled from a library so the suite has no image dependency, and sized
+ * to clear the server upload limit: this is the fixture for proving that a *large image* still
+ * rides BFU's chunked path on the media library, rather than being diverted into WordPress 7.1's
+ * client-side media processing (which reprocesses images and only runs in the block editor).
+ *
+ * The IDAT is stored uncompressed (zlib level 0), which keeps generation fast and the byte count
+ * predictable — the file is ~ width * height * 3 bytes.
+ *
+ * @param {number} width
+ * @param {number} height
+ * @param {string} name
+ *
+ * @return {{path: string, size: number, sha256: string, width: number, height: number}}
+ */
+function makeImageFile( width, height, name ) {
+	const signature = Buffer.from( [ 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a ] );
+
+	const ihdr = Buffer.alloc( 13 );
+	ihdr.writeUInt32BE( width, 0 );
+	ihdr.writeUInt32BE( height, 4 );
+	ihdr[ 8 ] = 8; // 8 bits per channel
+	ihdr[ 9 ] = 2; // colour type 2 = RGB
+
+	// One filter byte (0 = none) per scanline, then random RGB pixels.
+	const rowLen = 1 + width * 3;
+	const raw = crypto.randomBytes( rowLen * height );
+	for ( let y = 0; y < height; y++ ) {
+		raw[ y * rowLen ] = 0;
+	}
+
+	const png = Buffer.concat( [
+		signature,
+		pngChunk( 'IHDR', ihdr ),
+		pngChunk( 'IDAT', zlib.deflateSync( raw, { level: 0 } ) ),
+		pngChunk( 'IEND', Buffer.alloc( 0 ) ),
+	] );
+
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'bfu-img-' ) );
+	const filePath = path.join( dir, name );
+	fs.writeFileSync( filePath, png );
+
+	return {
+		path: filePath,
+		size: png.length,
+		sha256: crypto.createHash( 'sha256' ).update( png ).digest( 'hex' ),
+		width,
+		height,
+	};
+}
+
+/**
  * Hand a file to plupload on the Add New Media screen.
  *
  * Targets the input plupload's html5 runtime injects, not the `#async-upload` field belonging to
@@ -181,6 +270,33 @@ function recordChunkUploads( page ) {
 }
 
 /**
+ * Record calls to the media REST endpoint.
+ *
+ * WordPress 7.1's client-side media processing uploads through `POST /wp/v2/media` (and its
+ * sideload sibling) rather than the plupload/admin-ajax path BFU hooks. Counting these tells a test
+ * whether an upload was diverted away from BFU — for a media-library upload the expectation is that
+ * there are none.
+ *
+ * @param {import('@playwright/test').Page} page
+ *
+ * @return {{calls: () => string[]}}
+ */
+function recordMediaRestUploads( page ) {
+	const calls = [];
+
+	page.on( 'request', ( request ) => {
+		if ( request.method() !== 'POST' ) {
+			return;
+		}
+		if ( /\/wp-json\/wp\/v2\/media/.test( request.url() ) || /rest_route=[^&]*wp%2Fv2%2Fmedia/.test( request.url() ) ) {
+			calls.push( request.url() );
+		}
+	} );
+
+	return { calls: () => calls };
+}
+
+/**
  * Wait for an upload to be accepted and return the attachment it produced.
  *
  * Success shows up as the Edit link WordPress swaps into the media item once the server has taken
@@ -206,7 +322,9 @@ module.exports = {
 	login,
 	setUploadLimit,
 	makeTextFile,
+	makeImageFile,
 	uploadViaPlupload,
 	recordChunkUploads,
+	recordMediaRestUploads,
 	waitForUploadedAttachmentId,
 };

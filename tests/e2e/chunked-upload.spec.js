@@ -18,8 +18,10 @@ const {
 	login,
 	setUploadLimit,
 	makeTextFile,
+	makeImageFile,
 	uploadViaPlupload,
 	recordChunkUploads,
+	recordMediaRestUploads,
 	waitForUploadedAttachmentId,
 } = require( './helpers' );
 
@@ -104,5 +106,46 @@ test.describe( 'Large file chunked upload', () => {
 			uploads.sizes().length,
 			'An over-limit file should be rejected in the browser, without uploading anything.'
 		).toBe( 0 );
+	} );
+
+	test( 'a large image still rides the chunked path, not client-side media processing', async ( { page } ) => {
+		// WordPress 7.1 added client-side media processing (CSMP): images can be resized/converted
+		// in the browser and uploaded via the REST media endpoint. It runs in the block editor, not
+		// the media library, so a large image dropped on Add New Media must still go through BFU's
+		// plupload chunking and reach the server byte-for-byte, untouched. If a future release ever
+		// diverts media-library image uploads into CSMP, this is the test that catches it: the file
+		// would arrive reprocessed (not byte-identical) or over REST (no BFU chunks).
+		await setUploadLimit( page, 100, 'MB' );
+
+		const image = makeImageFile( 1400, 900, 'big-photo.png' ); // ~3.7MB of random pixels.
+		expect( image.size ).toBeGreaterThan( SERVER_UPLOAD_LIMIT_BYTES );
+
+		const chunks = recordChunkUploads( page );
+		const rest = recordMediaRestUploads( page );
+
+		await uploadViaPlupload( page, image.path );
+
+		const attachmentId = await waitForUploadedAttachmentId( page );
+		await expect( page.locator( '#media-items .error-div' ) ).toHaveCount( 0 );
+		await chunks.settle();
+
+		expect(
+			chunks.sizes().length,
+			'The image should have been chunked by BFU.'
+		).toBeGreaterThan( 1 );
+		expect(
+			rest.calls().length,
+			'A media-library image must not be diverted to the REST media endpoint by CSMP.'
+		).toBe( 0 );
+
+		const media = await ( await page.request.get( `/wp-json/wp/v2/media/${ attachmentId }` ) ).json();
+		expect( media.mime_type ).toBe( 'image/png' );
+
+		const body = await ( await page.request.get( media.source_url ) ).body();
+		expect( body.length, 'The stored image is the wrong size.' ).toBe( image.size );
+		expect(
+			crypto.createHash( 'sha256' ).update( body ).digest( 'hex' ),
+			'The image was reprocessed (not byte-identical) — CSMP likely intercepted it.'
+		).toBe( image.sha256 );
 	} );
 } );

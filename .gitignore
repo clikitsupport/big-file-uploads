@@ -10,3 +10,4 @@ phpunit-multisite.xml
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+.wp-env.override.json
