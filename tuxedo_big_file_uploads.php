@@ -554,6 +554,17 @@ class BigFileUploads {
         // file_exists() skipped the very first chunk, so anything that arrived in a
         // single chunk was never weighed here at all.
         $bfu_received_size = file_exists( $filePath ) ? filesize( $filePath ) : 0;
+
+        // The name above comes from the request, so the extension is whatever the
+        // uploader says it is. Read the format out of the bytes instead and take the
+        // stricter of the two, so a video renamed .jpg cannot spend the image
+        // allowance. The head of the file is enough to identify it, and it is present
+        // from the very first part.
+        $bfu_head       = $bfu_received_size ? $filePath : $_FILES['async-upload']['tmp_name'];
+        $bfu_real_limit = $this->sniffed_upload_limit( $bfu_head, $fileName );
+        if ( $bfu_real_limit > 0 && $bfu_real_limit < $tuxbfu_max_upload_size ) {
+            $tuxbfu_max_upload_size = $bfu_real_limit;
+        }
         if ( ( $bfu_received_size + filesize( $_FILES['async-upload']['tmp_name'] ) ) > $tuxbfu_max_upload_size ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
                 error_log( "BFU: File size limit exceeded." );
@@ -597,6 +608,37 @@ class BigFileUploads {
             $_FILES['async-upload']['size']     = filesize( $_FILES['async-upload']['tmp_name'] );
             $wp_filetype                        = wp_check_filetype_and_ext( $_FILES['async-upload']['tmp_name'], $_FILES['async-upload']['name'] );
             $_FILES['async-upload']['type']     = $wp_filetype['type'];
+
+            /*
+             * Weigh the finished file against the type WordPress actually detected.
+             *
+             * The per-chunk gate above has to take the uploader's word for the type:
+             * the name arrives in $_REQUEST and a half-written file cannot be sniffed.
+             * On its own that lets someone rename a 2GB video to .jpg and spend the
+             * image allowance on it. The bytes are all on disk by now and the real type
+             * is known, so measure once more and refuse to hand an over-limit file to
+             * WordPress. Falls back to the claimed name when the content could not be
+             * identified, which is a file core is about to reject anyway.
+             */
+            $verified_name = $fileName;
+            if ( ! empty( $wp_filetype['proper_filename'] ) ) {
+                $verified_name = $wp_filetype['proper_filename'];
+            } elseif ( ! empty( $wp_filetype['ext'] ) ) {
+                $verified_name = 'file.' . $wp_filetype['ext'];
+            }
+
+            $verified_limit = $this->get_upload_limit( $verified_name );
+            if ( $verified_limit > 0 && $_FILES['async-upload']['size'] > $verified_limit ) {
+                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                    error_log( "BFU: \"$fileName\" is over the limit for its detected type. Discarding." );
+                }
+
+                @unlink( $filePath );
+
+                // Deliberately the same message the per-chunk gate sends: the user does
+                // not need to be told which check caught them.
+                $this->send_upload_error( __( 'The file size has exceeded the maximum file size setting.', 'tuxedo-big-file-uploads' ), $fileName );
+            }
 
             header( 'Content-Type: text/plain; charset=' . get_option( 'blog_charset' ) );
 
@@ -1058,6 +1100,68 @@ class BigFileUploads {
         }
 
         return false;
+    }
+
+    /**
+     * The limit for one file type, resolved for the current user.
+     *
+     * @param  string  $type  File type key.
+     *
+     * @return int Bytes.
+     * @since 2.2.0
+     */
+    public function get_type_upload_limit( $type ) {
+        $resolved = $this->resolve_upload_limit( $type, $this->get_settings() );
+
+        return $resolved['limit'];
+    }
+
+    /**
+     * The limit implied by what a file actually contains, rather than what it is called.
+     *
+     * Only acts on audio and video, and only when the name claims to be neither. Those
+     * are the formats worth smuggling, since they are the large ones, and magic bytes
+     * identify them reliably. Everything else is left alone on purpose: archives and
+     * office documents share containers (a .docx is a zip), and audio and video share
+     * the MP4 one, so a stricter reading there would refuse legitimate uploads.
+     *
+     * @param  string  $path      File to read. The head is enough.
+     * @param  string  $filename  Name the uploader claims.
+     *
+     * @return int Bytes, or 0 when nothing should override the claimed limit.
+     * @since 2.2.0
+     */
+    protected function sniffed_upload_limit( $path, $filename ) {
+        $settings = $this->get_settings();
+
+        if ( empty( $settings['by_type'] ) || ! function_exists( 'finfo_open' ) || ! is_readable( $path ) ) {
+            return 0;
+        }
+
+        $claimed = $this->get_file_type( $filename );
+        if ( 'audio' === $claimed || 'video' === $claimed ) {
+            return 0;
+        }
+
+        $finfo = @finfo_open( FILEINFO_MIME_TYPE );
+        if ( ! $finfo ) {
+            return 0;
+        }
+
+        $mime = @finfo_file( $finfo, $path );
+        finfo_close( $finfo );
+
+        if ( ! is_string( $mime ) ) {
+            return 0;
+        }
+
+        foreach ( array( 'audio' => 'audio/', 'video' => 'video/' ) as $type => $prefix ) {
+            if ( 0 === strpos( $mime, $prefix ) ) {
+                return $this->get_type_upload_limit( $type );
+            }
+        }
+
+        return 0;
     }
 
     /**
