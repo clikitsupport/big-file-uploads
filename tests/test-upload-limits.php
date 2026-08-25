@@ -194,6 +194,138 @@ class Test_BFU_Upload_Limits extends BFU_TestCase {
 
 	/*
 	 * ---------------------------------------------------------------------
+	 * by_role and by_type together
+	 * ---------------------------------------------------------------------
+	 */
+
+	/**
+	 * Role limits carrying per-type overrides.
+	 *
+	 * Deliberately crossed over: Author holds the better base limit, Editor the better video
+	 * limit. Any resolver that elects one winning role and then reads that role's types can
+	 * only ever get one of the two right.
+	 *
+	 * @return array
+	 */
+	private function seed_role_type_limits() {
+		$settings = [
+			'by_role' => true,
+			'by_type' => true,
+			'limits'  => [
+				'all'    => [ 'bytes' => 750 * MB_IN_BYTES, 'format' => 'MB' ],
+				'editor' => [
+					'bytes'  => 1 * GB_IN_BYTES,
+					'format' => 'GB',
+					'types'  => [ 'video' => [ 'bytes' => 500 * MB_IN_BYTES, 'format' => 'MB' ] ],
+				],
+				'author' => [
+					'bytes'  => 2 * GB_IN_BYTES,
+					'format' => 'GB',
+					'types'  => [ 'video' => [ 'bytes' => 50 * MB_IN_BYTES, 'format' => 'MB' ] ],
+				],
+			],
+		];
+
+		$this->set_settings( $settings );
+
+		return $settings;
+	}
+
+	public function test_multi_role_user_gets_the_most_permissive_per_type_limit() {
+		$this->seed_role_type_limits();
+
+		$this->login_with_roles( [ 'author', 'editor' ] );
+
+		$this->assertSame(
+			500 * MB_IN_BYTES,
+			$this->bfu()->get_upload_limit( 'webinar.mp4' ),
+			'Editor allows 500MB of video, so an Editor who is also an Author must not be held to the Author 50MB.'
+		);
+	}
+
+	public function test_per_type_resolution_does_not_depend_on_role_order() {
+		$this->seed_role_type_limits();
+
+		$this->login_with_roles( [ 'editor', 'author' ] );
+
+		$this->assertSame( 500 * MB_IN_BYTES, $this->bfu()->get_upload_limit( 'webinar.mp4' ) );
+	}
+
+	public function test_role_without_an_override_wins_the_type_with_its_base_limit() {
+		// Editor leaves video blank, which means video inherits the Editor 1GB. That is more
+		// generous than the Author explicit 50MB, so 1GB has to win.
+		$this->set_settings( [
+			'by_role' => true,
+			'by_type' => true,
+			'limits'  => [
+				'all'    => [ 'bytes' => 750 * MB_IN_BYTES, 'format' => 'MB' ],
+				'editor' => [ 'bytes' => 1 * GB_IN_BYTES, 'format' => 'GB' ],
+				'author' => [
+					'bytes'  => 100 * MB_IN_BYTES,
+					'format' => 'MB',
+					'types'  => [ 'video' => [ 'bytes' => 50 * MB_IN_BYTES, 'format' => 'MB' ] ],
+				],
+			],
+		] );
+
+		$this->login_with_roles( [ 'author', 'editor' ] );
+
+		$this->assertSame(
+			1 * GB_IN_BYTES,
+			$this->bfu()->get_upload_limit( 'webinar.mp4' ),
+			'A blank per-type field inherits that role base limit, so the role can still win the type with it.'
+		);
+	}
+
+	public function test_type_nobody_overrides_falls_back_to_the_best_base_limit() {
+		$this->seed_role_type_limits();
+
+		$this->login_with_roles( [ 'author', 'editor' ] );
+
+		$this->assertSame(
+			2 * GB_IN_BYTES,
+			$this->bfu()->get_upload_limit( 'photo.jpg' ),
+			'No role overrides images, so the most permissive base limit applies.'
+		);
+	}
+
+	public function test_single_role_user_is_unaffected_by_another_roles_override() {
+		$this->seed_role_type_limits();
+
+		$this->login_as( 'author' );
+
+		$this->assertSame(
+			50 * MB_IN_BYTES,
+			$this->bfu()->get_upload_limit( 'webinar.mp4' ),
+			'An Author on their own is still held to the Author video limit.'
+		);
+	}
+
+	public function test_browser_type_map_carries_the_most_permissive_limit() {
+		$this->seed_role_type_limits();
+
+		$this->login_with_roles( [ 'author', 'editor' ] );
+
+		$map = $this->bfu()->get_type_limit_map();
+
+		// The map is what rejects a file in the browser. If it kept the stricter number the user
+		// would be blocked client side no matter what the server would have allowed.
+		$this->assertSame( 500 * MB_IN_BYTES, $map['video'] );
+		$this->assertArrayNotHasKey( 'image', $map, 'Types nobody overrides are left to the scope limit.' );
+	}
+
+	public function test_advertised_ceiling_covers_the_best_limit_across_roles() {
+		$this->seed_role_type_limits();
+
+		$this->login_with_roles( [ 'author', 'editor' ] );
+
+		// upload_size_limit has to clear the highest limit any of the user's roles can reach,
+		// or core rejects the file before the per-type rule is ever consulted.
+		$this->assertSame( 2 * GB_IN_BYTES, $this->bfu()->get_max_upload_limit() );
+	}
+
+	/*
+	 * ---------------------------------------------------------------------
 	 * Defaults for missing / malformed stored settings
 	 * ---------------------------------------------------------------------
 	 */
