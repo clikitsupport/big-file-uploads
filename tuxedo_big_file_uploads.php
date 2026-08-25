@@ -1061,14 +1061,113 @@ class BigFileUploads {
     }
 
     /**
-     * Which settings scope applies to the current user: a role key, or "all".
+     * Every settings scope that applies to the current user.
      *
-     * When limits are set per role and the user has several, the most permissive
-     * one wins, matching the behaviour before per-role limits gained file types.
+     * A multi-role user is measured against all of their roles, not one of them.
+     * Picking a single winning role up front worked while a scope carried one
+     * number, but with per-type limits the role holding the best base limit is
+     * not necessarily the one holding the best limit for the file in hand.
+     *
+     * Roles with no configured limit are left out so they cannot drag a user
+     * down to the all-users fallback. When that leaves nothing, the fallback is
+     * the answer.
      *
      * @param  array|null  $settings
      *
-     * @return string
+     * @return string[] Role keys, or array( 'all' ).
+     * @since 2.2.0
+     */
+    public function get_upload_limit_scopes( $settings = null ) {
+        if ( null === $settings ) {
+            $settings = $this->get_settings();
+        }
+
+        if ( empty( $settings['by_role'] ) || ! is_user_logged_in() ) {
+            return array( 'all' );
+        }
+
+        $scopes = array();
+        $user   = wp_get_current_user();
+        foreach ( (array) $user->roles as $role ) {
+            if ( ! empty( $settings['limits'][ $role ]['bytes'] ) ) {
+                $scopes[] = $role;
+            }
+        }
+
+        return $scopes ? $scopes : array( 'all' );
+    }
+
+    /**
+     * What one scope allows for one file type.
+     *
+     * A blank per-type field means the type inherits that scope's own limit, so
+     * this is the scope's effective ceiling for the type rather than just its
+     * override. Comparing effective ceilings is what keeps "most permissive
+     * wins" honest: a role that overrides nothing still offers its base limit,
+     * and must be able to win with it.
+     *
+     * @param  string  $scope     Role key, or "all".
+     * @param  string  $type      File type key, or '' when no file is known yet.
+     * @param  array   $settings  Settings from get_settings().
+     *
+     * @return int Bytes, or 0 when the scope has no limit configured.
+     * @since 2.2.0
+     */
+    private function get_scope_limit( $scope, $type, $settings ) {
+        $limit = isset( $settings['limits'][ $scope ]['bytes'] ) ? (int) $settings['limits'][ $scope ]['bytes'] : 0;
+
+        if ( ! $limit ) {
+            return 0;
+        }
+
+        // Only currently-offered types apply, so an override saved while a type
+        // was available (e.g. code) goes dormant with it instead of enforcing an
+        // invisible limit.
+        if ( ! empty( $settings['by_type'] ) && '' !== $type
+             && array_key_exists( $type, $this->get_limit_file_types() )
+             && ! empty( $settings['limits'][ $scope ]['types'][ $type ]['bytes'] ) ) {
+            $limit = (int) $settings['limits'][ $scope ]['types'][ $type ]['bytes'];
+        }
+
+        return $limit;
+    }
+
+    /**
+     * The most permissive limit across the user's scopes, and which one gave it.
+     *
+     * @param  string  $type      File type key, or '' for the plain scope limit.
+     * @param  array   $settings  Settings from get_settings().
+     *
+     * @return array{limit:int,scope:string}
+     * @since 2.2.0
+     */
+    private function resolve_upload_limit( $type, $settings ) {
+        $limit = 0;
+        $scope = 'all';
+
+        foreach ( $this->get_upload_limit_scopes( $settings ) as $candidate ) {
+            $candidate_limit = $this->get_scope_limit( $candidate, $type, $settings );
+
+            if ( $candidate_limit > $limit ) {
+                $limit = $candidate_limit;
+                $scope = $candidate;
+            }
+        }
+
+        if ( ! $limit ) {
+            $limit = $this->get_scope_limit( 'all', $type, $settings );
+            $scope = 'all';
+        }
+
+        return array( 'limit' => (int) $limit, 'scope' => $scope );
+    }
+
+    /**
+     * Which settings scope supplies the current user's plain upload limit.
+     *
+     * @param  array|null  $settings
+     *
+     * @return string A role key, or "all".
      * @since 2.2.0
      */
     public function get_upload_limit_scope( $settings = null ) {
@@ -1076,21 +1175,9 @@ class BigFileUploads {
             $settings = $this->get_settings();
         }
 
-        if ( empty( $settings['by_role'] ) || ! is_user_logged_in() ) {
-            return 'all';
-        }
+        $resolved = $this->resolve_upload_limit( '', $settings );
 
-        $scope = 'all';
-        $limit = 0;
-        $user  = wp_get_current_user();
-        foreach ( (array) $user->roles as $role ) {
-            if ( isset( $settings['limits'][ $role ]['bytes'] ) && $settings['limits'][ $role ]['bytes'] > $limit ) {
-                $limit = $settings['limits'][ $role ]['bytes'];
-                $scope = $role;
-            }
-        }
-
-        return $scope;
+        return $resolved['scope'];
     }
 
     /**
@@ -1106,24 +1193,10 @@ class BigFileUploads {
      */
     function get_upload_limit( $filename = '' ) {
         $settings = $this->get_settings();
-        $scope    = $this->get_upload_limit_scope( $settings );
-
-        $limit = isset( $settings['limits'][ $scope ]['bytes'] ) ? $settings['limits'][ $scope ]['bytes'] : 0;
-        if ( ! $limit ) {
-            $limit = $settings['limits']['all']['bytes'];
-            $scope = 'all';
-        }
-
-        if ( ! empty( $settings['by_type'] ) && '' !== $filename ) {
-            $type = $this->get_file_type( $filename );
-            // Only currently-offered types apply, so an override saved while a
-            // type was available (e.g. code) goes dormant with it instead of
-            // enforcing an invisible limit.
-            if ( array_key_exists( $type, $this->get_limit_file_types() )
-                 && ! empty( $settings['limits'][ $scope ]['types'][ $type ]['bytes'] ) ) {
-                $limit = $settings['limits'][ $scope ]['types'][ $type ]['bytes'];
-            }
-        }
+        $type     = '' !== $filename ? $this->get_file_type( $filename ) : '';
+        $resolved = $this->resolve_upload_limit( $type, $settings );
+        $limit    = $resolved['limit'];
+        $scope    = $resolved['scope'];
 
         /**
          * Filter the upload limit that applies to a file.
@@ -1167,6 +1240,9 @@ class BigFileUploads {
 
             // Resolve through get_upload_limit() with a representative filename so
             // the browser cap mirrors the server for every type - override or not.
+            // An inheriting type must be included too: the advertised ceiling is
+            // the largest override, so without an entry it would ride that ceiling
+            // in the browser and upload in full before the server rejected it.
             $map[ $type ] = $this->get_upload_limit( 'file.' . $extensions[ $type ][0] );
         }
 
@@ -1298,7 +1374,6 @@ class BigFileUploads {
      */
     public function get_max_upload_limit() {
         $settings = $this->get_settings();
-        $scope    = $this->get_upload_limit_scope( $settings );
         $limit    = $this->get_upload_limit();
 
         if ( ! empty( $settings['by_type'] ) ) {
@@ -1306,9 +1381,10 @@ class BigFileUploads {
             // the option after a type stops being offered, and a stale override
             // must not inflate the advertised ceiling.
             foreach ( array_keys( $this->get_limit_file_types() ) as $type ) {
-                if ( ! empty( $settings['limits'][ $scope ]['types'][ $type ]['bytes'] )
-                     && $settings['limits'][ $scope ]['types'][ $type ]['bytes'] > $limit ) {
-                    $limit = $settings['limits'][ $scope ]['types'][ $type ]['bytes'];
+                $resolved = $this->resolve_upload_limit( $type, $settings );
+
+                if ( $resolved['limit'] > $limit ) {
+                    $limit = $resolved['limit'];
                 }
             }
         }
