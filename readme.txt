@@ -141,7 +141,7 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
-2.2.0 [2026-08-19]
+2.2.0 [2026-08-26]
 ----------------------------------------------------------------------
 
 - New: Set a separate maximum upload size per file type - images, audio, video, documents, archives, and code - for all users or for each role. Leave a field blank to use the main limit.

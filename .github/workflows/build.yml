@@ -1,0 +1,108 @@
+name: Build Plugin ZIP
+
+# Manual, on-demand build. Use the "Run workflow" button and pick any branch;
+# the run produces a downloadable, installable plugin ZIP for that branch so it
+# can be tested in WordPress before a release goes out on WordPress.org.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build installable ZIP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the selected branch
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        # Only needed for the parse check below.
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          coverage: none
+          tools: none
+
+      - name: Collect build info
+        id: info
+        run: |
+          set -euo pipefail
+          slug='tuxedo-big-file-uploads'
+
+          # Version from the plugin header, e.g. "2.2.0".
+          version=$(grep -iE '^[[:space:]]*\*[[:space:]]*Version:' tuxedo_big_file_uploads.php \
+            | head -1 | sed -E 's/.*Version:[[:space:]]*//; s/[[:space:]]*$//')
+          version=${version:-unknown}
+
+          # Branch name with slashes flattened so it is safe in a filename.
+          branch=${GITHUB_REF_NAME//\//-}
+          sha=${GITHUB_SHA::7}
+
+          name="${slug}-${version}-${branch}-${sha}"
+          {
+            echo "slug=${slug}"
+            echo "version=${version}"
+            echo "name=${name}"
+            echo "zip=${name}.zip"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Assemble the package (honouring .distignore)
+        run: |
+          set -euo pipefail
+          slug='${{ steps.info.outputs.slug }}'
+          mkdir -p "dist/${slug}"
+
+          # The checkout only contains committed files, and .distignore lists the
+          # dev-only ones (tests, vendor, tooling, CI). The extra excludes are
+          # belt-and-suspenders for the repo's own .git and the dist dir itself.
+          rsync -a \
+            --exclude-from='.distignore' \
+            --exclude '.git' \
+            --exclude '.DS_Store' \
+            --exclude 'dist' \
+            ./ "dist/${slug}/"
+
+          echo "Packaged files:"
+          ( cd dist && find "${slug}" -type f | sort )
+
+      - name: Parse-check the packaged PHP
+        # A branch that does not even parse should not produce a "testable" build.
+        run: find dist -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+
+      - name: Create the ZIP
+        run: |
+          set -euo pipefail
+          cd dist
+          # Zip the folder itself, so the archive's top level is the plugin
+          # directory WordPress expects (tuxedo-big-file-uploads/...).
+          zip -rq "../${{ steps.info.outputs.zip }}" '${{ steps.info.outputs.slug }}'
+
+      - name: Upload the ZIP as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.info.outputs.name }}
+          path: ${{ steps.info.outputs.zip }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Write install instructions to the run summary
+        run: |
+          {
+            echo "## ${{ steps.info.outputs.slug }} — build ready"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Version | \`${{ steps.info.outputs.version }}\` |"
+            echo "| Branch | \`${GITHUB_REF_NAME}\` |"
+            echo "| Commit | \`${GITHUB_SHA::7}\` |"
+            echo ""
+            echo "### How to test it"
+            echo "1. In this run, open **Artifacts** at the bottom and download **${{ steps.info.outputs.name }}**."
+            echo "2. GitHub wraps artifacts in a zip, so **unzip it once** to get \`${{ steps.info.outputs.zip }}\`."
+            echo "3. In WordPress: **Plugins → Add New → Upload Plugin**, choose \`${{ steps.info.outputs.zip }}\`, and install."
+            echo ""
+            echo "It installs into the \`${{ steps.info.outputs.slug }}\` folder — the same slug as the released plugin — so it upgrades an existing copy in place."
+          } >> "$GITHUB_STEP_SUMMARY"
