@@ -1897,9 +1897,12 @@ class BigFileUploads {
         require( dirname( __FILE__ ) . '/templates/footer.php' );
 
         if ( ! $this->is_infinite_uploads_active() ) {
+            // Read before the scan modal: its report questions are only asked while the subscribe
+            // modal will follow, since that form is the only place the answers are sent.
+            $dismissed = get_user_option( 'bfu_subscribe_notice_dismissed', get_current_user_id() );
+
             require( dirname( __FILE__ ) . '/templates/modal-scan.php' );
 
-            $dismissed = get_user_option( 'bfu_subscribe_notice_dismissed', get_current_user_id() );
             if ( ! $dismissed ) {
                 require( dirname( __FILE__ ) . '/templates/modal-subscribe.php' );
             }
@@ -2021,6 +2024,50 @@ class BigFileUploads {
         $data = compact( 'file_count', 'file_size', 'is_done', 'remaining_dirs' );
 
         wp_send_json_success( $data );
+    }
+
+    /**
+     * The "Personalize Your Report" questions asked before a scan, for email marketing.
+     *
+     * Nothing is stored. admin.js copies the answers into the subscribe form's hidden fields, one per
+     * merge_tag (each must exist in the Mailchimp audience), so they are only sent with a signup.
+     * Choice keys are the values Mailchimp receives, so they stay the same in every locale; the
+     * persona keys match the Infinite Uploads checkout's.
+     *
+     * @return array[] Keyed by question: label, merge_tag, and choices (value => label).
+     */
+    public function get_report_questions() {
+        $yes_no = array(
+            'yes' => __( 'Yes', 'tuxedo-big-file-uploads' ),
+            'no'  => __( 'No', 'tuxedo-big-file-uploads' ),
+        );
+
+        return array(
+            'persona' => array(
+                'label'     => __( 'What best describes you?', 'tuxedo-big-file-uploads' ),
+                'merge_tag' => 'PERSONA',
+                'choices'   => array(
+                    'digital_agency'   => __( 'Digital Agency', 'tuxedo-big-file-uploads' ),
+                    'content_creator'  => __( 'Content Creator', 'tuxedo-big-file-uploads' ),
+                    'hosting_provider' => __( 'Hosting Provider', 'tuxedo-big-file-uploads' ),
+                    'ecommerce_store'  => __( 'Ecommerce Store', 'tuxedo-big-file-uploads' ),
+                    'software_company' => __( 'Product/Software Company', 'tuxedo-big-file-uploads' ),
+                    'freelancer'       => __( 'Freelancer', 'tuxedo-big-file-uploads' ),
+                    'small_business'   => __( 'Small Business', 'tuxedo-big-file-uploads' ),
+                    'other'            => __( 'Other', 'tuxedo-big-file-uploads' ),
+                ),
+            ),
+            'folders' => array(
+                'label'     => __( 'Do you use a media folders plugin?', 'tuxedo-big-file-uploads' ),
+                'merge_tag' => 'FOLDERS',
+                'choices'   => $yes_no,
+            ),
+            'imgopt'  => array(
+                'label'     => __( 'Do you use an image optimization plugin?', 'tuxedo-big-file-uploads' ),
+                'merge_tag' => 'IMGOPT',
+                'choices'   => $yes_no,
+            ),
+        );
     }
 
     /**
