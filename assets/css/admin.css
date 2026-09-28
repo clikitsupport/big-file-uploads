@@ -1097,6 +1097,84 @@ body.bfu-modal-open {
   }
 }
 
+/* "Personalize Your Report" questions, the scan modal's first step */
+.bfu-report__question {
+  margin: 0 auto 22px;
+  padding: 0;
+  border: 0;
+}
+
+#scan-modal .bfu-report__label {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #1f2d3d;
+}
+
+.bfu-report__choices {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* The radio stays in the tab order for keyboard use; its label is the visible pill. */
+.bfu-report__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.bfu-report__choice {
+  margin: 0;
+  padding: 8px 18px;
+  border: 1px solid #d5e3ef;
+  border-radius: 999px;
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #5b6b7b;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.bfu-report__choice:hover {
+  border-color: #26a9e0;
+  color: #1f2d3d;
+}
+
+.bfu-report__input:checked + .bfu-report__choice {
+  border-color: #26a9e0;
+  background: #26a9e0;
+  color: #ffffff;
+}
+
+.bfu-report__input:focus-visible + .bfu-report__choice {
+  box-shadow: 0 0 0 3px rgba(38, 169, 224, 0.3);
+}
+
+#scan-modal #bfu-report-start {
+  min-width: 220px;
+  margin-top: 6px;
+}
+
+/* Bootstrap would otherwise swap in its own blue for the disabled state. */
+#scan-modal #bfu-report-start:disabled {
+  background-color: rgba(38, 169, 224, 1) !important;
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Room for two answer pills per row on phones. */
+@media (max-width: 600px) {
+  #scan-modal .modal-body {
+    padding: 40px 20px 32px;
+  }
+}
+
 /* ==========================================================================
    Storage Usage Analysis (scan results) — Infinite Uploads brand
    ========================================================================== */

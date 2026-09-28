@@ -18,6 +18,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="modal-body">
 				<form action="https://infiniteuploads.us10.list-manage.com/subscribe/post?u=c50f189b795383e791f477637&amp;id=4f5e536a46&amp;SOURCE=BFU_Plugin" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
 
+					<?php // admin.js fills these from the "Personalize Your Report" answers given before the scan. ?>
+					<?php foreach ( $this->get_report_questions() as $bfu_question ) : ?>
+						<input type="hidden" name="<?php echo esc_attr( $bfu_question['merge_tag'] ); ?>" value="">
+					<?php endforeach; ?>
+
 					<h4 class="bfu-subscribe__title" id="subscribe-modal-label"><?php esc_html_e( 'Get Media Management Tips & Tricks', 'tuxedo-big-file-uploads' ); ?></h4>
 					<p class="bfu-subscribe__lead"><?php esc_html_e( 'Subscribe to receive tips for managing large files in WordPress and making your media library infinitely scalable with cloud storage from Infinite Uploads.', 'tuxedo-big-file-uploads' ); ?></p>
 

@@ -10,6 +10,7 @@
  * @testdox Settings page
  *
  * @covers BigFileUploads::settings_page
+ * @covers BigFileUploads::get_report_questions
  */
 class Test_BFU_Settings_Page extends BFU_TestCase {
 
@@ -180,6 +181,60 @@ class Test_BFU_Settings_Page extends BFU_TestCase {
 			$this->assertStringContainsString( 'id="subscribe-modal"', $this->render() );
 		} finally {
 			unset( $_GET['undismiss'] );
+		}
+	}
+
+	/*
+	 * ---------------------------------------------------------------------
+	 * The report questions
+	 * ---------------------------------------------------------------------
+	 */
+
+	public function test_report_questions_open_the_scan_while_the_subscribe_modal_will_follow() {
+		$html = $this->render();
+
+		$this->assertStringContainsString( 'id="bfu-report-questions"', $html );
+		$this->assertStringContainsString( 'id="subscribe-modal"', $html );
+		$this->assertMatchesRegularExpression(
+			'/id="bfu-scan-running"[^>]*\shidden/',
+			$html,
+			'The scan step should wait behind the questions.'
+		);
+	}
+
+	public function test_report_questions_are_skipped_once_subscribe_is_dismissed() {
+		// The answers are only ever sent with the subscribe form, so asking without it collects nothing.
+		update_user_option( get_current_user_id(), 'bfu_subscribe_notice_dismissed', 1 );
+
+		$html = $this->render();
+
+		$this->assertStringContainsString( 'id="scan-modal"', $html, 'The scan itself must still be offered.' );
+		$this->assertStringNotContainsString( 'id="bfu-report-questions"', $html );
+		$this->assertDoesNotMatchRegularExpression(
+			'/id="bfu-scan-running"[^>]*\shidden/',
+			$html,
+			'Without the questions, the modal must open straight onto the scan.'
+		);
+	}
+
+	public function test_subscribe_form_has_a_hidden_field_for_each_report_question() {
+		$html = $this->render();
+
+		$start = strpos( $html, 'id="mc-embedded-subscribe-form"' );
+		$this->assertNotFalse( $start, 'The subscribe form should render.' );
+		$form = substr( $html, $start, strpos( $html, '</form>', $start ) - $start );
+
+		foreach ( $this->bfu()->get_report_questions() as $key => $question ) {
+			$this->assertStringContainsString(
+				'data-merge-tag="' . $question['merge_tag'] . '"',
+				$html,
+				"admin.js finds the $key answer's destination field by this attribute."
+			);
+			$this->assertStringContainsString(
+				'<input type="hidden" name="' . $question['merge_tag'] . '"',
+				$form,
+				"The $key answer can only reach Mailchimp from a field inside the subscribe form."
+			);
 		}
 	}
 

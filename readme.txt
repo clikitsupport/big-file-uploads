@@ -141,6 +141,12 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
+2.2.1 [2026-09-28]
+----------------------------------------------------------------------
+
+- New: Running a free scan now starts with three quick questions (what best describes you, and whether you use a media folders or image optimization plugin) so we can tailor the tips we send.
+- Translation updates.
+
 2.2.0 [2026-08-26]
 ----------------------------------------------------------------------
 
