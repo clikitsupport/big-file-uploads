@@ -121,6 +121,66 @@ $bfu_default = size_format( $this->max_upload_size );
 						<?php }
 					} ?>
 				</div>
+
+				<?php if ( $this->digest->is_available() ) : ?>
+					<?php
+					$bfu_digest_frequency = $this->digest->get_frequency();
+					$bfu_digest_next      = $this->digest->get_next_send_label();
+					$bfu_digest_includes  = array(
+						__( 'New uploads and storage', 'tuxedo-big-file-uploads' ),
+						__( 'Largest new files', 'tuxedo-big-file-uploads' ),
+						__( 'Change from last period', 'tuxedo-big-file-uploads' ),
+						__( 'Media Library totals', 'tuxedo-big-file-uploads' ),
+					);
+					?>
+					<div class="bfu-digest" id="bfu-email-summary">
+						<div class="bfu-digest__head">
+							<div class="bfu-digest__intro">
+								<h3 class="bfu-panel__title"><?php esc_html_e( 'Email Summary', 'tuxedo-big-file-uploads' ); ?></h3>
+								<p class="bfu-digest__desc">
+									<?php
+									/* translators: %s: email address */
+									printf( esc_html__( 'A recap of your Media Library, emailed to %s.', 'tuxedo-big-file-uploads' ), '<strong>' . esc_html( implode( ', ', $this->digest->get_recipients() ) ) . '</strong>' );
+									?>
+								</p>
+							</div>
+							<label class="screen-reader-text" for="bfu-digest-frequency"><?php esc_html_e( 'How often to send the email summary', 'tuxedo-big-file-uploads' ); ?></label>
+							<select name="digest" id="bfu-digest-frequency" class="bfu-digest__select">
+								<?php foreach ( $this->digest->get_frequencies() as $bfu_key => $bfu_label ) : ?>
+									<option value="<?php echo esc_attr( $bfu_key ); ?>" <?php selected( $bfu_digest_frequency, $bfu_key ); ?>><?php echo esc_html( $bfu_label ); ?></option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+
+						<ul class="bfu-digest__includes">
+							<?php foreach ( $bfu_digest_includes as $bfu_include ) : ?>
+								<li>
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+									<?php echo esc_html( $bfu_include ); ?>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+
+						<div class="bfu-digest__foot">
+							<span class="bfu-digest__status">
+								<?php if ( $bfu_digest_next ) : ?>
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+									<?php
+									/* translators: %s: date and time, such as "November 1, 2026 at 9:00 am" */
+									printf( esc_html__( 'Next summary: %s', 'tuxedo-big-file-uploads' ), '<strong>' . esc_html( $bfu_digest_next ) . '</strong>' );
+									?>
+								<?php else : ?>
+									<?php esc_html_e( 'Summaries are off. Choose how often to receive one, then save.', 'tuxedo-big-file-uploads' ); ?>
+								<?php endif; ?>
+							</span>
+						</div>
+
+						<p class="bfu-digest__note">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+							<?php esc_html_e( 'Built on your site from your own Media Library. No data leaves it, and nothing is sent for a period with no uploads.', 'tuxedo-big-file-uploads' ); ?>
+						</p>
+					</div>
+				<?php endif; ?>
 			</div>
 
 		</div>

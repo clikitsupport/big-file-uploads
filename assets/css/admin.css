@@ -1764,6 +1764,147 @@ body.bfu-modal-open {
   cursor: help;
 }
 
+/* Email summary, the last block in the limits panel */
+.bfu-digest {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid #e6eef4;
+}
+
+.bfu-digest__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.bfu-digest__intro {
+  min-width: 0;
+}
+
+.bfu-settings-card .bfu-digest__desc {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+.bfu-settings-card .bfu-digest__desc strong {
+  color: #1f2d3d;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.bfu-settings-card .bfu-digest__select {
+  flex: 0 0 auto;
+  min-width: 140px;
+  height: 40px;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 34px 0 14px;
+  border: 1px solid #d5e3ef;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: #1f2d3d;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.bfu-settings-card .bfu-digest__select:focus {
+  border-color: #26a9e0;
+  box-shadow: 0 0 0 3px rgba(38, 169, 224, 0.2);
+  outline: none;
+}
+
+.bfu-digest__includes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 16px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bfu-digest__includes li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #445566;
+}
+
+.bfu-digest__includes svg {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  padding: 3px;
+  border-radius: 50%;
+  background: #e8f4fb;
+  color: #0b6d95;
+}
+
+.bfu-digest__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f1f7fb;
+}
+
+.bfu-digest__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #445566;
+}
+
+.bfu-digest__status strong {
+  color: #1f2d3d;
+  font-weight: 600;
+}
+
+.bfu-digest__status svg {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  color: #26a9e0;
+}
+
+.bfu-settings-card .bfu-digest__note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+.bfu-digest__note svg {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  margin-top: 2px;
+  color: #94a3b8;
+}
+
+@media screen and (max-width: 600px) {
+  .bfu-digest__head {
+    flex-direction: column;
+  }
+  .bfu-digest__includes {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Save */
 .bfu-settings__actions {
   display: flex;

@@ -72,6 +72,8 @@ abstract class BFU_TestCase extends WP_UnitTestCase {
 		delete_site_option( 'tuxbfu_settings' );
 		delete_site_option( 'tuxbfu_max_upload_size' );
 		delete_site_option( 'tuxbfu_file_scan' );
+		delete_option( 'tuxbfu_digest_history' );
+		wp_clear_scheduled_hook( 'bfu_send_email_digest' );
 	}
 
 	/**

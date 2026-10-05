@@ -70,6 +70,13 @@ class BigFileUploads {
     public $server_root = 'https://infiniteuploads.com/';
     protected $capability;
     protected $max_upload_size;
+
+    /**
+     * The email summary.
+     *
+     * @var Big_File_Uploads_Email_Digest
+     */
+    public $digest;
     public $ajax_timelimit = 20;
 
     /**
@@ -104,6 +111,7 @@ class BigFileUploads {
         //save default before we filter it
         $this->max_upload_size = wp_max_upload_size();
         register_activation_hook( __FILE__, array( $this, 'on_plugin_activation' ) );
+        register_deactivation_hook( __FILE__, array( 'Big_File_Uploads_Email_Digest', 'unschedule' ) );
         add_action( 'init', array( $this, 'load_textdomain' ) );
         add_action( 'admin_notices', array( $this, 'init_review_notice' ) );
         add_filter( 'plupload_init', array( $this, 'filter_plupload_settings' ) );
@@ -147,6 +155,9 @@ class BigFileUploads {
         }
 
         require_once dirname( __FILE__ ) . '/classes/class-file-scan.php';
+        require_once dirname( __FILE__ ) . '/classes/class-email-digest.php';
+
+        $this->digest = new Big_File_Uploads_Email_Digest( $this );
 
         /**
          * Filters the capability that is checked for access to Big File Uploads settings page.
@@ -1821,9 +1832,20 @@ class BigFileUploads {
                 }
             }
 
+            $digest_changed = false;
+            if ( $this->digest->is_available() && isset( $_POST['digest'] ) ) {
+                $digest             = $this->digest->sanitize_frequency( sanitize_key( wp_unslash( $_POST['digest'] ) ) );
+                $digest_changed     = $digest !== $this->digest->get_frequency();
+                $settings['digest'] = $digest;
+            }
+
             if ( ! $save_error ) {
                 update_site_option( 'tuxbfu_settings', $settings );
                 $save_success = true;
+
+                if ( $digest_changed ) {
+                    $this->digest->reschedule();
+                }
             }
         }
         ?>
