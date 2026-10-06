@@ -3,7 +3,7 @@ Contributors: bww
 Tags: increase file size limit, increase upload limit, max upload file size, post max size, upload limit, file upload, files uploader, ftp, video uploader, AJAX
 Requires at least: 5.3
 Tested up to: 7.1
-Stable tag: 2.2.1
+Stable tag: 2.2.2
 Requires PHP: 5.6
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -150,14 +150,16 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Screenshots ==
 
-1. Set maximum upload file size.
+1. Set maximum upload file size for all users.
 2. Customize upload size by user role.
-3. Disk utility for analyzing storage usage.
-4. Increase upload size for built-in file uploader.
+3. Customize upload size by file type.
+4. Disk utility for analyzing storage usage.
+5. Media Library email summary setting.
+6. Increase upload size for built-in file uploader.
 
 == Changelog ==
 
-2.2.2 [2026-10-05]
+2.2.2 [2026-10-07]
 ----------------------------------------------------------------------
 
 - New: Email summary of your uploads. Big File Uploads can email the site admin a summary of the last month, week, or day: files uploaded and storage added compared with the previous period, a breakdown by file type, the largest upload, and the totals from your last storage scan. Nothing is sent for a period with no uploads.
