@@ -3,7 +3,7 @@ Contributors: bww
 Tags: increase file size limit, increase upload limit, max upload file size, post max size, upload limit, file upload, files uploader, ftp, video uploader, AJAX
 Requires at least: 5.3
 Tested up to: 7.1
-Stable tag: 2.2.1
+Stable tag: 2.2.2
 Requires PHP: 5.6
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -36,6 +36,7 @@ No messing with Apache/PHP initialization files or settings. Just activate the p
 - Upload any size file directly to a connected Infinite Uploads cloud account
 - Super simple configuration and small plugin footprint that doesn't bog down WordPress
 - Uploads directory disk utility for quickly analyzing storage usage in your media library
+- Email summary of new uploads, sent from your site to the admin email monthly, weekly, or daily (or turned off)
 
 ★★★★★
 > “This is just perfect, EXACTLY what I needed to bypass the Cloudflare upload limit. Thank you very much!!” - [shamank](https://wordpress.org/support/users/shamank/)
@@ -59,6 +60,13 @@ Not every file needs the same limit. Turn on "Customize by file type" to give im
 ### Uploads Disk Utility
 
 The Big File Uploads plugin includes a media library disk utility that shows a breakdown of the files in your uploads directory by type and size. See how many images, videos, archives, documents, code, and other files (like audio) there are and how much space they're taking up.
+
+
+### Upload Email Summary
+
+Big File Uploads can email you a short summary of what was added to your media library. Each summary covers the last month, week, or day and shows how many files were uploaded and how much storage they added, compared with the period before, along with a breakdown by file type, the largest upload, and the totals from your last storage scan.
+
+The summary is built and sent by your own site using the standard WordPress mail function, so by default it goes only to your site's admin email address. Nothing is sent for a period with no uploads. Choose Monthly (the default), Weekly, Daily, or Off under Settings -> Big File Uploads -> Email Summary.
 
 
 ### FTP/SFTP Client-free File Uploading
@@ -112,6 +120,14 @@ Uploads can be as large as available disk space for temporary files allows, or u
 
 Yes. Turn on "Customize by file type" in Settings -> Big File Uploads and give images, audio, video, documents, and archives their own maximum size. Any type you leave blank uses the main limit, and the per-type limits can be set once for all users or separately for each user role.
 
+= How do I change how often the email summary arrives, or turn it off? =
+
+Go to Settings -> Big File Uploads and choose Monthly, Weekly, Daily, or Off under Email Summary, then save. Every summary email also includes a link to that setting. The summary is not available on multisite networks.
+
+= Where does the email summary get its numbers? =
+
+From your own site: the media library and the results of your last storage scan. The summary is created and sent by your site to its admin email address, and it never runs a scan of its own to build the email.
+
 = Is Big File Uploads a free plugin? =
 
 Yes all features of the Big File Uploads plugin are completely free and do not have a premium upgrade.
@@ -134,12 +150,22 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Screenshots ==
 
-1. Set maximum upload file size.
+1. Set maximum upload file size for all users.
 2. Customize upload size by user role.
-3. Disk utility for analyzing storage usage.
-4. Increase upload size for built-in file uploader.
+3. Customize upload size by file type.
+4. Disk utility for analyzing storage usage.
+5. Media Library email summary setting.
+6. Increase upload size for built-in file uploader.
 
 == Changelog ==
+
+2.2.2 [2026-10-07]
+----------------------------------------------------------------------
+
+- New: Email summary of your uploads. Big File Uploads can email the site admin a summary of the last month, week, or day: files uploaded and storage added compared with the previous period, a breakdown by file type, the largest upload, and the totals from your last storage scan. Nothing is sent for a period with no uploads.
+- New: Email Summary setting under Settings -> Big File Uploads to choose Monthly (default), Weekly, Daily, or Off, showing the recipient and when the next summary will be sent.
+- New: bfu_email_digest_recipients filter for developers to change who receives the summary.
+- Translation updates.
 
 2.2.1 [2026-09-28]
 ----------------------------------------------------------------------

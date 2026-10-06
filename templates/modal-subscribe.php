@@ -23,6 +23,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<input type="hidden" name="<?php echo esc_attr( $bfu_question['merge_tag'] ); ?>" value="">
 					<?php endforeach; ?>
 
+					<?php // Which site subscribed. Sent with the signup like the answers above, never on its own. ?>
+					<input type="hidden" name="SITE_URL" value="<?php echo esc_url( home_url( '/' ) ); ?>">
+
 					<h4 class="bfu-subscribe__title" id="subscribe-modal-label"><?php esc_html_e( 'Get Media Management Tips & Tricks', 'tuxedo-big-file-uploads' ); ?></h4>
 					<p class="bfu-subscribe__lead"><?php esc_html_e( 'Subscribe to receive tips for managing large files in WordPress and making your media library infinitely scalable with cloud storage from Infinite Uploads.', 'tuxedo-big-file-uploads' ); ?></p>
 

@@ -1,8 +1,11 @@
 jQuery(document).ready(function ($) {
   $('[data-toggle="tooltip"]').tooltip();
 
-  //open modals from link
-  $(window.location.hash).modal('show');
+  //open modals from link; other anchors (like #bfu-email-summary) just scroll, as links do
+  var $hashTarget = window.location.hash ? $(document.getElementById(window.location.hash.slice(1))) : $();
+  if ($hashTarget.hasClass('modal')) {
+    $hashTarget.modal('show');
+  }
   $(".modal").on("hidden.bs.modal", function () { // any time a modal is hidden
     var urlReplace = window.location.toString().split('#', 1)[0];
     history.pushState(null, null, urlReplace); // push url without the hash as new history item

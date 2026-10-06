@@ -239,4 +239,12 @@ class Test_BFU_Multisite extends BFU_TestCase {
 
 		$this->assertSame( 3, $types['image']->files, 'Scan results live in a site option, so the network shares them.' );
 	}
+
+	public function test_the_email_summary_is_not_offered_on_a_network() {
+		$this->bfu()->digest->maybe_schedule();
+
+		$this->assertFalse( $this->bfu()->digest->is_available() );
+		$this->assertSame( 'off', $this->bfu()->digest->get_frequency() );
+		$this->assertFalse( wp_next_scheduled( Big_File_Uploads_Email_Digest::HOOK ), 'One admin email cannot summarize per-site media tables cheaply.' );
+	}
 }

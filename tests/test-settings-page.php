@@ -238,6 +238,25 @@ class Test_BFU_Settings_Page extends BFU_TestCase {
 		}
 	}
 
+	public function test_subscribe_form_sends_the_site_url_with_the_signup() {
+		$html = $this->render();
+
+		$start = strpos( $html, 'id="mc-embedded-subscribe-form"' );
+		$form  = substr( $html, $start, strpos( $html, '</form>', $start ) - $start );
+
+		$this->assertStringContainsString(
+			'<input type="hidden" name="SITE_URL" value="' . esc_url( home_url( '/' ) ) . '">',
+			$form,
+			'The site address only leaves the site inside the subscribe form, when the user submits it.'
+		);
+	}
+
+	public function test_the_site_url_is_not_rendered_once_subscribe_is_dismissed() {
+		update_user_option( get_current_user_id(), 'bfu_subscribe_notice_dismissed', 1 );
+
+		$this->assertStringNotContainsString( 'name="SITE_URL"', $this->render() );
+	}
+
 	/*
 	 * ---------------------------------------------------------------------
 	 * Saving
