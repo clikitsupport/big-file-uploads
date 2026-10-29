@@ -18,6 +18,14 @@ class Test_BFU_Email_Digest extends BFU_TestCase {
 
 		update_option( 'timezone_string', 'America/Chicago' );
 		reset_phpmailer_instance();
+
+		// wp-env's test domain is localhost:8889, and PHPMailer refuses the default wordpress@localhost sender.
+		add_filter(
+			'wp_mail_from',
+			function () {
+				return 'wordpress@example.org';
+			}
+		);
 	}
 
 	public function tear_down() {
